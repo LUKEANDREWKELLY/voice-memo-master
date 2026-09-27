@@ -604,6 +604,58 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 .tg-dense~.cv>summary{padding:3px 8px}
 @media (max-width:1000px){.tg-dense{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}.tg-dense .tg-c3{border-top:1px solid var(--grid)}}
 @media (max-width:640px){.tg-dense .tg-col+.tg-col{border-left:none;border-top:1px solid var(--grid)}.tg-dense .memoir.short .mm-text{-webkit-line-clamp:2}.tg-dense .mm-more{min-height:26px;margin-top:2px;font-size:9px}.tg-dense .mm-jump{min-height:22px;font-size:8.5px}.tg-dense~.tagline q{font-size:11.5px}.tg-dense .bands>summary{min-height:28px}}
+/* ===== slim sidebar layout: words parked left, songs up front ===== */
+.layout{display:block}
+.side{background:var(--paper);border-bottom:2px solid var(--grid)}
+.side-tog{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;min-height:36px;padding:4px 8px;border:none;border-bottom:1px solid var(--grid);background:var(--ink);color:var(--accent-ink);text-align:left}
+.side-tog .st-name{font-size:11.5px;font-weight:900;text-transform:uppercase;letter-spacing:.02em;line-height:1.1}
+.side-tog .st-name em{color:#fff;font-style:italic}
+.side-tog .st-more{flex:none;font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fff;opacity:.85}
+.side-tog .st-more::after{content:" ▾"}
+.side.open .side-tog .st-more::after{content:" ▴"}
+.side-body{display:none}
+.side.open .side-body{display:block}
+.side .topgrid{display:block!important;border-bottom:1px solid var(--grid)}
+.side .tg-col+.tg-col{border-left:none!important;border-top:1px solid var(--grid)!important}
+.side .side-head{display:block;margin:0;border:none;border-bottom:1px solid var(--grid)}
+.side .side-head h1{font-size:14px}
+.side .money{width:100%}
+.side .dedication{margin:0;border:none;border-bottom:1px solid var(--grid);border-left:4px solid var(--accent);font-size:10.5px;line-height:1.3}
+.side .topbanner{font-size:10px;line-height:1.3}
+.side .about{margin:0;border:none}
+.side .about p{font-size:10.5px}
+.side .tagline{margin:0!important}
+.side .cv-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+.side .cv-stats>div{grid-template-columns:54px minmax(0,1fr);grid-template-rows:auto;border-bottom:1px solid var(--grid)}
+.side .cv-stats>div:nth-child(2n){border-right:none}
+.side .cv-stats>div:first-child{grid-column:1 / -1;border-right:none}
+.side .cv-stats>div:last-child,.side .cv-stats>div:nth-child(4){border-bottom:none}
+.side .cv-stats dt{border-bottom:none;border-right:1px solid var(--grid);display:flex;align-items:center;font-size:8px;padding:2px 4px}
+.side .cv-stats dd{white-space:normal;font-size:10.5px;padding:2px 5px}
+.side .cv-cols{grid-template-columns:1fr}
+.side .cv-sec{padding:3px 8px 4px}
+.side .cv-sec+.cv-sec{border-left:none;border-top:1px solid var(--grid)}
+.side .cv-exp,.side .cv-stmt,.side .cv-bio{font-size:10.5px}
+.side .cv-name{font-size:14px;padding:3px 8px}
+.side .cv-cast{padding:3px 8px 5px}
+.side .cv-actors{width:auto}
+.side .cv-actors li{flex:1 1 auto;text-align:center;font-size:9.5px;padding:2px 4px;border-bottom:1px solid var(--grid)}
+.side .buildlog li{font-size:10px;grid-template-columns:54px 1fr}
+.main-head{grid-template-columns:1fr!important}
+.side .htstrip{flex-wrap:wrap}.side .store{font-size:8.5px;margin-left:auto}
+.main-head .head-actions{flex-direction:row;border-left:none}
+.main-head .head-actions button{text-align:center;border-bottom:none;border-right:1px solid var(--grid);min-height:26px;text-transform:uppercase;font-size:10px;letter-spacing:.05em}
+.main-head .head-actions button:last-child{border-right:none}
+@media (min-width:1000px){
+  .layout{display:grid;grid-template-columns:300px minmax(0,1fr);align-items:start}
+  .side{position:sticky;top:calc(var(--npH) + env(safe-area-inset-top,0px));height:calc(100vh - var(--npH) - env(safe-area-inset-top,0px));overflow-y:auto;overscroll-behavior:contain;border-bottom:none;border-right:2px solid var(--grid)}
+  .side-tog{display:none}
+  .side-body{display:block}
+  .mainc{min-width:0}
+  .mainc .wrap{max-width:none}
+  :root{--cols:24px 30px minmax(90px,1.3fr) 118px minmax(80px,1.5fr) 54px 54px 54px 40px 44px 32px 50px 100px 40px 44px 26px}
+  body.editing{--cols:24px 30px minmax(90px,1.3fr) 118px minmax(80px,1.5fr) 54px 54px 54px 40px 44px 32px 50px 100px 40px 44px 26px 28px}
+}
 </style>
 </head>
 <body>
@@ -615,6 +667,24 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   <button class="np-next" id="npNext" title="Next song in this bucket">Next</button>
   <div class="np-bar" id="npBar" role="slider" aria-label="Song position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="-1"><div class="np-fill" id="npFill"></div></div>
 </div>
+<!-- ===== LAYOUT: slim sidebar (all the words) + songs up front ===== -->
+<div class="layout">
+<aside class="side" id="side" aria-label="About Luke">
+<button class="side-tog" id="sideTog" aria-expanded="false" aria-controls="sideBody"><span class="st-name">Luke Andrew <em>motherfucking</em> Kelly</span><span class="st-more">Tips · memoir · résumé · more</span></button>
+<div class="side-body" id="sideBody">
+<!-- ===== BRAND: Human Tradition (logo also at icons/human-tradition-logo.svg) ===== -->
+<div class="htstrip"><svg class="htmark" viewBox="0 0 34 40" aria-hidden="true"><g transform="translate(7 0) skewX(-10)"><rect x="0" y="2" width="8" height="36" fill="#111"/><rect x="11" y="12" width="8" height="5" fill="#8a0303"/><rect x="11" y="20" width="8" height="18" fill="#111"/><rect x="22" y="22" width="8" height="5" fill="#8a0303"/><rect x="22" y="30" width="8" height="8" fill="#111"/></g></svg><span class="htstamp">Built by Human Tradition</span><span class="store" id="store"></span></div>
+<header class="side-head">
+    <div>
+      <p class="brand"><span class="sq" aria-hidden="true"></span>Voice Memo Master</p>
+      <h1>Luke Andrew motherfucking Kelly</h1>
+      <p class="credit subtext">Undiscovered musician who built this in New York, in the Lower East Side tonight between the hours of 6 PM and 11 PM Eastern Standard Time, September 26th. <strong>Give me money. Give me money. Send me money.</strong></p>
+      <div class="money" id="money" aria-label="Send Luke money">
+        <a class="m-btn" href="https://x.com/" target="_blank" rel="noopener">Tip me on X</a><a class="m-btn" href="https://grok.com/" target="_blank" rel="noopener">Grok money</a><span class="m-btn m-off" id="btcBtn" title="Bitcoin address coming soon">Bitcoin <small>(address soon)</small></span><span class="m-threat">…or I’m going on OnlyFans.</span>
+      </div>
+      <p class="sub">Voice memos, trimmed to the song and polished the same way every time.</p>
+    </div>
+</header>
 <!-- ===== TOP SECTION: three columns (stacks on phones) ===== -->
 <div class="topgrid tg-dense">
 <div class="tg-col tg-c1">
@@ -713,6 +783,28 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 <!-- ===== TOP BANNER: edit the text below (id="topBanner") ===== -->
 <div class="topbanner" id="topBanner" role="note">Debuting: 'Song for Barbara Walters' — the much-awaited, anticipated single from Luke Andrew motherfucking Kelly — releasing on Elon Musk's birthday. Dedicated to the possibility of Nathan Fielder being featured on the track.</div>
 <!-- ===== /TOP BANNER ===== -->
+  <!-- ===== DEDICATION ===== -->
+  <blockquote class="dedication" id="dedication"><span class="lbl">Dedication</span>Dedicated to Elon Musk. Here's hoping he adopts me, or hires me to be his personal security guard — I'd charge him zero dollars a year. I know he's got a bunch of kids; I don't have a father.</blockquote>
+  <footer class="about" id="about">
+  <details class="buildlog" id="buildLog"><summary>Tonight’s build log</summary><ol id="buildLogList"><li><time>…</time><span>Loading every change made tonight…</span></li></ol><p class="bl-note">Every update to this site, newest first, straight from its public history on <a href="https://github.com/LUKEANDREWKELLY/voice-memo-master/commits/main" target="_blank" rel="noopener">GitHub</a>. Times are New York time.</p></details>
+<script>(function(){ var ol=document.getElementById('buildLogList'), box=document.getElementById('buildLog'); if (matchMedia('(min-width:641px)').matches) box.open=true;
+  function esc(s){return s.replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+  function row(date,msg){var d=new Date(date);var t=d.toLocaleString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric'})+' '+d.toLocaleString('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit'});return '<li><time datetime="'+date+'">'+esc(t)+'</time><span>'+esc(msg)+'</span></li>';}
+  fetch('changelog.json?'+Date.now()).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(cs){ol.innerHTML=cs.map(function(c){return row(c.date,c.msg);}).join('');})
+  .catch(function(){ return fetch('https://api.github.com/repos/LUKEANDREWKELLY/voice-memo-master/commits?per_page=100').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(cs){
+    ol.innerHTML=cs.map(function(c){var d=new Date(c.commit.author.date);var t=d.toLocaleString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric'})+' '+d.toLocaleString('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit'});
+      return '<li><time datetime="'+c.commit.author.date+'">'+esc(t)+'</time><span>'+esc(c.commit.message.split('\n')[0])+'</span></li>';}).join('');
+  }); }).catch(function(){ ol.innerHTML='<li><time>—</time><span>Couldn’t load the log right now. See the full history on GitHub.</span></li>'; }); })();</script>
+
+  <h2>About</h2>
+  <p><strong>Voice Memo Master</strong> is the original creation of <strong>Luke Andrew motherfucking Kelly, undiscovered musician</strong>. He built it in New York tonight and is revealing it to everybody, and he wants the X and Grok crowd, including the xAI team and Elon Musk, to see it.</p>
+  <p><em>Dedicated to Elon Musk. Here's hoping he adopts me, or hires me to be his personal security guard — I'd charge him zero dollars a year. I know he's got a bunch of kids; I don't have a father.</em></p>
+  <p class="note" style="margin-top:0">Every song gets the same treatment: it tidies up the start and end (bye-bye chatter and fumbling before and after you play), cleans up hiss, gives your voice a little shine, and makes every song sit at the same loudness. Slide LOUD, WARMTH and SPARKLE to hear the change right away, then tap KEEP IT to save that sound. TAPE makes it sound like an old cassette. PHONE makes it clear and punchy on tiny phone speakers. Drag a slider sideways or up and down, scroll it, or use the arrow keys; double-click puts it back to 0. Tap RAW or POLISHED to compare. Your songs get dealt at random into up to 6 buckets: tap a tab to open one, SHUFFLE deals again, NEXT and SURPRISE ME hop around, PLAY BUCKET plays them one after another, and ALL shows everything. RANDOMIZE (the dice) tries a random sound on every song, or tap a song’s own dice. It’s only a preview until you tap KEEP IT, and RESET puts the saved sound back. Turn off SURPRISE ON OPEN if you don’t want fresh dice each time the app opens. Sort with A–Z, NEWEST, OLDEST (by recording date) or TOP (most upvotes); PLAY BUCKET plays in that order. The black bar at the top always shows what’s playing: tap the name to jump to that song, tap the thin line to skip around, NEXT for the next song. Songs are named from the title saved inside the file; Voice Memos code names like “20240115 143022” become the recording date. In EDIT LIST you can tick songs and DELETE SELECTED, or tap FIX NAMES. ADD PHOTOS at the top keeps a row of your pictures; tap one to see it big, and in EDIT LIST you can move or delete them. Your songs stay saved in this browser on this device. Download one song (on iPhone the share sheet pops up so you can Save to Files), or grab them all at once in a .zip. Add it to your home screen to use it like an app; it works offline once it has loaded.<span class="hint-desktop"> On a computer you can also drag memos onto the drop box.</span></p>
+  <p class="fine">© Luke Andrew motherfucking Kelly. Everything runs on your device; your audio never leaves your browser.</p>
+  </footer>
+</div>
+</aside>
+<main class="mainc">
 <!-- ===== PHOTOS: one row of thumbnails (stored on this device) ===== -->
 <section class="photos empty" id="photos" aria-label="Photos" aria-roledescription="carousel">
   <div class="bn" id="bn">
@@ -729,27 +821,14 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   <div class="lb-top"><span class="lb-count" id="lbCount"></span><button id="lbClose" aria-label="Close photo">Close</button></div>
   <div class="lb-stage" id="lbStage"><img id="lbImg" alt=""><button class="lb-prev" id="lbPrev" aria-label="Previous photo">‹</button><button class="lb-next" id="lbNext" aria-label="Next photo">›</button></div>
 </div>
-<!-- ===== BRAND: Human Tradition (logo also at icons/human-tradition-logo.svg) ===== -->
-<div class="htstrip"><svg class="htmark" viewBox="0 0 34 40" aria-hidden="true"><g transform="translate(7 0) skewX(-10)"><rect x="0" y="2" width="8" height="36" fill="#111"/><rect x="11" y="12" width="8" height="5" fill="#8a0303"/><rect x="11" y="20" width="8" height="18" fill="#111"/><rect x="22" y="22" width="8" height="5" fill="#8a0303"/><rect x="22" y="30" width="8" height="8" fill="#111"/></g></svg><span class="htstamp">Human Tradition</span><span class="store" id="store"></span></div>
 <div class="wrap">
-  <header>
-    <div>
-      <p class="brand"><span class="sq" aria-hidden="true"></span>Voice Memo Master</p>
-      <h1>Luke Andrew motherfucking Kelly</h1>
-      <p class="credit subtext">Undiscovered musician who built this in New York, in the Lower East Side tonight between the hours of 6 PM and 11 PM Eastern Standard Time, September 26th. <strong>Give me money. Give me money. Send me money.</strong></p>
-      <div class="money" id="money" aria-label="Send Luke money">
-        <a class="m-btn" href="https://x.com/" target="_blank" rel="noopener">Tip me on X</a><a class="m-btn" href="https://grok.com/" target="_blank" rel="noopener">Grok money</a><span class="m-btn m-off" id="btcBtn" title="Bitcoin address coming soon">Bitcoin <small>(address soon)</small></span><span class="m-threat">…or I’m going on OnlyFans.</span>
-      </div>
-      <p class="sub">Voice memos, trimmed to the song and polished the same way every time.</p>
-    </div>
+  <header class="main-head">
     <div class="head-actions">
       <button id="edit">Select / delete</button>
       <button id="dlAll" disabled>Download all songs</button>
     </div>
   </header>
 
-  <!-- ===== DEDICATION ===== -->
-  <blockquote class="dedication" id="dedication"><span class="lbl">Dedication</span>Dedicated to Elon Musk. Here's hoping he adopts me, or hires me to be his personal security guard — I'd charge him zero dollars a year. I know he's got a bunch of kids; I don't have a father.</blockquote>
 
   <input type="file" id="file" class="sr-file" accept="audio/*,.m4a,.qta,.wav,.mp3,.aif,.aiff,.caf,.aac" multiple tabindex="-1" aria-hidden="true">
   <label for="file" class="add-btn" id="addBtn" role="button" tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>Add memo <small>m4a · wav · mp3</small></label>
@@ -791,25 +870,11 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 
   <label for="file" class="add-btn fab" id="fab" role="button" tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>Add memo</label>
 
-  <footer class="about" id="about">
-  <details class="buildlog" id="buildLog"><summary>Tonight’s build log</summary><ol id="buildLogList"><li><time>…</time><span>Loading every change made tonight…</span></li></ol><p class="bl-note">Every update to this site, newest first, straight from its public history on <a href="https://github.com/LUKEANDREWKELLY/voice-memo-master/commits/main" target="_blank" rel="noopener">GitHub</a>. Times are New York time.</p></details>
-<script>(function(){ var ol=document.getElementById('buildLogList'), box=document.getElementById('buildLog'); if (matchMedia('(min-width:641px)').matches) box.open=true;
-  function esc(s){return s.replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
-  function row(date,msg){var d=new Date(date);var t=d.toLocaleString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric'})+' '+d.toLocaleString('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit'});return '<li><time datetime="'+date+'">'+esc(t)+'</time><span>'+esc(msg)+'</span></li>';}
-  fetch('changelog.json?'+Date.now()).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(cs){ol.innerHTML=cs.map(function(c){return row(c.date,c.msg);}).join('');})
-  .catch(function(){ return fetch('https://api.github.com/repos/LUKEANDREWKELLY/voice-memo-master/commits?per_page=100').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(cs){
-    ol.innerHTML=cs.map(function(c){var d=new Date(c.commit.author.date);var t=d.toLocaleString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric'})+' '+d.toLocaleString('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit'});
-      return '<li><time datetime="'+c.commit.author.date+'">'+esc(t)+'</time><span>'+esc(c.commit.message.split('\n')[0])+'</span></li>';}).join('');
-  }); }).catch(function(){ ol.innerHTML='<li><time>—</time><span>Couldn’t load the log right now. See the full history on GitHub.</span></li>'; }); })();</script>
-
-  <h2>About</h2>
-  <p><strong>Voice Memo Master</strong> is the original creation of <strong>Luke Andrew motherfucking Kelly, undiscovered musician</strong>. He built it in New York tonight and is revealing it to everybody, and he wants the X and Grok crowd, including the xAI team and Elon Musk, to see it.</p>
-  <p><em>Dedicated to Elon Musk. Here's hoping he adopts me, or hires me to be his personal security guard — I'd charge him zero dollars a year. I know he's got a bunch of kids; I don't have a father.</em></p>
-  <p class="note" style="margin-top:0">Every song gets the same treatment: it tidies up the start and end (bye-bye chatter and fumbling before and after you play), cleans up hiss, gives your voice a little shine, and makes every song sit at the same loudness. Slide LOUD, WARMTH and SPARKLE to hear the change right away, then tap KEEP IT to save that sound. TAPE makes it sound like an old cassette. PHONE makes it clear and punchy on tiny phone speakers. Drag a slider sideways or up and down, scroll it, or use the arrow keys; double-click puts it back to 0. Tap RAW or POLISHED to compare. Your songs get dealt at random into up to 6 buckets: tap a tab to open one, SHUFFLE deals again, NEXT and SURPRISE ME hop around, PLAY BUCKET plays them one after another, and ALL shows everything. RANDOMIZE (the dice) tries a random sound on every song, or tap a song’s own dice. It’s only a preview until you tap KEEP IT, and RESET puts the saved sound back. Turn off SURPRISE ON OPEN if you don’t want fresh dice each time the app opens. Sort with A–Z, NEWEST, OLDEST (by recording date) or TOP (most upvotes); PLAY BUCKET plays in that order. The black bar at the top always shows what’s playing: tap the name to jump to that song, tap the thin line to skip around, NEXT for the next song. Songs are named from the title saved inside the file; Voice Memos code names like “20240115 143022” become the recording date. In EDIT LIST you can tick songs and DELETE SELECTED, or tap FIX NAMES. ADD PHOTOS at the top keeps a row of your pictures; tap one to see it big, and in EDIT LIST you can move or delete them. Your songs stay saved in this browser on this device. Download one song (on iPhone the share sheet pops up so you can Save to Files), or grab them all at once in a .zip. Add it to your home screen to use it like an app; it works offline once it has loaded.<span class="hint-desktop"> On a computer you can also drag memos onto the drop box.</span></p>
-  <p class="fine">© Luke Andrew motherfucking Kelly. Everything runs on your device; your audio never leaves your browser.</p>
-  </footer>
+</div>
+</main>
 </div>
 <audio id="player" preload="none"></audio>
+<script>(function(){var s=document.getElementById('side'),b=document.getElementById('sideTog');b.addEventListener('click',function(){var o=s.classList.toggle('open');b.setAttribute('aria-expanded',String(o));});})();</script>
 
 <script>
 (() => {
