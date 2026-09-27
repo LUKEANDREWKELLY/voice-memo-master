@@ -111,6 +111,13 @@ footer{padding:10px 12px 18px;font-size:10.5px;color:var(--muted)}
 footer a{font-weight:800}
 .toast{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#111;color:var(--accent-ink);padding:6px 12px;font-weight:800;font-size:11px;border:1px solid var(--accent-ink);z-index:60}
 .toast[hidden]{display:none}
+.landed{position:fixed;left:50%;bottom:calc(52px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;background:var(--accent);color:var(--accent-ink);border:1px solid #111;padding:7px 12px;font-weight:900;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;cursor:pointer;animation:landed 5s ease forwards}
+.landed[hidden]{display:none}
+@keyframes landed{0%{opacity:0;transform:translate(-50%,8px)}6%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0;visibility:hidden}}
+.song.fresh{animation:fresh 4s ease-out}
+.song.fresh .t b::after{content:"NEW";margin-left:6px;padding:0 4px;background:var(--accent);color:var(--accent-ink);font-size:9px;letter-spacing:.1em;vertical-align:1px}
+@keyframes fresh{0%,45%{background:var(--hi);box-shadow:inset 4px 0 0 var(--accent)}}
+@media (prefers-reduced-motion: reduce){.landed{animation:none}.song.fresh{animation:none;background:var(--hi)}}
 .lb{position:fixed;inset:0;z-index:70;background:#0b0b0b;display:grid;place-items:center}
 .lb[hidden]{display:none}
 .lb img{max-width:100vw;max-height:100vh;object-fit:contain}
@@ -176,6 +183,7 @@ footer a{font-weight:800}
 <footer>© Luke Andrew motherfucking Kelly, undiscovered musician. Polished with <a href="../">Voice Memo Master</a>, which he built in New York in one night.</footer>
 <audio id="player" preload="none"></audio>
 <div class="toast" id="toast" hidden role="status"></div>
+<div class="landed" id="landed" hidden role="status" aria-live="polite"></div>
 <div class="lb" id="lb" hidden role="dialog" aria-label="Photo"><img id="lbImg" alt=""><button id="lbClose">Close</button></div>
 <script>
 (() => {
@@ -206,7 +214,7 @@ function render(){
   if (!list.length){ listEl.innerHTML = '<li class="empty">No songs match that.</li>'; drawNP(); return; }
   listEl.innerHTML = '';
   for (const s of list){
-    const li = document.createElement('li'), on = playing === s && !player.paused; li.className = 'song' + (playing === s ? ' now' : ''); li.id = 's-' + s.id;
+    const li = document.createElement('li'), on = playing === s && !player.paused; li.className = 'song' + (playing === s ? ' now' : '') + (s._fresh && Date.now() - s._fresh < 60000 ? ' fresh' : ''); li.id = 's-' + s.id;
     li.innerHTML = `<button class="play" aria-label="${on ? 'Pause' : 'Play'} ${esc(s.title)}">${on ? PAUSE : PLAY}</button>
       <div class="t"><b title="${esc(s.title)}">${esc(s.title)}</b><small>${s.bucketNo ? `<i title="${esc(s.bucket || '')}">B${s.bucketNo}</i>` : ''}${esc(when(s.date))}</small></div>
       <canvas aria-label="Waveform of ${esc(s.title)}. Tap to jump."></canvas>
@@ -304,15 +312,49 @@ function photosUp(ph){
 $('#lbClose').addEventListener('click', () => { $('#lb').hidden = true; $('#lbImg').src = ''; });
 $('#lb').addEventListener('click', e => { if (e.target === $('#lb')){ $('#lb').hidden = true; $('#lbImg').src = ''; } });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#lb').hidden) $('#lbClose').click(); });
-/* load */
+/* load, then keep the list fresh: re-check every 20 s while the page is visible, merge new songs in without touching playback, scroll or sort */
+async function fetchList(){ // -> {songs, photos} or null when nothing is published yet; throws when offline
+  const r = await fetch('../songs.json?t=' + Date.now(), {cache:'no-store'});
+  if (r.status === 404) return null; if (!r.ok) throw new Error(r.status);
+  const d = await r.json(); return {songs: (d.songs || []).filter(s => s && s.id && s.file && s.title), photos: (d.photos || []).filter(p => p && p.file)};
+}
+const LIVE_MS = 20000; let liveT = null, liveBusy = false, listSig = '', photosShown = false, hashDone = false;
+const hashId = (() => { const m = /[#&]s=([^&]+)/.exec(location.hash); try { return m ? decodeURIComponent(m[1]) : null; } catch(e){ return null; } })();
+const sigOf = l => JSON.stringify(l.map(s => [s.id, s.title, s.file || s.url, s.date, s.bucketNo, s.duration]));
+function flashHash(){ if (!hashId || hashDone) return; const s = songs.find(x => x.id === hashId); if (!s) return; const li = document.getElementById('s-' + s.id);
+  if (li){ hashDone = true; li.scrollIntoView({block:'center'}); li.classList.remove('flash'); void li.offsetWidth; li.classList.add('flash'); } }
+function keepScroll(fn){ // re-render without the list jumping under the listener's thumb
+  let id = null, top = 0; if (scrollY > 0){ const pl = playing && document.getElementById('s-' + playing.id), pr = pl && pl.getBoundingClientRect();
+    if (pr && pr.bottom > 40 && pr.top < innerHeight){ id = pl.id; top = pr.top; }   // keep the playing row still if it's on screen
+    else for (const li of listEl.querySelectorAll('li.song')){ const r = li.getBoundingClientRect(); if (r.bottom > 80){ id = li.id; top = r.top; break; } } }
+  fn(); if (id){ const li = document.getElementById(id); if (li){ const d = li.getBoundingClientRect().top - top; if (Math.abs(d) > 0.5) scrollBy(0, d); } } }
+function landed(added){
+  const el = $('#landed'), n = added.length; el.textContent = n === 1 ? `“${added[0].title.slice(0, 32)}” just landed` : `${n} new songs just landed`;
+  el.hidden = true; void el.offsetWidth; el.hidden = false; clearTimeout(landed.t); landed.t = setTimeout(() => el.hidden = true, 5200);
+  el.onclick = () => { el.hidden = true; const li = added.map(s => document.getElementById('s-' + s.id)).find(Boolean); if (li) li.scrollIntoView({block:'center', behavior:'smooth'}); };
+}
+function mergeList(fresh){
+  const sig = sigOf(fresh); if (sig === listSig) return; const first = !listSig && !songs.length; listSig = sig;
+  const old = new Map(songs.map(s => [s.id, s])), next = [], added = [];
+  for (const f of fresh){ const o = old.get(f.id); if (o){ Object.assign(o, f); next.push(o); old.delete(f.id); } else { if (!first) f._fresh = Date.now(); next.push(f); if (!first) added.push(f); } }
+  for (const o of old.values()) if (o === playing) next.push(o);   // taken off, but it's playing right now: let it finish
+  songs = next; keepScroll(render); flashHash();
+  if (added.length) landed(added);
+}
+async function refresh(){
+  if (liveBusy) return; liveBusy = true;
+  try { const d = await fetchList(); mergeList(d ? d.songs : []); if (d && d.photos.length && !photosShown){ photosShown = true; photosUp(d.photos); } }
+  catch(e){ /* offline for a moment: try again next round */ }
+  finally { liveBusy = false; }
+}
+function schedule(){ clearTimeout(liveT); if (!document.hidden) liveT = setTimeout(async () => { await refresh(); schedule(); }, LIVE_MS); }
+document.addEventListener('visibilitychange', () => { if (document.hidden) clearTimeout(liveT); else { refresh().then(schedule); } });
 (async () => {
-  try { const r = await fetch('../songs.json?t=' + Date.now(), {cache:'no-store'});
-    if (r.ok){ const d = await r.json(); songs = (d.songs || []).filter(s => s && s.file && s.title); photosUp((d.photos || []).filter(p => p && p.file)); }
-    else if (r.status !== 404) throw new Error(r.status);
-  } catch(e){ listEl.innerHTML = '<li class="empty">Couldn’t load the songs right now.<small>Check your connection and refresh.</small></li>'; drawNP(); return; }
-  render();
-  const m = /[#&]s=([^&]+)/.exec(location.hash);
-  if (m){ const s = songs.find(x => x.id === decodeURIComponent(m[1])); if (s){ const li = document.getElementById('s-' + s.id); if (li){ li.scrollIntoView({block:'center'}); li.classList.add('flash'); } } }
+  let d;
+  try { d = await fetchList(); }
+  catch(e){ listEl.innerHTML = '<li class="empty">Couldn’t load the songs right now.<small>Check your connection. It will keep trying.</small></li>'; drawNP(); schedule(); return; }
+  if (d){ songs = d.songs; listSig = sigOf(songs); if (d.photos.length){ photosShown = true; photosUp(d.photos); } } else listSig = sigOf([]);
+  render(); flashHash(); schedule();
 })();
 })();
 </script>

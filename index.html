@@ -373,6 +373,8 @@ li.memo .ab button[aria-pressed="true"]{background:var(--accent);color:var(--acc
 .meter.warn i{background:var(--accent)}
 .pubmsg{min-height:16px;font-weight:700}
 .pubmsg.err{color:var(--accent)}
+.publive{margin-top:3px;padding:3px 6px;border:1px solid var(--grid);background:var(--paper2);font-weight:800;font-variant-numeric:tabular-nums}
+.publive.ok{background:var(--ink);color:var(--accent-ink)}
 .pub-big{display:block;width:100%;margin:8px 0 2px;min-height:44px;border:1px solid var(--grid);background:var(--accent);color:var(--accent-ink);font:inherit;font-size:13px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
 .pub-big:hover{background:var(--accent-hover)}
 .pub-big:disabled{opacity:.5;cursor:default}
@@ -1028,6 +1030,7 @@ body.dropping::after{content:'Drop your songs anywhere';position:fixed;inset:8px
       <button id="pubAll" class="pub-big">Publish all songs</button>
       <div class="btnrow"><button id="pubPhotos">Publish photos</button></div>
       <div class="pubmsg" id="pubMsg" aria-live="polite"></div>
+      <div class="publive" id="pubLiveLine" hidden aria-live="polite"></div>
     </div>
   </div>
 </div>
@@ -2695,6 +2698,20 @@ const usedBytes = d => (d.songs||[]).reduce((a,e) => a + (e.bytes||0), 0) + (d.p
 function drawSpace(d){ if (!d) return; const used = usedBytes(d), pct = Math.min(100, used/SITE_LIMIT*100), mins = Math.max(0, (SITE_LIMIT - used) / (MP3_KBPS*1000/8*60));
   $('#pubMeter').classList.toggle('warn', used > SITE_WARN); $('#pubMeter').firstElementChild.style.width = pct.toFixed(1) + '%';
   $('#pubSpace').textContent = `${(d.songs||[]).length} song${(d.songs||[]).length===1?'':'s'} and ${(d.photos||[]).length} photo${(d.photos||[]).length===1?'':'s'} use ${fmtBytes(used)} of about 1 GB. Room for roughly ${Math.floor(mins/3.5)} more songs of 3½ minutes.`; }
+const LIVE_LISTS = ['songs.json'];
+/* saved vs actually live: Pages takes ~20-45 s to put each commit on the site, so watch the public list until the saved songs show up */
+let pubSaved = new Set(), pubSavedAt = 0, liveWatchT = null;
+function noteSaved(ids){ ids.forEach(i => pubSaved.add(i)); pubSavedAt = Date.now(); watchLive(); }
+async function liveIds(){ const ids = new Set();
+  for (const u of LIVE_LISTS){ try { const r = await fetch(u + '?t=' + Date.now(), {cache:'no-store'}); if (r.ok) ((await r.json()).songs || []).forEach(e => ids.add(e.id)); } catch(e){} }
+  return ids; }
+async function watchLive(){ clearTimeout(liveWatchT); const n = pubSaved.size, el = $('#pubLiveLine'); if (!n){ if (el) el.hidden = true; return; }
+  const ids = await liveIds(); let live = 0; for (const i of pubSaved) if (ids.has(i)) live++;
+  const left = Math.max(5, Math.round(45 - (Date.now() - pubSavedAt) / 1000));
+  if (el){ el.hidden = false; el.classList.toggle('ok', live >= n);
+    el.textContent = live >= n ? `Saved ${n} · all ${n} live on the site` : `Saved ${n} · ${live ? `${live} live now · ` : ''}${live ? 'the rest' : 'live on the site'} in about ${left}s`; }
+  if (live < n) liveWatchT = setTimeout(watchLive, 5000);
+}
 /* Git Data API: upload blobs, then one tree + one commit per batch, then move main (retry if the site moved meanwhile) */
 async function ghJson(path, opt, what){ const r = await gh(path, opt); if (!r.ok) throw await ghFail(r, what); return r.json(); }
 async function siteHead(){ const ref = await ghJson(`/repos/${GH_REPO}/git/ref/heads/main`, {}, 'Reading the site');
@@ -2722,7 +2739,7 @@ async function publishSongs(list){
   list = list.filter(m => m.state === 'done'); if (!list.length){ pubSay('No polished songs to publish yet.'); return; }
   if (!getKey()){ openPub(); pubSay('Paste your GitHub key first, then publish.', true); return; }
   if (pubRunning){ pubSay('Already publishing. Hang on until it finishes.'); return; }
-  pubRunning = true; list.forEach(m => pubBusy.add(m.id)); render();
+  pubRunning = true; list.forEach(m => pubBusy.add(m.id)); render(); pubSaved = new Set(); watchLive();
   let done = 0, skipped = 0, updated = 0;
   try {
     pubSay('Checking what’s already on the gallery…');
@@ -2739,6 +2756,7 @@ async function publishSongs(list){
       batch.forEach(e => delete e._new);
       const msg = fresh ? `${fresh} song${fresh>1?'s':''} on the public gallery: ${batch.map(e=>e.title).join(', ').slice(0,120)}` : `Public gallery song names updated`;
       await commitFiles(fs, d => { for (const e of batch){ const i = d.songs.findIndex(x => x.id === e.id); if (i >= 0) d.songs[i] = e; else d.songs.push(e); } }, msg);
+      noteSaved(batch.filter(e => e.file).map(e => e.id));
       batch.forEach(e => { for (const m of list) if (pubId(m) === e.id) pubBusy.delete(m.id); }); render(); };
     const N = need.length; let n = 0;
     for (const m of list){
