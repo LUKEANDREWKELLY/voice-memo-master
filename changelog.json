@@ -1,5 +1,15 @@
 [
 {
+"sha": "2623872",
+"date": "2026-09-26T22:32:32-04:00",
+"msg": "Songs come first now: all the words moved into a slim sidebar on the left (a tap-open drawer on phones), and the logo says Built by Human Tradition"
+},
+{
+"sha": "ee5aa45",
+"date": "2026-09-26T22:29:42-04:00",
+"msg": "Build log data"
+},
+{
 "sha": "1fa4b57",
 "date": "2026-09-26T22:29:42-04:00",
 "msg": "Delete buttons are always showing now, and the top is a tight dashboard (tips, memoir, bands side by side) so the songs show up way sooner"
