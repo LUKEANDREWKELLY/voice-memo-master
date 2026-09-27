@@ -1,6 +1,6 @@
 /* Voice Memo Master service worker: offline app shell + Android Web Share Target.
    All paths are relative to the SW scope, so the app works from any subpath (e.g. GitHub Pages). */
-const VERSION = 'vmm-v9';
+const VERSION = 'vmm-v10';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './og-image.png',
   './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png'];
 
@@ -29,6 +29,9 @@ function stash(files){
 self.addEventListener('fetch', e => {
   const req = e.request, url = new URL(req.url);
   const scope = new URL(self.registration.scope);
+  // Other pages on this site (portfolio, public gallery) and published files/manifests are never served from this cache
+  if (url.origin === location.origin && (url.pathname.startsWith(scope.pathname + 'portfolio/') || url.pathname.startsWith(scope.pathname + 'gallery/') ||
+      url.pathname.startsWith(scope.pathname + 'songs/') || url.pathname.startsWith(scope.pathname + 'photos/') || url.pathname.endsWith('.json'))) return;
 
   // Web Share Target (Android): POST ./share-target with multipart files
   if (req.method === 'POST' && url.href.startsWith(scope.href) && url.pathname.endsWith('/share-target')) {
@@ -46,6 +49,8 @@ self.addEventListener('fetch', e => {
 
   // Pages: network first, fall back to the cached shell (offline)
   if (req.mode === 'navigate' || (url.origin === location.origin && /\/(index\.html)?$/.test(url.pathname))) {
+    const isApp = url.href.split(/[?#]/)[0] === scope.href || url.href.split(/[?#]/)[0] === new URL('./index.html', scope).href;
+    if (!isApp) return;   // only the app itself is cached as ./index.html
     e.respondWith(fetch(req).then(r => {
       if (r.ok) { const cp = r.clone(); caches.open(VERSION).then(c => c.put('./index.html', cp)); }
       return r;

@@ -326,6 +326,61 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   .fab{display:flex;position:fixed;left:4px;right:4px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:20;width:auto;margin:0;min-height:44px;box-shadow:0 0 0 2px var(--bg)}
   .fab.hide{display:none}
 }
+/* phones only (≤640px): denser toolbars and rows so more songs fit; tap targets stay ≥30px. Laptop layout untouched. */
+@media (max-width:640px){
+  :root{--npH:43px}
+  .np{grid-template-columns:36px minmax(0,1fr) auto auto;grid-template-rows:34px 8px}
+  .np-play svg{width:12px;height:12px}
+  .np-title{flex-direction:row;align-items:center;gap:5px}
+  .np-name{font-size:11px}
+  .np-bk{font-size:8.5px;line-height:12px}
+  .np-time{line-height:34px;padding:0 5px;font-size:10px}
+  .np-next{min-width:44px;font-size:10px}
+  .np-bar::before,.np-fill{top:2px;height:4px}
+  .topbanner{font-size:10px;line-height:1.25;padding:2px 4px}
+  .htstrip{padding:3px 4px}
+  .wrap{padding:2px 2px calc(44px + env(safe-area-inset-bottom,0px))}
+  header{margin-bottom:2px}
+  header>div:first-child>*{padding:1px 4px}
+  h1{font-size:14px}
+  .credit,.sub{font-size:10.5px}
+  .head-actions button{min-height:32px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;padding:0 6px}
+  .dedication{margin-bottom:2px;padding:2px 4px;font-size:10.5px;line-height:1.3}
+  .add-btn{min-height:34px;margin-bottom:2px}
+  .status{margin:2px 0;font-size:10px;min-height:12px}
+  .tools input{min-height:32px;font-size:16px;padding:0 6px}
+  .sort button{min-height:30px;padding:0 8px;font-size:10px}
+  .count{font-size:9.5px;padding:0 4px}
+  .acts .grp{flex:1 1 100%}
+  .acts button{min-height:30px;padding:0 6px;font-size:10px;letter-spacing:.03em;gap:3px}
+  .acts button svg{width:10px;height:10px}
+  .tabs button{min-height:30px;padding:0 8px;font-size:10px}
+  li.memo{grid-template-columns:22px 34px minmax(0,1fr) auto 34px;border-bottom-width:2px}
+  body.editing li.memo{grid-template-columns:32px 34px minmax(0,1fr) auto 34px}
+  li.memo::before{font-size:9px}
+  .play{min-height:30px}
+  .play svg{width:10px;height:10px}
+  .name{font-size:11px;padding:1px 4px;min-height:18px}
+  .when{font-size:9.5px;padding:1px 4px;min-height:16px}
+  li.memo>*,li.memo .title>*,li.memo .knobs>*{min-height:18px}
+  canvas.wave{height:22px}
+  li.memo .knobs>*,.fader{min-height:32px}
+  .fader::before{height:7px}.f-fill{height:7px}.f-zero{height:10px}.f-thumb{height:12px;width:3px;margin-left:-1px}
+  .f-lbl{top:4px;font-size:9px}.f-val{top:4px;font-size:10px}
+  li.memo .knobs>.tape,li.memo .knobs>.phone,li.memo .knobs>.dice,li.memo .knobs>.apply{min-height:30px;padding:0 6px;font-size:10px}
+  .dice svg{width:13px;height:13px}
+  .apply{min-height:30px;padding:0 6px;font-size:10px}
+  .vote{min-height:30px;font-size:10.5px}
+  li.memo .ab button{min-height:30px;padding:0 8px;font-size:10px}
+  .icon{min-height:30px;padding:0 8px;font-size:10px}
+  .dl svg,.pub svg{width:12px;height:12px}
+  .pub{min-height:30px}
+  .sel input{width:18px;height:18px}
+  .photos.empty .ph-add{min-height:32px;font-size:10px}
+  .photos:not(.empty) .ph-add{min-height:30px}
+  .bn-ed button{min-height:30px;padding:0 8px}
+  .fab{min-height:38px}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -445,7 +500,7 @@ async function tx(store, mode, fn){
   const d = await idb();
   return new Promise((res, rej) => {
     const t = d.transaction(store, mode); const s = t.objectStore(store);
-    const out = fn(s); t.oncomplete = () => res(out && out.result !== undefined ? out.result : out); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error);
+    const out = fn(s); t.oncomplete = () => res(out instanceof IDBRequest ? out.result : out); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error);
   });
 }
 /* Storage: IndexedDB first. If one save fails (e.g. the device is out of space), only THAT item falls back to memory
@@ -473,7 +528,7 @@ const putBlob = (k,b) => saveTx(ok => ok ? mem.blobs.delete(k) : mem.blobs.set(k
   // store raw bytes: some browsers refuse to store File objects
   const buf = await b.arrayBuffer(); return tx('blobs','readwrite', s => s.put({type:b.type||'', buf}, k)); });
 const getBlob = k => mem.blobs.has(k) ? Promise.resolve(mem.blobs.get(k)) : safeTx(() => mem.blobs.get(k), async () => { const r = await tx('blobs','readonly', s => s.get(k));
-  return r ? (r instanceof Blob ? r : new Blob([r.buf], {type:r.type})) : r; });
+  return r instanceof Blob ? r : (r && r.buf) ? new Blob([r.buf], {type:r.type||''}) : undefined; });
 const hasBlob = k => mem.blobs.has(k) ? Promise.resolve(true) : safeTx(() => false, async () => (await tx('blobs','readonly', s => s.count(k))) > 0);
 const delMemo = id => { mem.memos.delete(id); mem.blobs.delete(id+':orig'); mem.blobs.delete(id+':master');
   return safeTx(() => {}, () => Promise.all([tx('memos','readwrite', s=>s.delete(id)), tx('blobs','readwrite', s=>{s.delete(id+':orig'); s.delete(id+':master');})])); };
@@ -969,7 +1024,7 @@ function render(){
     li.querySelector('.name').value = m.name;
     const when = li.querySelector('.when');
     if (m.state==='error'){ when.textContent = m.error; when.classList.add('err'); }
-    else if (!done) when.textContent = m.step || 'Waiting';
+    else if (!done){ const qi = queue.findIndex(([x]) => x === m); when.textContent = m === polishingNow ? (m.step || 'Polishing…') : qi >= 0 ? `In line (#${qi+1})` : (m.step && m.step !== 'Waiting' ? m.step : 'In line'); }
     else when.textContent = (m.createdSrc==='file' ? '' : m.createdSrc==='upload' ? 'Added ' : 'File date ') + fmtWhen(m.created||m.added);
     if ((q || bk.active==='all') && bk.map[m.id] !== undefined){ const t = document.createElement('b'); t.className='bkb'; t.textContent = 'B'+(bk.map[m.id]+1); t.title = 'Bucket '+(bk.map[m.id]+1)+': '+bk.names[bk.map[m.id]]; when.prepend(t); }
     li.querySelector('canvas').setAttribute('aria-label', done ? `Waveform. The polished song keeps ${fmt(m.start)} to ${fmt(m.end)} of ${fmt(m.total)}.` : 'Waveform');
@@ -1391,11 +1446,17 @@ async function addFiles(files){
   setStatus(`Checking ${files.length} file${files.length>1?'s':''}…`);
   if (!memMode) document.getElementById('banner').hidden = true;
   const known = new Map(memos.filter(m=>m.hash).map(m => [m.hash, m]));
-  const dupes = []; let added = 0;
+  const dupes = []; let added = 0, refilled = 0;
   for (const f of files){
     let ab; try { ab = await f.arrayBuffer(); } catch(e){ setStatus('Couldn’t open ' + f.name + '.'); continue; }
     const hash = await fingerprint(ab);
-    if (known.has(hash)){ dupes.push(`${f.name} (same as ${known.get(hash).name.toUpperCase()})`); continue; }
+    if (known.has(hash)){ const old = known.get(hash);
+      if (old.state === 'error' && !queue.some(([x]) => x === old)){   // audio was missing or it failed: fill it in, keep its name, bucket and votes
+        let stored = false; try { stored = await putBlob(old.id+':orig', f); } catch(e){}
+        if (!stored) old._volatile = true;
+        old.state = 'queued'; delete old.error; delete old.missing; delete old.step; queue.push([old, f]); refilled++;
+        try { await putMemo(strip(old)); } catch(e){} render(); continue; }
+      dupes.push(`${f.name} (same as ${old.name.toUpperCase()})`); continue; }
     const m = { id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random()), name: baseName(f.name), srcName: f.name, autoName: true,
                 added: Date.now(), state:'queued', step:'Waiting', hash };
     known.set(hash, m);
@@ -1409,27 +1470,49 @@ async function addFiles(files){
   render(); run();
   if (dupes.length){
     const msg = `Skipped ${dupes.length} duplicate${dupes.length>1?'s':''} already in your library: ${dupes.slice(0,5).join(', ')}${dupes.length>5?`, and ${dupes.length-5} more`:''}.`;
-    setBanner(msg + (added ? ` Added ${added} new.` : ''));
-    if (!added) setStatus('');
+    setBanner(msg + (added ? ` Added ${added} new.` : '') + (refilled ? ` Filled in the missing audio for ${refilled}.` : ''));
+    if (!added && !refilled) setStatus('');
   }
 }
+const WATCHDOG_MS = +window.__vmmWatchdogMs || 180000;   // one song may take at most ~3 minutes of on-screen time to polish
+let polishingNow = null, pausedHidden = false;
+function withWatchdog(p){ // rejects if the page has been visible for WATCHDOG_MS without an answer (time with the page hidden doesn't count)
+  p.catch(() => {});
+  return new Promise((res, rej) => { let seen = 0, last = Date.now();
+    const iv = setInterval(() => { const now = Date.now(); if (!document.hidden) seen += Math.min(now - last, 5000); last = now;
+      if (seen > WATCHDOG_MS){ clearInterval(iv); const e = new Error('timeout'); e.timeout = true; rej(e); } }, 1000);
+    p.then(v => { clearInterval(iv); res(v); }, e => { clearInterval(iv); rej(e); }); });
+}
+const polishMsg = m => `Polishing “${m.name}”… ${queue.length} more in line.`;
 async function run(){
   if (busy) return; busy = true;
-  while (queue.length){
-    const [m,f] = queue.shift();
-    setStatus(`Polishing “${m.name}”… ${queue.length} more in line.`);
-    try{
-      const k = {...KNOB0, ...((m._rand ? m._home : m.knobs) || {})};   // a dice preview is never baked unless you tap Keep it
-      const r = await master(f, s => { m.step = s; const el = [...listEl.querySelectorAll('li.memo')].find(li => li.querySelector('.name')?.value===m.name); if (el) el.querySelector('.when').textContent = s; }, k);
-      await putBlob(m.id+':master', r.blob);
-      Object.assign(m, {state:'done', start:r.start, end:r.end, total:r.total, lufs:r.lufs, wave:r.wave, baked:k, mono:true});
-      if (playing && playing.id===m.id){ player.pause(); playing=null; }
-      delete m.step;
-    } catch(e){ m.state='error'; m.error = /\.qta$/i.test(f.name) ? 'This browser can’t read .qta files. In Voice Memos, share the memo and choose Save to Files (it saves as .m4a), then add that.' : 'Couldn’t read this file as audio (' + (f.name.split('.').pop()) + '). Export it as m4a, wav, or mp3 and add it again.'; }
-    await putMemo(strip(m)); render();
-  }
-  busy = false; setStatus(memos.length ? 'All songs polished.' : ''); showStorage(); shrinkOld();
+  try {
+    while (queue.length){
+      const [m,f] = queue.shift(); polishingNow = m; m.step = m.step && m.step !== 'Waiting' ? m.step : 'Starting…';
+      setStatus(document.hidden ? 'Paused. Keep this page open to finish polishing.' : polishMsg(m)); render();
+      try{
+        const k = {...KNOB0, ...((m._rand ? m._home : m.knobs) || {})};   // a dice preview is never baked unless you tap Keep it
+        const r = await withWatchdog(master(f, s => { m.step = s; const el = [...listEl.querySelectorAll('li.memo')].find(li => li._m === m); if (el) el.querySelector('.when').textContent = s; }, k));
+        await putBlob(m.id+':master', r.blob);
+        Object.assign(m, {state:'done', start:r.start, end:r.end, total:r.total, lufs:r.lufs, wave:r.wave, baked:k, mono:true});
+        if (playing && playing.id===m.id){ player.pause(); playing=null; }
+        delete m.step; delete m.missing;
+      } catch(e){ m.state='error'; delete m.step;
+        m.error = e && e.timeout ? 'This one took over 3 minutes to polish, so it was skipped to keep the line moving. Try exporting it again as m4a or wav and add it again.'
+          : /\.qta$/i.test((f && f.name) || '') ? 'This browser can’t read .qta files. In Voice Memos, share the memo and choose Save to Files (it saves as .m4a), then add that.'
+          : 'Couldn’t read this file as audio (' + (String((f && f.name) || 'audio').split('.').pop()) + '). Export it as m4a, wav, or mp3 and add it again.'; }
+      polishingNow = null;
+      try { await putMemo(strip(m)); } catch(e){}
+      render();
+    }
+  } finally { busy = false; polishingNow = null; }
+  setStatus(memos.length ? 'All songs polished.' : ''); showStorage(); shrinkOld();
 }
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden){ if (busy || queue.length){ pausedHidden = true; setStatus('Paused. Keep this page open to finish polishing.'); } return; }
+  if (pausedHidden){ pausedHidden = false; if (polishingNow) setStatus(polishMsg(polishingNow)); }
+  if (queue.length && !busy) run();
+});
 
 const drop = $('#drop'), fileIn = $('#file');
 document.querySelectorAll('label.add-btn').forEach(l => l.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' '){ e.preventDefault(); fileIn.click(); } }));
@@ -1477,7 +1560,8 @@ window.addEventListener('unhandledrejection', e => setStatus('Something failed: 
       putMemo(strip(m)); }
     // anything interrupted mid-polish, or a finished song whose polished file never got saved, gets re-run
     for (const m of memos) if (m.state==='done'){ try { if (!(await hasBlob(m.id+':master'))) m.state = 'queued'; } catch(e){} }
-    for (const m of memos) if (m.state!=='done' && m.state!=='error'){ const f = await getBlob(m.id+':orig'); if (f) queue.push([m,f]); }
+    for (const m of memos) if (m.state!=='done' && m.state!=='error'){ let f = null; try { f = await getBlob(m.id+':orig'); } catch(e){}
+      if (f) queue.push([m,f]); else { m.state = 'error'; m.missing = true; m.error = 'Audio missing. Add the file again to fill it in.'; delete m.step; try { await putMemo(strip(m)); } catch(e){} } }
     if (surpriseOn) memos.forEach(roll);   // fresh dice every time the app opens (preview only)
     render(); run();
   } catch(e){ goMemory(); render(); }
@@ -1518,31 +1602,56 @@ async function phTx(mode, fn){ const d = await phDb(); return new Promise((res, 
 const phBlob = (p, which) => new Blob([which === 'thumb' ? p.thumb : p.buf], {type:'image/jpeg'});
 function phUrl(p, which){ const k = p.id + ':' + which; if (!phUrls.has(k)) phUrls.set(k, URL.createObjectURL(phBlob(p, which))); return phUrls.get(k); }
 function dropUrls(p){ for (const w of ['thumb','full']){ const k = p.id+':'+w; if (phUrls.has(k)){ URL.revokeObjectURL(phUrls.get(k)); phUrls.delete(k); } } }
+// iPhone-safe decoding: img.decode(), else wait for onload, else createImageBitmap. Canvases are shrunk to 0×0 after use
+// because iOS Safari has a small total canvas-memory budget and doesn't free canvases quickly.
 async function loadImage(file){
-  const url = URL.createObjectURL(file);
-  try { const img = new Image(); img.decoding = 'async'; img.src = url; await img.decode(); return img; }   // <img> applies the photo's rotation
-  finally { setTimeout(() => URL.revokeObjectURL(url), 0); }
+  const url = URL.createObjectURL(file), img = new Image(); img.decoding = 'async';
+  const loaded = new Promise((res, rej) => { img.onload = () => res(); img.onerror = () => rej(new Error('img')); setTimeout(() => rej(new Error('slow')), 20000); });
+  img.src = url;
+  const done = src => ({src, w: src.naturalWidth || src.width, h: src.naturalHeight || src.height, free(){ try { if (src.close) src.close(); else { src.onload = src.onerror = null; src.src = ''; } } catch(e){} URL.revokeObjectURL(url); }});
+  try { await img.decode(); if (img.naturalWidth) return done(img); } catch(e){}
+  try { await loaded; if (img.naturalWidth) return done(img); } catch(e){}
+  img.onload = img.onerror = null; img.src = '';
+  if (window.createImageBitmap){ try { const bm = await createImageBitmap(file, {imageOrientation:'from-image'}); return done(bm); } catch(e){} try { const bm = await createImageBitmap(file); return done(bm); } catch(e){} }
+  URL.revokeObjectURL(url); throw new Error('decode');
 }
-function scaled(img, max, q){
-  const w0 = img.naturalWidth, h0 = img.naturalHeight, k = Math.min(1, max / Math.max(w0, h0)), w = Math.max(1, Math.round(w0*k)), h = Math.max(1, Math.round(h0*k));
-  const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.imageSmoothingQuality = 'high'; g.fillStyle = '#fff'; g.fillRect(0,0,w,h); g.drawImage(img, 0, 0, w, h);
-  return new Promise((res, rej) => c.toBlob(b => b ? res({blob:b, w, h}) : rej(new Error('encode')), 'image/jpeg', q));
+function scaled(im, max, q){
+  const k = Math.min(1, max / Math.max(im.w, im.h)), w = Math.max(1, Math.round(im.w*k)), h = Math.max(1, Math.round(im.h*k));
+  const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.imageSmoothingQuality = 'high'; g.fillStyle = '#fff'; g.fillRect(0,0,w,h); g.drawImage(im.src, 0, 0, w, h);
+  const release = () => { c.width = 0; c.height = 0; };
+  return new Promise((res, rej) => {
+    const fromUrl = () => { try { const d = c.toDataURL('image/jpeg', q), bin = atob(d.split(',')[1] || ''); release(); if (!bin.length) return rej(new Error('encode')); res({blob: new Blob([Uint8Array.from(bin, ch => ch.charCodeAt(0))], {type:'image/jpeg'}), w, h}); } catch(e){ release(); rej(new Error('encode')); } };
+    if (!c.toBlob) return fromUrl();
+    c.toBlob(b => { if (b){ release(); res({blob:b, w, h}); } else fromUrl(); }, 'image/jpeg', q);
+  });
 }
 async function addPhotos(files){
   files = files.filter(f => /^image\//.test(f.type) || /\.(jpe?g|png|gif|webp|heic|heif|avif|bmp)$/i.test(f.name)); if (!files.length) return;
-  let ok = 0; const bad = []; let order = photos.reduce((a,p) => Math.max(a, p.order||0), 0);
-  for (const f of files){
-    setStatus(`Adding photo ${ok+bad.length+1} of ${files.length}…`);
+  const N = files.length; let ok = 0, full = false, noSave = 0; const bad = [], heic = [];
+  let order = photos.reduce((a,p) => Math.max(a, p.order||0), 0);
+  for (let i=0; i<N; i++){
+    const f = files[i]; files[i] = null;   // don't keep the originals around
+    setStatus(`Adding photo ${i+1} of ${N}…`);
+    let im = null;
     try {
-      const img = await loadImage(f); const full = await scaled(img, 1600, 0.8), th = await scaled(img, 320, 0.75);
-      const p = { id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random()), order: ++order, added: Date.now(), name: f.name, w: full.w, h: full.h,
-                  buf: await full.blob.arrayBuffer(), thumb: await th.blob.arrayBuffer() };
-      try { await phTx('readwrite', st => st.put(p)); } catch(e){ p._volatile = true; noteUnsaved(e); }
-      photos.push(p); ok++;
-    } catch(e){ bad.push(f.name); }
+      im = await loadImage(f);
+      const big = await scaled(im, 1600, 0.8), th = await scaled(im, 320, 0.75); im.free(); im = null;
+      const p = { id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random()), order: ++order, added: Date.now(), name: f.name, w: big.w, h: big.h,
+                  buf: await big.blob.arrayBuffer(), thumb: await th.blob.arrayBuffer() };
+      try { await phTx('readwrite', st => st.put(p)); }
+      catch(e){ p._volatile = true; noSave++; if (e && (e.name === 'QuotaExceededError' || /quota|space/i.test(e.message||''))) full = true; }
+      photos.push(p); ok++; drawPhotos();   // show each one as soon as it's ready
+    } catch(e){ if (im) im.free(); (/heic|heif/i.test(f.type) || /\.(heic|heif)$/i.test(f.name) ? heic : bad).push(f.name); }
+    await new Promise(r => setTimeout(r, 30));   // breathe between photos (lets iOS free memory)
   }
-  drawPhotos(); showStorage();
-  setStatus((ok ? `Added ${ok} photo${ok>1?'s':''}.` : '') + (bad.length ? ` Couldn’t open ${bad.slice(0,3).join(', ')}${bad.length>3?'…':''}. Try a JPEG or PNG.` : ''));
+  showStorage();
+  const failed = [...heic, ...bad];
+  const why = (heic.length ? 'This browser can’t open HEIC photos. On iPhone, add them from the photo library picker (it converts them), or set Settings → Camera → Formats → Most Compatible. ' : '') +
+              (bad.length ? `Couldn’t open ${bad.slice(0,3).join(', ')}${bad.length>3?` and ${bad.length-3} more`:''}. Try JPEG or PNG. ` : '') +
+              (noSave ? (full ? 'This device is out of room, so ' : 'This browser wouldn’t save them, so ') + `${noSave} photo${noSave>1?'s':''} will disappear when you close the page. ` : '');
+  if (!ok) setBanner('No photos were added. ' + why);
+  else if (failed.length || noSave) setBanner(`Added ${ok} of ${N} photos. ` + why);
+  setStatus(ok ? `Added ${ok} photo${ok>1?'s':''}.` : 'No photos were added.');
 }
 function drawPhotos(){
   const row = $('#phRow'), add = $('#phAdd'); photos.sort((a,b) => (a.order||0)-(b.order||0));
@@ -1591,7 +1700,7 @@ async function importShared(){
   } catch(e){ setStatus('Couldn’t import the shared memo: ' + (e && e.message || e)); }
 }
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js', {updateViaCache:'none'}).then(r => r.update && r.update()).catch(() => {}));
 }
 window.addEventListener('resize', () => memos.forEach(m => m._cv && drawWave(m._cv, m)));
 })();
