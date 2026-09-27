@@ -1,7 +1,41 @@
 {
  "version": 1,
  "artist": "Luke Andrew motherfucking Kelly",
- "updated": "2026-09-27T02:56:24.111Z",
+ "updated": "2026-09-27T02:58:30.598Z",
  "songs": [],
- "photos": []
+ "photos": [
+  {
+   "id": "e1b81b7e-cd63-4d82-9cd4-042147056d35",
+   "file": "photos/e1b81b7ecd634d829cd4.jpg",
+   "w": 1600,
+   "h": 899,
+   "bytes": 205328,
+   "sha": "5b31efc5128afdf352e26d3fe786ae9fde53fb07",
+   "fx": 100,
+   "fy": 29.91156344102778,
+   "zoom": 1
+  },
+  {
+   "id": "fe1fc5f9-d144-44cd-a6a9-07c432e385bd",
+   "file": "photos/fe1fc5f9d14444cda6a9.jpg",
+   "w": 1600,
+   "h": 899,
+   "bytes": 152428,
+   "sha": "d4008fc1c262a9523fd2d31d455a958270ed2906",
+   "fx": 0,
+   "fy": 58.63167399245574,
+   "zoom": 1
+  },
+  {
+   "id": "3511fbb4-2549-4e0b-8a70-1c98483adcfe",
+   "file": "photos/3511fbb425494e0b8a70.jpg",
+   "w": 1600,
+   "h": 899,
+   "bytes": 193528,
+   "sha": "f5be97d4fc85b5b18292f3958f137d1847bcea52",
+   "fx": 100,
+   "fy": 68.06486875455474,
+   "zoom": 1
+  }
+ ]
 }
