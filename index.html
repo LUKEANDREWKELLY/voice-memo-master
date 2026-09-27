@@ -90,9 +90,45 @@ li.memo.flash{animation:flash 1.2s ease-out}
 .mm-text{margin:0;font-size:12px;line-height:1.45;font-weight:500}
 .mm-sign{margin:4px 0 0;font-size:10.5px;font-style:italic;font-weight:600;color:var(--muted)}
 .mm-more{display:none}
+/* folding rows (dedication, résumé) */
+details.fold>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px}
+details.fold>summary::-webkit-details-marker{display:none}
+.fold-ind{margin-left:auto;flex:none;width:18px;height:18px;border:1px solid var(--grid);background:var(--paper);display:grid;place-items:center;font-size:12px;font-weight:900;line-height:1}
+.fold-ind::before{content:"+"}
+details.fold[open] .fold-ind::before{content:"–"}
+details.fold>summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.mm-jump{display:none}
+#songs{scroll-margin-top:calc(var(--npH) + env(safe-area-inset-top,0px) + 4px)}
+/* résumé */
+.cv{background:var(--paper);border-bottom:1px solid var(--grid)}
+.cv>summary{padding:4px 12px 3px;background:var(--bg);border-bottom:2px solid var(--grid)}
+.cv-h{margin:0;font-size:15px;font-weight:900;letter-spacing:.16em;text-transform:uppercase}
+.cv-sub{font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.cv:not([open])>summary{border-bottom-width:1px}
+.cv-body{padding:0}
+.cv-stats{display:grid;grid-template-columns:repeat(5,auto);margin:0;border-bottom:1px solid var(--grid)}
+.cv-stats>div{display:grid;grid-template-rows:auto auto;border-right:1px solid var(--grid)}
+.cv-stats>div:last-child{border-right:none}
+.cv-stats dt{padding:2px 8px;background:var(--head);border-bottom:1px solid var(--grid);font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.cv-stats dd{margin:0;padding:3px 8px;font-size:12px;font-weight:800;white-space:nowrap}
+.cv-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr)}
+.cv-sec{padding:5px 12px 7px}
+.cv-sec+.cv-sec{border-left:1px solid var(--grid)}
+.cv-sec h3{margin:0 0 3px;padding-bottom:2px;border-bottom:1px solid var(--grid);font-size:10px;font-weight:900;letter-spacing:.14em;font-variant:small-caps;text-transform:lowercase}
+.cv-sec h3{font-variant-caps:all-small-caps;text-transform:none}
+.cv-exp{margin:0;padding:0;list-style:none;font-size:11.5px;line-height:1.5}
+.cv-exp li{position:relative;padding-left:12px}
+.cv-exp li::before{content:"";position:absolute;left:1px;top:.62em;width:5px;height:5px;background:var(--ink)}
+.cv-hot{margin-top:2px}
+.cv-hot::before{background:var(--accent)!important}
+.cv-hl{background:var(--accent);color:var(--accent-ink);font-weight:800;padding:0 4px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.cv-stamp{display:inline-block;margin:2px 0 0 4px;padding:1px 6px;border:1.5px solid var(--accent);color:var(--accent);background:var(--paper);font-size:8.5px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;transform:rotate(-3deg);vertical-align:1px;white-space:nowrap}
+.cv-stmt{margin:0;font-size:11.5px;line-height:1.45;max-width:80ch}
 /* dedication strip: favorite bands */
 .bands{background:var(--paper);border-bottom:1px solid var(--grid)}
-.bands h2{margin:0;padding:4px 12px 3px;background:var(--head);border-bottom:1px solid var(--grid);font-size:10.5px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;line-height:1.3}
+.bands>summary{padding:4px 12px 3px;background:var(--head);border-bottom:1px solid var(--grid)}
+.bands:not([open])>summary{border-bottom:none}
+.bands h2{margin:0;font-size:10.5px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;line-height:1.3}
 .bands ul{display:flex;flex-wrap:wrap;margin:0;padding:5px 12px 2px;list-style:none;font-size:11.5px;line-height:1.7}
 .bands li{white-space:nowrap}
 .bands li:not(:last-child)::after{content:"/";margin:0 7px;color:var(--muted);opacity:.55;font-weight:400}
@@ -426,7 +462,24 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   .mm-text{font-size:11px;line-height:1.4}
   .memoir.short .mm-text{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
   .memoir.short .mm-sign{display:none}
-  .bands h2{padding:3px 8px;font-size:9.5px}
+  .bands>summary{padding:3px 8px;min-height:30px}
+  .bands h2{font-size:9.5px}
+  .cv>summary{padding:3px 8px;min-height:30px}
+  .cv-h{font-size:12px}
+  .cv-sub{font-size:8.5px}
+  .cv-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cv-stats>div{grid-template-columns:62px minmax(0,1fr);grid-template-rows:auto;border-bottom:1px solid var(--grid)}
+  .cv-stats>div:nth-child(2n){border-right:none}
+  .cv-stats>div:first-child{grid-column:1 / -1;border-right:none}
+  .cv-stats>div:last-child{border-bottom:none}
+  .cv-stats>div:nth-child(4){border-bottom:none}
+  .cv-stats dt{border-bottom:none;border-right:1px solid var(--grid);display:flex;align-items:center;font-size:8.5px;padding:2px 5px}
+  .cv-stats dd{font-size:11px;padding:3px 6px;white-space:normal}
+  .cv-cols{grid-template-columns:1fr}
+  .cv-sec{padding:4px 8px 5px}
+  .cv-sec+.cv-sec{border-left:none;border-top:1px solid var(--grid)}
+  .cv-exp,.cv-stmt{font-size:10.5px}
+  .mm-jump{display:inline-flex;align-items:center;order:3;margin-left:auto;min-height:26px;padding:0 8px;border:1px solid var(--accent-ink);color:var(--accent-ink);font-size:9.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;text-decoration:none}
   .bands ul{padding:3px 8px 1px;font-size:10.5px;line-height:1.75}
   .bands li:not(:last-child)::after{margin:0 5px}
   .bands-note{padding:0 8px 5px;font-size:9.5px}
@@ -498,7 +551,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 </div>
 <!-- ===== MEMOIR BLURB (very top) ===== -->
 <section class="memoir short" id="memoir" aria-labelledby="mmTitle">
-  <div class="mm-band"><span class="mm-stamp" aria-hidden="true">FOR SALE</span><span class="mm-dash" aria-hidden="true">—</span><h2 class="mm-title" id="mmTitle"><span class="sr-file">FOR SALE — </span>Luke Andrew <em>motherfucking</em> Kelly: A Memoir <span class="mm-inc">(Incomplete)</span></h2></div>
+  <div class="mm-band"><span class="mm-stamp" aria-hidden="true">FOR SALE</span><span class="mm-dash" aria-hidden="true">—</span><a class="mm-jump" href="#songs">Songs ↓</a><h2 class="mm-title" id="mmTitle"><span class="sr-file">FOR SALE — </span>Luke Andrew <em>motherfucking</em> Kelly: A Memoir <span class="mm-inc">(Incomplete)</span></h2></div>
   <div class="mm-body">
     <p class="mm-text">I've been building this since 1988. Thirty-eight years of bad decisions, good songs, and one very specific obsession with making your audio do things it was never supposed to do. Girls, you're going to love this memoir. Boys, you're going to steal it. Everyone else — just press play.</p>
     <p class="mm-sign">Coming soon. Probably. Don't hold your breath. Or do. I don't care. I'm busy.</p>
@@ -507,11 +560,40 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 </section>
 <script>document.getElementById('mmMore').addEventListener('click', e => { const m = document.getElementById('memoir'), open = m.classList.toggle('short') === false; e.currentTarget.setAttribute('aria-expanded', String(open)); e.currentTarget.textContent = open ? 'Read less' : 'Read more'; });</script>
 <!-- ===== DEDICATION STRIP: favorite bands ===== -->
-<section class="bands" aria-labelledby="bandsTitle">
-  <h2 id="bandsTitle">This is dedicated to the legacy of Luke Andrew motherfucking Kelly's favorite bands</h2>
+<details class="bands fold" id="foldBands" data-key="lak-fold-bands" open>
+  <summary><h2 id="bandsTitle">This is dedicated to the legacy of Luke Andrew motherfucking Kelly's favorite bands</h2><span class="fold-ind" aria-hidden="true"></span></summary>
   <ul><li><a href="https://www.georgewatsky.com/" target="_blank" rel="noopener">Watsky</a></li><li><a href="https://www.profgampo.com/" target="_blank" rel="noopener">Prof</a></li><li><a href="https://www.ajrbrothers.com/" target="_blank" rel="noopener">AJR</a></li><li><a href="https://boniver.org/" target="_blank" rel="noopener">Bon Iver</a></li><li><a href="https://www.aurora-music.com/" target="_blank" rel="noopener">Aurora</a></li><li><a href="https://www.thinlizzyofficial.com/" target="_blank" rel="noopener">Thin Lizzy</a></li><li><a href="https://www.thelonebellow.com/" target="_blank" rel="noopener">The Lone Bellow</a></li><li><a href="https://en.wikipedia.org/wiki/The_Jackson_5" target="_blank" rel="noopener">The Jackson 5</a></li><li><a href="https://www.joanjett.com/" target="_blank" rel="noopener">Joan Jett and the Blackhearts</a></li><li><a href="https://www.haimofficial.com/" target="_blank" rel="noopener">Haim</a></li><li><a href="https://www.gretavanfleet.com/" target="_blank" rel="noopener">Greta Van Fleet</a></li><li><a href="https://andygrammer.com/" target="_blank" rel="noopener">Andy Grammer</a></li><li><a href="https://www.bensonboone.com/" target="_blank" rel="noopener">Benson Boone</a></li><li><a href="https://www.jukeboxtheghost.com/" target="_blank" rel="noopener">Jukebox the Ghost</a></li><li><a href="https://www.samhunt.com/" target="_blank" rel="noopener">Sam Hunt</a></li><li><a href="https://hozier.com/" target="_blank" rel="noopener">Hozier</a></li><li><a href="https://open.spotify.com/search/Fletcher%20Gill" target="_blank" rel="noopener">Fletcher Gill</a></li><li><a href="https://www.arkellsmusic.com/" target="_blank" rel="noopener">Arkells</a></li><li><a href="https://www.tinymovingparts.com/" target="_blank" rel="noopener">Tiny Moving Parts</a></li><li><a href="https://www.officialkaleo.com/" target="_blank" rel="noopener">Kaleo</a></li><li><a href="https://www.sylvanesso.com/" target="_blank" rel="noopener">Sylvan Esso</a></li></ul>
   <p class="bands-note">The Galactic Federation believes that this is of utmost importance if we are going to save this planet.</p>
-</section>
+</details>
+<!-- ===== RÉSUMÉ ===== -->
+<details class="cv fold" id="foldCv" data-key="lak-fold-cv" open>
+  <summary><h2 class="cv-h">Résumé</h2><span class="cv-sub">Curriculum vitae · abridged</span><span class="fold-ind" aria-hidden="true"></span></summary>
+  <div class="cv-body">
+    <dl class="cv-stats">
+      <div><dt>Name</dt><dd>Luke Andrew motherfucking Kelly</dd></div>
+      <div><dt>Height</dt><dd>6'0"</dd></div>
+      <div><dt>Weight</dt><dd>175 lbs</dd></div>
+      <div><dt>Status</dt><dd>Single, no children</dd></div>
+      <div><dt>Tattoos</dt><dd>Lots</dd></div>
+    </dl>
+    <div class="cv-cols">
+      <section class="cv-sec"><h3>Experience</h3>
+        <ul class="cv-exp">
+          <li>Police Officer</li>
+          <li>Worked at an inpatient psychiatric hospital</li>
+          <li class="cv-hot"><span class="cv-hl">Spent seven days as a patient in an inpatient psychiatric hospital</span> <span class="cv-stamp">Both sides of the door</span></li>
+        </ul>
+      </section>
+      <section class="cv-sec"><h3>Personal statement</h3>
+        <p class="cv-stmt">I want to be an actor, but I'm not an actor because I was born in a cult. I was kidnapped as a child. I finally escaped. I just want to be as famous as Matthew McConaughey. I am personally offended that I have not been cast in every single Christopher Nolan film he has ever made. I am not blaming him personally, but I am telling him now: this is his chance to make up for lost time.</p>
+      </section>
+    </div>
+  </div>
+</details>
+<script>(function(){ var mob = matchMedia('(max-width:640px)').matches;   // phones: folded by default; your choice is remembered
+  document.querySelectorAll('details.fold').forEach(function(d){ var k = d.dataset.key, v = null; try { v = localStorage.getItem(k); } catch(e){}
+    d.open = v === null ? !mob : v === '1';
+    d.addEventListener('toggle', function(){ try { localStorage.setItem(k, d.open ? '1' : '0'); } catch(e){} }); }); })();</script>
 <!-- ===== TOP BANNER: edit the text below (id="topBanner") ===== -->
 <div class="topbanner" id="topBanner" role="note">Debuting: 'Song for Barbara Walters' — the much-awaited, anticipated single from Luke Andrew motherfucking Kelly — releasing on Elon Musk's birthday. Dedicated to the possibility of Nathan Fielder being featured on the track.</div>
 <!-- ===== /TOP BANNER ===== -->
@@ -562,7 +644,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   <div class="status" id="status" aria-live="polite"></div>
   <div class="banner" id="banner" hidden></div>
 
-  <div class="tools">
+  <div class="tools" id="songs">
     <input id="search" type="search" placeholder="Search names, dates, or lyrics" aria-label="Search memos">
     <div class="ab sort" role="group" aria-label="Sort by"><button data-sort="az" aria-pressed="false" title="Sort by name, A to Z">A–Z</button><button data-sort="new" aria-pressed="true" title="Newest recording first">Newest</button><button data-sort="old" aria-pressed="false" title="Oldest recording first">Oldest</button><button data-sort="top" aria-pressed="false" title="Most upvotes first">Top</button></div>
     <span class="count" id="count"></span>
