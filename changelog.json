@@ -1,5 +1,15 @@
 [
 {
+"sha": "1e32e2a",
+"date": "2026-09-26T22:54:54-04:00",
+"msg": "Gallery photos now wear the same movie title card with your name across the middle"
+},
+{
+"sha": "c81fd62",
+"date": "2026-09-26T22:53:51-04:00",
+"msg": "Build log data"
+},
+{
 "sha": "03d2b71",
 "date": "2026-09-26T22:53:51-04:00",
 "msg": "The public gallery is open: one big Publish all button (or tick songs and Publish selected) sends your polished songs to a free listening page anyone can play on their phone"
