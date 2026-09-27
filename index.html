@@ -57,6 +57,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:11p
 .topbanner{display:block;width:100%;padding:3px 6px;padding-top:calc(3px + env(safe-area-inset-top,0px));background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:1.3;font-weight:700;border-bottom:1px solid var(--grid)}
 
 .htstrip{display:flex;align-items:center;gap:8px;padding:4px 6px;background:var(--bg);border-bottom:1px solid var(--grid)}
+.store{margin-left:auto;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;font-variant-numeric:tabular-nums}
 .htmark{width:30px;height:22px;display:block;flex:none}
 .htstamp{display:inline-block;padding:2px 7px 1px;border:1.5px solid var(--grid);font-size:11px;line-height:1.2;font-weight:900;letter-spacing:.24em;text-transform:uppercase;color:var(--ink);background:transparent}
 header{display:grid;grid-template-columns:1fr auto;border:1px solid var(--grid);margin:0 0 4px;background:var(--cell)}
@@ -230,7 +231,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 <div class="topbanner" id="topBanner" role="note">Debuting: 'Song for Barbara Walters' — the much-awaited, anticipated single from Luke Andrew Kelly — releasing on Elon Musk's birthday. Dedicated to the possibility of Nathan Fielder being featured on the track.</div>
 <!-- ===== /TOP BANNER ===== -->
 <!-- ===== BRAND: Human Tradition (logo also at icons/human-tradition-logo.svg) ===== -->
-<div class="htstrip"><svg class="htmark" viewBox="0 0 58 42" aria-hidden="true"><g transform="translate(8.5 0) skewX(-12)"><rect x="1" y="3" width="17" height="4" fill="#111"/><rect x="5" y="3" width="9" height="36" fill="#111"/><rect x="1" y="35" width="17" height="4" fill="#111"/><rect x="25" y="19" width="8" height="20" fill="#111"/><rect x="25" y="11" width="8" height="5" fill="#8a0303"/><rect x="40" y="27" width="8" height="12" fill="#111"/><rect x="40" y="19" width="8" height="5" fill="#8a0303"/></g></svg><span class="htstamp">Human Tradition</span></div>
+<div class="htstrip"><svg class="htmark" viewBox="0 0 58 42" aria-hidden="true"><g transform="translate(8.5 0) skewX(-12)"><rect x="1" y="3" width="17" height="4" fill="#111"/><rect x="5" y="3" width="9" height="36" fill="#111"/><rect x="1" y="35" width="17" height="4" fill="#111"/><rect x="25" y="19" width="8" height="20" fill="#111"/><rect x="25" y="11" width="8" height="5" fill="#8a0303"/><rect x="40" y="27" width="8" height="12" fill="#111"/><rect x="40" y="19" width="8" height="5" fill="#8a0303"/></g></svg><span class="htstamp">Human Tradition</span><span class="store" id="store"></span></div>
 <div class="wrap">
   <header>
     <div>
@@ -538,6 +539,45 @@ function peaks(x, buckets=600){
   for (let b=0;b<buckets;b++){ let m=0; const s=Math.floor(b*step), e=Math.floor((b+1)*step); for (let i=s;i<e;i+=8){ const v=Math.abs(x[i]); if(v>m)m=v; } out[b]=m; }
   const mx=Math.max(...out,1e-9); return out.map(v=>+(v/mx).toFixed(3));
 }
+/* Storage shrink: the master is dual-mono, so it is SAVED as a mono 24-bit WAV (half the bytes, bit-identical audio)
+   and expanded to the same stereo 24-bit WAV only when downloading. */
+function wav24mono(x){
+  const n=x.length, bytes=n*3, buf=new ArrayBuffer(44+bytes), v=new DataView(buf);
+  const w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
+  w(0,'RIFF'); v.setUint32(4,36+bytes,true); w(8,'WAVE'); w(12,'fmt '); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+  v.setUint32(24,SR,true); v.setUint32(28,SR*3,true); v.setUint16(32,3,true); v.setUint16(34,24,true); w(36,'data'); v.setUint32(40,bytes,true);
+  const u=new Uint8Array(buf); let o=44;
+  for (let i=0;i<n;i++){ let s=Math.max(-1,Math.min(1,x[i])); let q=Math.round(s*8388607); if(q<0)q+=16777216;
+    u[o]=q&255; u[o+1]=(q>>8)&255; u[o+2]=(q>>16)&255; o+=3; }
+  return new Blob([buf],{type:'audio/wav'});
+}
+function wavInfo(u){ // -> {ch, bits, dataOff, dataLen} for a PCM WAV
+  const v = new DataView(u.buffer, u.byteOffset, u.byteLength); let o = 12, ch = 0, bits = 0;
+  while (o + 8 <= u.length){ const id = String.fromCharCode(u[o],u[o+1],u[o+2],u[o+3]), len = v.getUint32(o+4, true);
+    if (id === 'fmt '){ ch = v.getUint16(o+10, true); bits = v.getUint16(o+22, true); }
+    if (id === 'data') return {ch, bits, dataOff:o+8, dataLen:Math.min(len, u.length-o-8)};
+    o += 8 + len + (len & 1); }
+  return null;
+}
+async function stereoWav(blob){ // mono 24-bit -> stereo 24-bit (download format); anything else passes through
+  if (!blob) return blob;
+  const u = new Uint8Array(await blob.arrayBuffer()), inf = wavInfo(u);
+  if (!inf || inf.ch !== 1 || inf.bits !== 24) return blob;
+  const n = Math.floor(inf.dataLen/3), bytes = n*6, out = new Uint8Array(44+bytes), v = new DataView(out.buffer);
+  const w=(o,s)=>{for(let i=0;i<s.length;i++)out[o+i]=s.charCodeAt(i);};
+  w(0,'RIFF'); v.setUint32(4,36+bytes,true); w(8,'WAVE'); w(12,'fmt '); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,2,true);
+  v.setUint32(24,SR,true); v.setUint32(28,SR*6,true); v.setUint16(32,6,true); v.setUint16(34,24,true); w(36,'data'); v.setUint32(40,bytes,true);
+  for (let i=0, a=inf.dataOff, o=44; i<n; i++, a+=3, o+=6){ out[o]=out[o+3]=u[a]; out[o+1]=out[o+4]=u[a+1]; out[o+2]=out[o+5]=u[a+2]; }
+  return new Blob([out], {type:'audio/wav'});
+}
+async function monoWav(blob){ // legacy stereo 24-bit dual-mono master -> mono 24-bit (for shrinking old saves); null if not applicable
+  const u = new Uint8Array(await blob.arrayBuffer()), inf = wavInfo(u);
+  if (!inf || inf.ch !== 2 || inf.bits !== 24) return null;
+  const n = Math.floor(inf.dataLen/6), bytes = n*3, out = new Uint8Array(44+bytes); out.set(u.subarray(0,44));
+  const v = new DataView(out.buffer); v.setUint32(4,36+bytes,true); v.setUint16(22,1,true); v.setUint32(28,SR*3,true); v.setUint16(32,3,true); v.setUint32(40,bytes,true);
+  for (let i=0, a=inf.dataOff, o=44; i<n; i++, a+=6, o+=3){ out[o]=u[a]; out[o+1]=u[a+1]; out[o+2]=u[a+2]; }
+  return new Blob([out], {type:'audio/wav'});
+}
 function wav24stereo(x){
   const n=x.length, bytes=n*6, buf=new ArrayBuffer(44+bytes), v=new DataView(buf);
   const w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
@@ -579,7 +619,7 @@ async function master(file, onStep, k){
     g *= Math.pow(10, (target-L)/20); await tick();
   }
   fades(out, 0.05, 1.0);
-  return { blob: wav24stereo(out), start:a, end:b, total: full.length/SR, lufs: L,
+  return { blob: wav24mono(out), start:a, end:b, total: full.length/SR, lufs: L,
            wave: peaks(full), mwave: peaks(out) };
 }
 
@@ -699,7 +739,7 @@ function render(){
     li.querySelector('.play').addEventListener('click', () => togglePlay(m));
     li.querySelector('.vote').addEventListener('click', async e => { m.votes = (m.votes||0)+1; const b=e.currentTarget; b.querySelector('span').textContent=m.votes; b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); await putMemo(strip(m)); if (sortMode==='top') setTimeout(render, 350); });
     li.querySelectorAll('.ab button').forEach(b => b.addEventListener('click', () => { abState[m.id]=b.dataset.w; const was = playing&&playing.id===m.id&&!player.paused; if (playing&&playing.id===m.id){ player.pause(); playing=null; } if (was) togglePlay(m); else render(); }));
-    li.querySelector('.dl').addEventListener('click', async () => saveFile(await getBlob(m.id+':master'), safe(m.name)+' (polished).wav'));
+    li.querySelector('.dl').addEventListener('click', async () => saveFile(await stereoWav(await getBlob(m.id+':master')), safe(m.name)+' (polished).wav'));
     li.querySelector('.lyr').addEventListener('click', () => { openLyrics[m.id] = !openLyrics[m.id]; render(); });
     const del = li.querySelector('.del');
     if (del) del.addEventListener('click', async () => { if (!confirm(`Delete “${m.name}”? This removes the raw and polished versions.`)) return; if (playing&&playing.id===m.id){player.pause();playing=null;} await delMemo(m.id); memos=memos.filter(x=>x.id!==m.id); render(); });
@@ -948,13 +988,13 @@ async function run(){
       const k = {...(m.knobs||KNOB0)};
       const r = await master(f, s => { m.step = s; const el = [...listEl.querySelectorAll('li.memo')].find(li => li.querySelector('.name')?.value===m.name); if (el) el.querySelector('.when').textContent = s; }, k);
       await putBlob(m.id+':master', r.blob);
-      Object.assign(m, {state:'done', start:r.start, end:r.end, total:r.total, lufs:r.lufs, wave:r.wave, baked:k});
+      Object.assign(m, {state:'done', start:r.start, end:r.end, total:r.total, lufs:r.lufs, wave:r.wave, baked:k, mono:true});
       if (playing && playing.id===m.id){ player.pause(); playing=null; }
       delete m.step;
     } catch(e){ m.state='error'; m.error = /\.qta$/i.test(f.name) ? 'This browser can’t read .qta files. In Voice Memos, share the memo and choose Save to Files (it saves as .m4a), then add that.' : 'Couldn’t read this file as audio (' + (f.name.split('.').pop()) + '). Export it as m4a, wav, or mp3 and add it again.'; }
     await putMemo(strip(m)); render();
   }
-  busy = false; setStatus(memos.length ? 'All songs polished.' : '');
+  busy = false; setStatus(memos.length ? 'All songs polished.' : ''); showStorage(); shrinkOld();
 }
 
 const drop = $('#drop'), fileIn = $('#file');
@@ -972,7 +1012,7 @@ document.querySelectorAll('.sort button').forEach(b => b.addEventListener('click
 $('#edit').addEventListener('click', () => { editMode = !editMode; document.body.classList.toggle('editing', editMode); $('#edit').textContent = editMode ? 'Done' : 'Edit list'; render(); });
 $('#dlAll').addEventListener('click', async () => {
   const done = memos.filter(m=>m.state==='done'); const entries=[]; const used=new Set();
-  for (const m of done){ let nm=safe(m.name)+' (polished).wav', k=2; while(used.has(nm)) nm=safe(m.name)+` (polished ${k++}).wav`; used.add(nm); entries.push({name:nm, blob: await getBlob(m.id+':master')}); }
+  for (const m of done){ let nm=safe(m.name)+' (polished).wav', k=2; while(used.has(nm)) nm=safe(m.name)+` (polished ${k++}).wav`; used.add(nm); entries.push({name:nm, blob: await stereoWav(await getBlob(m.id+':master'))}); }
   saveZip(entries, 'Luke Andrew Kelly songs.zip');
 });
 
@@ -990,9 +1030,29 @@ window.addEventListener('unhandledrejection', e => setStatus('Something failed: 
     for (const m of memos) if (m.state!=='done' && m.state!=='error'){ const f = await getBlob(m.id+':orig'); if (f) queue.push([m,f]); }
     render(); run();
   } catch(e){ goMemory(); render(); }
-  importShared();
+  importShared(); showStorage();
 })();
 /* Android Web Share Target: sw.js stashes shared files in IndexedDB 'lak-share' and opens ./?shared=1 */
+const fmtBytes = b => b >= 1e9 ? (b/1e9).toFixed(1)+' GB' : b >= 1e6 ? Math.round(b/1e6)+' MB' : Math.max(0, Math.round(b/1e3))+' KB';
+async function showStorage(){
+  try { if (!navigator.storage || !navigator.storage.estimate) return; const e = await navigator.storage.estimate();
+    const el = document.getElementById('store'); if (el && e.quota) el.textContent = 'Saved: ' + fmtBytes(e.usage||0) + ' of ' + fmtBytes(e.quota); } catch(e){}
+}
+let shrinking = false;
+async function shrinkOld(){ // one at a time, only while nothing is being polished
+  if (shrinking || memMode) return; shrinking = true; let n = 0;
+  try {
+    for (const m of memos){
+      if (busy) break;
+      if (m.state !== 'done' || m.mono) continue;
+      const b = await getBlob(m.id+':master'); if (!b) continue;
+      const mono = await monoWav(b);
+      if (mono){ if (!(await putBlob(m.id+':master', mono))) break; n++; }
+      m.mono = true; await putMemo(strip(m)); await tick();
+    }
+  } catch(e){} finally { shrinking = false; }
+  if (n){ setStatus(`Made ${n} saved song${n>1?'s':''} take half the space.`); showStorage(); }
+}
 async function importShared(){
   if (!/[?&]shared=1/.test(location.search)) return;
   try { history.replaceState(null, '', location.pathname); } catch(e){}
