@@ -2833,7 +2833,7 @@ function drawSpace(){
   const q = QUALITY[getQuality()], free = SHELVES.reduce((a, s) => a + Math.max(0, SHELF_FILL - shelfBytes(d, s.n) - (extra[s.n] || 0)), 0);
   const avg = avgSongSec(), fits = Math.max(0, Math.floor(free / (avg / 60 * perMin(q.kbps)))), un = unpublished(), est = un.reduce((a,m) => a + estBytes(m, q.kbps), 0);
   $('#pubSpace').textContent = `${(d.songs||[]).length} song${(d.songs||[]).length===1?'':'s'} and ${(d.photos||[]).length} photo${(d.photos||[]).length===1?'':'s'} published. `
-    + `At ${q.label} (${q.kbps} kbps, ${(perMin(q.kbps)/1e6).toFixed(2)} MB a minute) there’s room for about ${fits.toLocaleString()} more songs of ${fmtMin(avg)}.`;
+    + `At ${q.label} (${q.kbps} kbps, ${(perMin(q.kbps)/1e6).toFixed(2)} MB a minute) there’s room for about ${fits.toLocaleString()} more song${fits === 1 ? '' : 's'} of ${fmtMin(avg)}.`;
   $('#pubEst').textContent = un.length ? `Your ${un.length} unpublished song${un.length===1?'':'s'}: about ${fmtBytes(est)} at ${q.label}.${est > free ? ' That’s more than the free space, so some won’t fit. Try a smaller quality.' : ''}` : 'Every polished song is already published.';
   document.querySelectorAll('input[name="pubq"]').forEach(r => { r.checked = r.value === getQuality(); r.disabled = pubRunning; });
 }
