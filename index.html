@@ -80,10 +80,38 @@ li.memo.flash{animation:flash 1.2s ease-out}
 @keyframes flash{0%,40%{background:var(--hi)}}
 .topbanner{display:block;width:100%;padding:3px 6px;background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:1.3;font-weight:700;border-bottom:1px solid var(--grid)}
 
+/* photo row: one scrollable line of thumbnails above the logo */
+.photos{background:var(--bg);border-bottom:1px solid var(--grid);padding:4px 6px}
+.ph-row{display:flex;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+.ph{flex:none;position:relative;width:78px;height:64px;margin:0 -1px 0 0;padding:0;border:1px solid var(--grid);background:var(--paper);cursor:zoom-in;overflow:hidden}
+.ph img{display:block;width:100%;height:100%;object-fit:cover}
+.ph:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;z-index:1}
+.ph-add{flex:none;display:flex;align-items:center;justify-content:center;gap:5px;min-width:64px;height:64px;padding:0 10px;border:1px solid var(--grid);background:var(--accent);color:var(--accent-ink);font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;user-select:none;-webkit-user-select:none;white-space:nowrap}
+.ph-add:hover{background:var(--accent-hover)}
+.ph-add svg{width:10px;height:10px;fill:currentColor}
+.photos.empty .ph-add{flex:1;height:24px;min-height:24px}
+.photos.empty .ph-row{overflow:hidden}
+.ph-ed{position:absolute;left:0;right:0;bottom:0;display:none;border-top:1px solid var(--grid)}
+body.editing .ph-ed{display:flex}
+body.editing .ph{cursor:default}
+.ph-ed button{flex:1;min-height:20px;padding:0;border:none;border-right:1px solid var(--grid);background:var(--paper);font-size:11px;font-weight:900;line-height:1}
+.ph-ed button:last-child{border-right:none}
+.ph-ed .ph-del{color:var(--accent)}
+.lb{position:fixed;inset:0;z-index:80;display:grid;grid-template-rows:auto 1fr;background:#0b0b0b;color:var(--accent-ink);padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+.lb[hidden]{display:none}
+.lb-top{display:flex;align-items:stretch;border-bottom:1px solid #333}
+.lb-count{flex:1;align-self:center;padding:0 10px;font-size:11px;font-weight:800;letter-spacing:.08em}
+.lb button{border:none;border-left:1px solid #333;background:transparent;color:var(--accent-ink);min-height:44px;min-width:52px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.lb button:hover{background:#222}
+.lb-stage{position:relative;display:grid;place-items:center;min-height:0;overflow:hidden;touch-action:pan-y}
+.lb-stage img{max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none}
+.lb-prev,.lb-next{position:absolute!important;top:0;bottom:0;width:18%;min-width:52px;border:none!important;font-size:28px!important;background:transparent}
+.lb-prev{left:0}.lb-next{right:0}
+.lb-prev:hover,.lb-next:hover{background:rgba(255,255,255,.06)!important}
 .htstrip{display:flex;align-items:center;gap:8px;padding:4px 6px;background:var(--bg);border-bottom:1px solid var(--grid)}
-.store{margin-left:auto;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.store{margin-left:auto;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;text-align:right;line-height:1.25;font-variant-numeric:tabular-nums}
 .htmark{width:30px;height:22px;display:block;flex:none}
-.htstamp{display:inline-block;padding:2px 7px 1px;border:1.5px solid var(--grid);font-size:11px;line-height:1.2;font-weight:900;letter-spacing:.24em;text-transform:uppercase;color:var(--ink);background:transparent}
+.htstamp{flex:none;white-space:nowrap;display:inline-block;padding:2px 7px 1px;border:1.5px solid var(--grid);font-size:11px;line-height:1.2;font-weight:900;letter-spacing:.24em;text-transform:uppercase;color:var(--ink);background:transparent}
 header{display:grid;grid-template-columns:1fr auto;border:1px solid var(--grid);margin:0 0 4px;background:var(--cell)}
 header>div:first-child>*{margin:0;padding:2px 5px;border-bottom:1px solid var(--grid)}
 header>div:first-child>*:last-child{border-bottom:none}
@@ -259,6 +287,11 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   .acts button{flex:1 1 auto;justify-content:center;min-height:44px;padding:0 8px;font-size:11px}
   .acts .grp button:last-child{border-right:none}
   .tabs button{min-height:44px;padding:0 12px;font-size:11px}
+  .photos{padding:3px}
+  .ph{width:88px;height:76px}
+  .ph-add{height:76px}
+  .photos.empty .ph-add{height:44px;min-height:44px;font-size:11px}
+  .ph-ed button{min-height:30px;font-size:13px}
   body.editing li.memo{grid-template-columns:44px 44px minmax(0,1fr) auto 44px}
   .sel input{width:22px;height:22px}
   .thead{display:none}
@@ -308,6 +341,15 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 <!-- ===== TOP BANNER: edit the text below (id="topBanner") ===== -->
 <div class="topbanner" id="topBanner" role="note">Debuting: 'Song for Barbara Walters' — the much-awaited, anticipated single from Luke Andrew Kelly — releasing on Elon Musk's birthday. Dedicated to the possibility of Nathan Fielder being featured on the track.</div>
 <!-- ===== /TOP BANNER ===== -->
+<!-- ===== PHOTOS: one row of thumbnails (stored on this device) ===== -->
+<section class="photos empty" id="photos" aria-label="Photos">
+  <div class="ph-row" id="phRow"><label for="phFile" class="ph-add" id="phAdd" role="button" tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>Add photos</label></div>
+  <input type="file" id="phFile" class="sr-file" accept="image/*" multiple tabindex="-1" aria-hidden="true">
+</section>
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Photo">
+  <div class="lb-top"><span class="lb-count" id="lbCount"></span><button id="lbClose" aria-label="Close photo">Close</button></div>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" alt=""><button class="lb-prev" id="lbPrev" aria-label="Previous photo">‹</button><button class="lb-next" id="lbNext" aria-label="Next photo">›</button></div>
+</div>
 <!-- ===== BRAND: Human Tradition (logo also at icons/human-tradition-logo.svg) ===== -->
 <div class="htstrip"><svg class="htmark" viewBox="0 0 58 42" aria-hidden="true"><g transform="translate(8.5 0) skewX(-12)"><rect x="1" y="3" width="17" height="4" fill="#111"/><rect x="5" y="3" width="9" height="36" fill="#111"/><rect x="1" y="35" width="17" height="4" fill="#111"/><rect x="25" y="19" width="8" height="20" fill="#111"/><rect x="25" y="11" width="8" height="5" fill="#8a0303"/><rect x="40" y="27" width="8" height="12" fill="#111"/><rect x="40" y="19" width="8" height="5" fill="#8a0303"/></g></svg><span class="htstamp">Human Tradition</span><span class="store" id="store"></span></div>
 <div class="wrap">
@@ -371,7 +413,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   <h2>About</h2>
   <p><strong>Voice Memo Master</strong> is the original creation of <strong>Luke Andrew Kelly, undiscovered musician</strong>. He built it in New York tonight and is revealing it to everybody, and he wants the X and Grok crowd, including the xAI team and Elon Musk, to see it.</p>
   <p><em>Dedicated to Elon Musk. Here's hoping he adopts me, or hires me to be his personal security guard — I'd charge him zero dollars a year. I know he's got a bunch of kids; I don't have a father.</em></p>
-  <p class="note" style="margin-top:0">Every song gets the same treatment: it tidies up the start and end (bye-bye chatter and fumbling before and after you play), cleans up hiss, gives your voice a little shine, and makes every song sit at the same loudness. Slide LOUD, WARMTH and SPARKLE to hear the change right away, then tap KEEP IT to save that sound. TAPE makes it sound like an old cassette. PHONE makes it clear and punchy on tiny phone speakers. Drag a slider sideways or up and down, scroll it, or use the arrow keys; double-click puts it back to 0. Tap RAW or POLISHED to compare. Your songs get dealt at random into up to 6 buckets: tap a tab to open one, SHUFFLE deals again, NEXT and SURPRISE ME hop around, PLAY BUCKET plays them one after another, and ALL shows everything. RANDOMIZE (the dice) tries a random sound on every song, or tap a song’s own dice. It’s only a preview until you tap KEEP IT, and RESET puts the saved sound back. Turn off SURPRISE ON OPEN if you don’t want fresh dice each time the app opens. Sort with A–Z, NEWEST, OLDEST (by recording date) or TOP (most upvotes); PLAY BUCKET plays in that order. The black bar at the top always shows what’s playing: tap the name to jump to that song, tap the thin line to skip around, NEXT for the next song. Songs are named from the title saved inside the file; Voice Memos code names like “20240115 143022” become the recording date. In EDIT LIST you can tick songs and DELETE SELECTED, or tap FIX NAMES. Your songs stay saved in this browser on this device. Download one song (on iPhone the share sheet pops up so you can Save to Files), or grab them all at once in a .zip. Add it to your home screen to use it like an app; it works offline once it has loaded.<span class="hint-desktop"> On a computer you can also drag memos onto the drop box.</span></p>
+  <p class="note" style="margin-top:0">Every song gets the same treatment: it tidies up the start and end (bye-bye chatter and fumbling before and after you play), cleans up hiss, gives your voice a little shine, and makes every song sit at the same loudness. Slide LOUD, WARMTH and SPARKLE to hear the change right away, then tap KEEP IT to save that sound. TAPE makes it sound like an old cassette. PHONE makes it clear and punchy on tiny phone speakers. Drag a slider sideways or up and down, scroll it, or use the arrow keys; double-click puts it back to 0. Tap RAW or POLISHED to compare. Your songs get dealt at random into up to 6 buckets: tap a tab to open one, SHUFFLE deals again, NEXT and SURPRISE ME hop around, PLAY BUCKET plays them one after another, and ALL shows everything. RANDOMIZE (the dice) tries a random sound on every song, or tap a song’s own dice. It’s only a preview until you tap KEEP IT, and RESET puts the saved sound back. Turn off SURPRISE ON OPEN if you don’t want fresh dice each time the app opens. Sort with A–Z, NEWEST, OLDEST (by recording date) or TOP (most upvotes); PLAY BUCKET plays in that order. The black bar at the top always shows what’s playing: tap the name to jump to that song, tap the thin line to skip around, NEXT for the next song. Songs are named from the title saved inside the file; Voice Memos code names like “20240115 143022” become the recording date. In EDIT LIST you can tick songs and DELETE SELECTED, or tap FIX NAMES. ADD PHOTOS at the top keeps a row of your pictures; tap one to see it big, and in EDIT LIST you can move or delete them. Your songs stay saved in this browser on this device. Download one song (on iPhone the share sheet pops up so you can Save to Files), or grab them all at once in a .zip. Add it to your home screen to use it like an app; it works offline once it has loaded.<span class="hint-desktop"> On a computer you can also drag memos onto the drop box.</span></p>
   <p class="fine">© Luke Andrew Kelly. Everything runs on your device; your audio never leaves your browser.</p>
   </footer>
 </div>
@@ -1446,7 +1488,7 @@ window.addEventListener('unhandledrejection', e => setStatus('Something failed: 
 const fmtBytes = b => b >= 1e9 ? (b/1e9).toFixed(1)+' GB' : b >= 1e6 ? Math.round(b/1e6)+' MB' : Math.max(0, Math.round(b/1e3))+' KB';
 async function showStorage(){
   try { if (!navigator.storage || !navigator.storage.estimate) return; const e = await navigator.storage.estimate();
-    const el = document.getElementById('store'); if (el && e.quota) el.textContent = 'Saved: ' + fmtBytes(e.usage||0) + ' of ' + fmtBytes(e.quota); } catch(e){}
+    const el = document.getElementById('store'); if (el && e.quota) el.textContent = 'Saved: ' + fmtBytes(e.usage||0) + ' of ' + fmtBytes(e.quota) + (photos.length ? ` · ${photos.length} photo${photos.length>1?'s':''}` : ''); } catch(e){}
 }
 let shrinking = false;
 async function shrinkOld(){ // one at a time, only while nothing is being polished
@@ -1463,6 +1505,80 @@ async function shrinkOld(){ // one at a time, only while nothing is being polish
   } catch(e){} finally { shrinking = false; }
   if (n){ setStatus(`Made ${n} saved song${n>1?'s':''} take half the space.`); showStorage(); }
 }
+/* ---------- photo row: resized in the browser (max 1600px JPEG) and kept in their own IndexedDB database ---------- */
+let photos = [], phDbp = null, phUrls = new Map(), lbAt = -1;
+function phDb(){
+  if (phDbp) return phDbp;
+  phDbp = new Promise((res, rej) => { const r = indexedDB.open('lak-photos', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('photos', {keyPath:'id'}); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+  return phDbp;
+}
+async function phTx(mode, fn){ const d = await phDb(); return new Promise((res, rej) => { const t = d.transaction('photos', mode), st = t.objectStore('photos'); const q = fn(st);
+  t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error); }); }
+const phBlob = (p, which) => new Blob([which === 'thumb' ? p.thumb : p.buf], {type:'image/jpeg'});
+function phUrl(p, which){ const k = p.id + ':' + which; if (!phUrls.has(k)) phUrls.set(k, URL.createObjectURL(phBlob(p, which))); return phUrls.get(k); }
+function dropUrls(p){ for (const w of ['thumb','full']){ const k = p.id+':'+w; if (phUrls.has(k)){ URL.revokeObjectURL(phUrls.get(k)); phUrls.delete(k); } } }
+async function loadImage(file){
+  const url = URL.createObjectURL(file);
+  try { const img = new Image(); img.decoding = 'async'; img.src = url; await img.decode(); return img; }   // <img> applies the photo's rotation
+  finally { setTimeout(() => URL.revokeObjectURL(url), 0); }
+}
+function scaled(img, max, q){
+  const w0 = img.naturalWidth, h0 = img.naturalHeight, k = Math.min(1, max / Math.max(w0, h0)), w = Math.max(1, Math.round(w0*k)), h = Math.max(1, Math.round(h0*k));
+  const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.imageSmoothingQuality = 'high'; g.fillStyle = '#fff'; g.fillRect(0,0,w,h); g.drawImage(img, 0, 0, w, h);
+  return new Promise((res, rej) => c.toBlob(b => b ? res({blob:b, w, h}) : rej(new Error('encode')), 'image/jpeg', q));
+}
+async function addPhotos(files){
+  files = files.filter(f => /^image\//.test(f.type) || /\.(jpe?g|png|gif|webp|heic|heif|avif|bmp)$/i.test(f.name)); if (!files.length) return;
+  let ok = 0; const bad = []; let order = photos.reduce((a,p) => Math.max(a, p.order||0), 0);
+  for (const f of files){
+    setStatus(`Adding photo ${ok+bad.length+1} of ${files.length}…`);
+    try {
+      const img = await loadImage(f); const full = await scaled(img, 1600, 0.8), th = await scaled(img, 320, 0.75);
+      const p = { id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random()), order: ++order, added: Date.now(), name: f.name, w: full.w, h: full.h,
+                  buf: await full.blob.arrayBuffer(), thumb: await th.blob.arrayBuffer() };
+      try { await phTx('readwrite', st => st.put(p)); } catch(e){ p._volatile = true; noteUnsaved(e); }
+      photos.push(p); ok++;
+    } catch(e){ bad.push(f.name); }
+  }
+  drawPhotos(); showStorage();
+  setStatus((ok ? `Added ${ok} photo${ok>1?'s':''}.` : '') + (bad.length ? ` Couldn’t open ${bad.slice(0,3).join(', ')}${bad.length>3?'…':''}. Try a JPEG or PNG.` : ''));
+}
+function drawPhotos(){
+  const row = $('#phRow'), add = $('#phAdd'); photos.sort((a,b) => (a.order||0)-(b.order||0));
+  $('#photos').classList.toggle('empty', !photos.length);
+  row.querySelectorAll('.ph').forEach(x => x.remove());
+  photos.forEach((p, i) => {
+    const b = document.createElement('div'); b.className = 'ph'; b.tabIndex = 0; b.setAttribute('role','button'); b.setAttribute('aria-label', `Photo ${i+1} of ${photos.length}`);
+    const im = document.createElement('img'); im.alt = ''; im.loading = 'lazy'; im.src = phUrl(p, 'thumb'); b.appendChild(im);
+    const ed = document.createElement('div'); ed.className = 'ph-ed';
+    ed.innerHTML = `<button class="ph-l" aria-label="Move photo left" ${i?'':'disabled'}>‹</button><button class="ph-del" aria-label="Delete photo">✕</button><button class="ph-r" aria-label="Move photo right" ${i<photos.length-1?'':'disabled'}>›</button>`;
+    b.appendChild(ed);
+    b.addEventListener('click', e => { if (e.target.closest('.ph-ed')) return; if (!editMode) openLb(i); });
+    b.addEventListener('keydown', e => { if ((e.key==='Enter'||e.key===' ') && e.target===b){ e.preventDefault(); if (!editMode) openLb(i); } });
+    ed.querySelector('.ph-del').addEventListener('click', async () => { if (!confirm('Delete this photo? It can’t be undone.')) return;
+      try { await phTx('readwrite', st => st.delete(p.id)); } catch(e){} dropUrls(p); photos = photos.filter(x => x !== p); drawPhotos(); showStorage(); });
+    const move = async d => { const j = i + d; if (j < 0 || j >= photos.length) return; const q = photos[j]; [p.order, q.order] = [q.order, p.order];
+      try { await phTx('readwrite', st => { st.put(p); return st.put(q); }); } catch(e){} drawPhotos(); const n = $('#phRow').querySelectorAll('.ph')[j]; n && n.querySelector(d<0?'.ph-l':'.ph-r')?.focus(); };
+    ed.querySelector('.ph-l').addEventListener('click', () => move(-1)); ed.querySelector('.ph-r').addEventListener('click', () => move(1));
+    row.insertBefore(b, add);
+  });
+  add.lastChild.textContent = photos.length ? 'Add' : 'Add photos';
+}
+function openLb(i){ if (!photos.length) return; lbAt = (i + photos.length) % photos.length; const p = photos[lbAt];
+  $('#lbImg').src = phUrl(p, 'full'); $('#lbImg').alt = `Photo ${lbAt+1}`; $('#lbCount').textContent = `Photo ${lbAt+1} of ${photos.length}`;
+  const one = photos.length < 2; $('#lbPrev').hidden = one; $('#lbNext').hidden = one;
+  const lb = $('#lb'); if (lb.hidden){ lb.hidden = false; document.body.style.overflow = 'hidden'; $('#lbClose').focus(); } }
+function closeLb(){ $('#lb').hidden = true; document.body.style.overflow = ''; const t = $('#phRow').querySelectorAll('.ph')[lbAt]; lbAt = -1; t && t.focus(); }
+$('#lbClose').addEventListener('click', closeLb); $('#lbPrev').addEventListener('click', () => openLb(lbAt-1)); $('#lbNext').addEventListener('click', () => openLb(lbAt+1));
+document.addEventListener('keydown', e => { if ($('#lb').hidden) return; if (e.key==='Escape') closeLb(); else if (e.key==='ArrowLeft') openLb(lbAt-1); else if (e.key==='ArrowRight') openLb(lbAt+1); });
+{ let x0 = null; const st = $('#lbStage'); st.addEventListener('pointerdown', e => { x0 = e.clientX; }); st.addEventListener('pointerup', e => { if (x0 === null) return; const dx = e.clientX - x0; x0 = null; if (Math.abs(dx) > 50) openLb(lbAt + (dx < 0 ? 1 : -1)); });
+  st.addEventListener('click', e => { if (e.target === st) closeLb(); }); }
+$('#phFile').addEventListener('change', () => { addPhotos([...$('#phFile').files]); $('#phFile').value = ''; });
+$('#phAdd').addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' '){ e.preventDefault(); $('#phFile').click(); } });
+$('#edit').addEventListener('click', () => drawPhotos());
+(async () => { try { photos = (await phTx('readonly', st => st.getAll())) || []; } catch(e){ photos = []; } drawPhotos(); showStorage(); })();
+
 async function importShared(){
   if (!/[?&]shared=1/.test(location.search)) return;
   try { history.replaceState(null, '', location.pathname); } catch(e){}
