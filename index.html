@@ -523,10 +523,12 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   <details class="buildlog" id="buildLog"><summary>Tonight’s build log</summary><ol id="buildLogList"><li><time>…</time><span>Loading every change made tonight…</span></li></ol><p class="bl-note">Every update to this site, newest first, straight from its public history on <a href="https://github.com/LUKEANDREWKELLY/voice-memo-master/commits/main" target="_blank" rel="noopener">GitHub</a>. Times are New York time.</p></details>
 <script>(function(){ var ol=document.getElementById('buildLogList'), box=document.getElementById('buildLog'); if (matchMedia('(min-width:641px)').matches) box.open=true;
   function esc(s){return s.replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
-  fetch('https://api.github.com/repos/LUKEANDREWKELLY/voice-memo-master/commits?per_page=100').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(cs){
+  function row(date,msg){var d=new Date(date);var t=d.toLocaleString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric'})+' '+d.toLocaleString('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit'});return '<li><time datetime="'+date+'">'+esc(t)+'</time><span>'+esc(msg)+'</span></li>';}
+  fetch('changelog.json?'+Date.now()).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(cs){ol.innerHTML=cs.map(function(c){return row(c.date,c.msg);}).join('');})
+  .catch(function(){ return fetch('https://api.github.com/repos/LUKEANDREWKELLY/voice-memo-master/commits?per_page=100').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(cs){
     ol.innerHTML=cs.map(function(c){var d=new Date(c.commit.author.date);var t=d.toLocaleString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric'})+' '+d.toLocaleString('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit'});
       return '<li><time datetime="'+c.commit.author.date+'">'+esc(t)+'</time><span>'+esc(c.commit.message.split('\n')[0])+'</span></li>';}).join('');
-  }).catch(function(){ ol.innerHTML='<li><time>—</time><span>Couldn’t load the log right now. See the full history on GitHub.</span></li>'; }); })();</script>
+  }); }).catch(function(){ ol.innerHTML='<li><time>—</time><span>Couldn’t load the log right now. See the full history on GitHub.</span></li>'; }); })();</script>
 
   <h2>About</h2>
   <p><strong>Voice Memo Master</strong> is the original creation of <strong>Luke Andrew motherfucking Kelly, undiscovered musician</strong>. He built it in New York tonight and is revealing it to everybody, and he wants the X and Grok crowd, including the xAI team and Elon Musk, to see it.</p>
