@@ -2737,8 +2737,11 @@ function recountShelves(d){ d.shelves = SHELVES.map(s => ({n:s.n, repo:s.repo, s
   d.photoBytes = photoBytes(d); d.totalBytes = d.shelves.reduce((a,s) => a + s.bytes, 0) + d.photoBytes; }
 function syncPubMap(){ pubMap = {}; if (!pubManifest) return; const byPid = new Map((pubManifest.songs||[]).map(e => [e.id, e])); for (const m of memos){ const e = byPid.get(pubId(m)); if (e) pubMap[m.id] = e; } }
 async function loadPublic(){ // what's live, from the public site (no key needed)
-  try { let r = await fetch('gallery/gallery.json?t=' + Date.now(), {cache:'no-store'}); if (!r.ok) r = await fetch('songs.json?t=' + Date.now(), {cache:'no-store'});
-    if (r.ok){ pubManifest = normIndex(await r.json()); syncPubMap(); render(); } } catch(e){}
+  try { const get = async u => { try { const r = await fetch(u + '?t=' + Date.now(), {cache:'no-store'}); return r.ok ? await r.json() : null; } catch(e){ return null; } };
+    const [idx, old] = await Promise.all([get('gallery/gallery.json'), get('songs.json')]);   // both lists: older copies of the app still add to songs.json
+    if (idx || old){ const d = normIndex(idx), ids = new Set(d.songs.map(e => e.id)), gone = new Set(d.removed || []);
+      if (old) for (const e of normIndex(old).songs) if (!ids.has(e.id) && !gone.has(e.id)) d.songs.push(e);
+      pubManifest = d; syncPubMap(); render(); } } catch(e){}
   drawSpace();
 }
 const LIVE_LISTS = ['gallery/gallery.json', 'songs.json'];
