@@ -12,9 +12,12 @@ cut the talking and handling noise before and after the song → reduce room his
 
 - Original vs. master toggle per memo, live Volume/Bass/Treble preview knobs, **Apply** to re‑master with those settings
 - Lyrics box with browser speech‑recognition transcription (Chrome/Edge desktop)
-- Search, sort (Top / Newest), upvotes, rename, delete (Edit list)
+- Search, sort (A–Z / Newest / Oldest by recording date / Top by upvotes; remembered; Play bucket follows it), upvotes, rename, delete (Edit list)
 - **Buckets:** songs are dealt at random into up to 6 small grids (tabs 1–6 plus ALL). SHUFFLE re-deals, NEXT / SURPRISE ME hop between buckets, PLAY BUCKET plays one after another. The deal and the open tab are remembered; new songs go into the smallest bucket; search looks in every bucket.
 - **Dice (RANDOMIZE):** random Loud / Warmth / Sparkle (never 0, Loud kept between −3 and +6), Tape (50%) and Phone (25%) for every song or one song. Preview only: the saved song and saved settings don't change until you tap **Keep it**; **Reset** goes back to the saved sound. **Surprise on open** (default on) rolls fresh dice each time the app opens.
+- **Now playing bar** pinned to the top (safe-area aware): play/pause, song name + bucket (tap to jump to the row), time, tap-to-seek line, Next. Lock screen / Control Center info via Media Session (title, Luke Andrew Kelly, bucket, app icon; play/pause/next).
+- **Real names:** song titles come from the file's own tags (m4a/mov ©nam, titl, QuickTime keys title; WAV INAM / bext; MP3 ID3v2 TIT2; AIFF NAME). Raw Voice Memos names like `20240115 143022-1A2B3C4D` with no title tag become `Memo · Jan 15 2024, 2:30 PM`. Older imports are fixed once on load (and by **Fix names** in Edit list); names you typed yourself are never touched.
+- **Edit list:** tick songs, **Select all**, **Delete selected** (asks first, with the count)
 - Saved songs take half the space (stored mono, downloaded as stereo 24-bit WAV); a meter shows how much browser storage is used
 - Duplicate detection (SHA‑256), recording date read from the file (Voice Memos / m4a, BWF, ShurePlus MOTIV)
 - Download a single master as WAV, or **Download all masters** as a .zip

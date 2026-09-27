@@ -54,7 +54,31 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:11p
 .wrap{max-width:1280px;margin:0 auto;padding:4px 4px 24px}
 ::selection{background:var(--accent);color:var(--accent-ink)}
 
-.topbanner{display:block;width:100%;padding:3px 6px;padding-top:calc(3px + env(safe-area-inset-top,0px));background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:1.3;font-weight:700;border-bottom:1px solid var(--grid)}
+:root{--npH:32px}
+body{padding-top:calc(var(--npH) + env(safe-area-inset-top,0px))}
+li.memo{scroll-margin-top:calc(var(--npH) + env(safe-area-inset-top,0px) + 8px)}
+/* now playing: pinned to the top of the screen */
+.np{position:fixed;top:0;left:0;right:0;z-index:40;display:grid;grid-template-columns:28px minmax(0,1fr) auto auto;grid-template-rows:24px 7px;grid-template-areas:"pp tt tm nx" "bar bar bar bar";
+  padding-top:env(safe-area-inset-top,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);background:#111;color:var(--accent-ink);border-bottom:1px solid var(--grid)}
+.np button{border:none;border-right:1px solid #3a3a3a;background:transparent;color:var(--accent-ink);min-height:0}
+.np button:hover{background:#2a2a2a}
+.np-play{grid-area:pp;display:grid;place-items:center;padding:0;background:var(--accent)!important}
+.np-play svg{width:10px;height:10px;fill:currentColor}
+.np-play:disabled{opacity:.5}
+.np-title{grid-area:tt;display:flex;align-items:center;gap:6px;min-width:0;padding:0 6px;text-align:left;cursor:pointer}
+.np-name{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+.np-bk{flex:none;padding:0 4px;border:1px solid var(--accent-ink);font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;line-height:13px}
+.np-bk:empty{display:none}
+.np.idle .np-name{font-weight:600;text-transform:none;letter-spacing:0;color:#bfa13a}
+.np-time{grid-area:tm;align-self:center;padding:0 8px;font-size:10.5px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums;border-right:1px solid #3a3a3a;line-height:24px}
+.np-next{grid-area:nx;padding:0 10px!important;font-size:10px;text-transform:uppercase;letter-spacing:.06em;border-right:none!important}
+.np-bar{grid-area:bar;position:relative;cursor:pointer;touch-action:none;background:#111}
+.np-bar::before{content:"";position:absolute;left:0;right:0;top:2px;height:3px;background:#444}
+.np-fill{position:absolute;left:0;top:2px;height:3px;width:0;background:var(--accent-ink)}
+.np.idle .np-bar{cursor:default}
+li.memo.flash{animation:flash 1.2s ease-out}
+@keyframes flash{0%,40%{background:var(--hi)}}
+.topbanner{display:block;width:100%;padding:3px 6px;background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:1.3;font-weight:700;border-bottom:1px solid var(--grid)}
 
 .htstrip{display:flex;align-items:center;gap:8px;padding:4px 6px;background:var(--bg);border-bottom:1px solid var(--grid)}
 .store{margin-left:auto;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -121,6 +145,15 @@ button:disabled:hover{background:var(--cell2)}
 .tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
 .tabs button[aria-selected="true"] small{color:var(--accent-ink)}
 .tabs .hint{align-self:center;padding:0 6px;font-size:10px;color:var(--muted);white-space:nowrap}
+#editbar{display:none}
+body.editing #editbar{display:flex}
+#editbar .grp+.grp{margin-left:0;border-left:none}
+body.editing li.memo::before{display:none}
+.sel{grid-area:n;display:flex;align-items:center;justify-content:center;background:var(--head);cursor:pointer;border-right:1px solid var(--grid)}
+.sel input{appearance:none;-webkit-appearance:none;width:13px;height:13px;margin:0;border:1.5px solid var(--grid);background:var(--paper);cursor:pointer}
+.sel input:checked{background:var(--accent);box-shadow:inset 0 0 0 2px var(--paper)}
+.sel input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+li.memo.picked{background:var(--hi)!important}
 .bkb{display:inline-block;margin-right:4px;padding:0 3px;border:1px solid var(--grid);background:var(--cell2);color:var(--ink);font-size:9px;font-weight:800;line-height:12px}
 .ab button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 
@@ -204,6 +237,14 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 @media (max-width:760px){
   .wrap{padding:3px 3px calc(56px + env(safe-area-inset-bottom,0px))}
   .topbanner{font-size:10.5px;padding-left:4px;padding-right:4px}
+  :root{--npH:57px}
+  .np{grid-template-columns:44px minmax(0,1fr) auto auto;grid-template-rows:44px 12px}
+  .np-play svg{width:14px;height:14px}
+  .np-title{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px}
+  .np-name{max-width:100%;font-size:12px}
+  .np-time{line-height:44px;padding:0 6px}
+  .np-next{min-width:52px;font-size:11px}
+  .np-bar::before,.np-fill{top:4px;height:4px}
   header{grid-template-columns:1fr}
   .head-actions{flex-direction:row;border-left:none;border-top:1px solid var(--grid)}
   .head-actions button{min-height:44px;border-bottom:none;border-right:1px solid var(--grid);text-align:center;white-space:nowrap}
@@ -212,12 +253,14 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   .add-btn{min-height:44px}
   .tools{flex-wrap:wrap}
   .tools input{flex-basis:100%;min-height:40px;font-size:16px;border-right:none;border-bottom:1px solid var(--grid)}
-  .sort button{min-height:40px;padding:0 14px}
+  .sort button{min-height:40px;padding:0 10px}
   .acts .grp{flex:1 1 100%}
   .acts .grp+.grp{margin-left:0;border-left:none;border-top:1px solid var(--grid)}
   .acts button{flex:1 1 auto;justify-content:center;min-height:44px;padding:0 8px;font-size:11px}
   .acts .grp button:last-child{border-right:none}
   .tabs button{min-height:44px;padding:0 12px;font-size:11px}
+  body.editing li.memo{grid-template-columns:44px 44px minmax(0,1fr) auto 44px}
+  .sel input{width:22px;height:22px}
   .thead{display:none}
   li.memo{grid-template-columns:24px 44px minmax(0,1fr) auto 44px;grid-template-areas:"n p t t dl" "n p d d dl" "w w w w w" "k k k k k" "v v ab lyr lyr";border-bottom:2px solid var(--grid)}
   li.memo:has(.del){grid-template-areas:"n p t t dl" "n p d d dl" "w w w w w" "k k k k k" "v v ab lyr del"}
@@ -254,6 +297,14 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 </style>
 </head>
 <body>
+<!-- ===== NOW PLAYING (pinned to the top) ===== -->
+<div class="np idle" id="np" role="region" aria-label="Now playing">
+  <button class="np-play" id="npPlay" aria-label="Play"><svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg></button>
+  <button class="np-title" id="npTitle" title="Show this song in the list"><span class="np-name" id="npName">Nothing playing</span><span class="np-bk" id="npBk"></span></button>
+  <span class="np-time" id="npTime"></span>
+  <button class="np-next" id="npNext" title="Next song in this bucket">Next</button>
+  <div class="np-bar" id="npBar" role="slider" aria-label="Song position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="-1"><div class="np-fill" id="npFill"></div></div>
+</div>
 <!-- ===== TOP BANNER: edit the text below (id="topBanner") ===== -->
 <div class="topbanner" id="topBanner" role="note">Debuting: 'Song for Barbara Walters' — the much-awaited, anticipated single from Luke Andrew Kelly — releasing on Elon Musk's birthday. Dedicated to the possibility of Nathan Fielder being featured on the track.</div>
 <!-- ===== /TOP BANNER ===== -->
@@ -287,7 +338,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 
   <div class="tools">
     <input id="search" type="search" placeholder="Search names, dates, or lyrics" aria-label="Search memos">
-    <div class="ab sort" role="group" aria-label="Sort by"><button data-sort="top" aria-pressed="false">Top</button><button data-sort="new" aria-pressed="true">Newest</button></div>
+    <div class="ab sort" role="group" aria-label="Sort by"><button data-sort="az" aria-pressed="false" title="Sort by name, A to Z">A–Z</button><button data-sort="new" aria-pressed="true" title="Newest recording first">Newest</button><button data-sort="old" aria-pressed="false" title="Oldest recording first">Oldest</button><button data-sort="top" aria-pressed="false" title="Most upvotes first">Top</button></div>
     <span class="count" id="count"></span>
   </div>
   <div class="acts" id="acts">
@@ -303,6 +354,13 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
       <button id="surprise" aria-pressed="true" title="Roll the dice on every song each time the app opens (just a preview, nothing saved changes)">Surprise on open: On</button>
     </div>
   </div>
+  <div class="acts" id="editbar" role="group" aria-label="Edit list">
+    <div class="grp">
+      <button id="selAll" title="Tick every song shown below">Select all</button>
+      <button id="delSel" class="primary" disabled title="Delete the ticked songs (asks first)">Delete selected</button>
+      <button id="fixNames" title="Give songs with a Voice Memos code name their real title from the file, or a friendly date. Names you typed yourself are left alone.">Fix names</button>
+    </div>
+  </div>
   <div class="tabs" id="tabs" role="tablist" aria-label="Buckets"></div>
   <div class="thead" aria-hidden="true"><span>#</span><span>Play</span><span>Name</span><span>Date</span><span>Wave</span><span>Loud</span><span>Warmth</span><span>Sparkle</span><span>Tape</span><span>Phone</span><span>Dice</span><span>Keep</span><span>Raw/Polished</span><span>Votes</span><span>Lyrics</span><span>DL</span><span class="h-del">Del</span></div>
   <ul id="list"></ul>
@@ -313,7 +371,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   <h2>About</h2>
   <p><strong>Voice Memo Master</strong> is the original creation of <strong>Luke Andrew Kelly, undiscovered musician</strong>. He built it in New York tonight and is revealing it to everybody, and he wants the X and Grok crowd, including the xAI team and Elon Musk, to see it.</p>
   <p><em>Dedicated to Elon Musk. Here's hoping he adopts me, or hires me to be his personal security guard — I'd charge him zero dollars a year. I know he's got a bunch of kids; I don't have a father.</em></p>
-  <p class="note" style="margin-top:0">Every song gets the same treatment: it tidies up the start and end (bye-bye chatter and fumbling before and after you play), cleans up hiss, gives your voice a little shine, and makes every song sit at the same loudness. Slide LOUD, WARMTH and SPARKLE to hear the change right away, then tap KEEP IT to save that sound. TAPE makes it sound like an old cassette. PHONE makes it clear and punchy on tiny phone speakers. Drag a slider sideways or up and down, scroll it, or use the arrow keys; double-click puts it back to 0. Tap RAW or POLISHED to compare. Your songs get dealt at random into up to 6 buckets: tap a tab to open one, SHUFFLE deals again, NEXT and SURPRISE ME hop around, PLAY BUCKET plays them one after another, and ALL shows everything. RANDOMIZE (the dice) tries a random sound on every song, or tap a song’s own dice. It’s only a preview until you tap KEEP IT, and RESET puts the saved sound back. Turn off SURPRISE ON OPEN if you don’t want fresh dice each time the app opens. Your songs stay saved in this browser on this device. Download one song (on iPhone the share sheet pops up so you can Save to Files), or grab them all at once in a .zip. Add it to your home screen to use it like an app; it works offline once it has loaded.<span class="hint-desktop"> On a computer you can also drag memos onto the drop box.</span></p>
+  <p class="note" style="margin-top:0">Every song gets the same treatment: it tidies up the start and end (bye-bye chatter and fumbling before and after you play), cleans up hiss, gives your voice a little shine, and makes every song sit at the same loudness. Slide LOUD, WARMTH and SPARKLE to hear the change right away, then tap KEEP IT to save that sound. TAPE makes it sound like an old cassette. PHONE makes it clear and punchy on tiny phone speakers. Drag a slider sideways or up and down, scroll it, or use the arrow keys; double-click puts it back to 0. Tap RAW or POLISHED to compare. Your songs get dealt at random into up to 6 buckets: tap a tab to open one, SHUFFLE deals again, NEXT and SURPRISE ME hop around, PLAY BUCKET plays them one after another, and ALL shows everything. RANDOMIZE (the dice) tries a random sound on every song, or tap a song’s own dice. It’s only a preview until you tap KEEP IT, and RESET puts the saved sound back. Turn off SURPRISE ON OPEN if you don’t want fresh dice each time the app opens. Sort with A–Z, NEWEST, OLDEST (by recording date) or TOP (most upvotes); PLAY BUCKET plays in that order. The black bar at the top always shows what’s playing: tap the name to jump to that song, tap the thin line to skip around, NEXT for the next song. Songs are named from the title saved inside the file; Voice Memos code names like “20240115 143022” become the recording date. In EDIT LIST you can tick songs and DELETE SELECTED, or tap FIX NAMES. Your songs stay saved in this browser on this device. Download one song (on iPhone the share sheet pops up so you can Save to Files), or grab them all at once in a .zip. Add it to your home screen to use it like an app; it works offline once it has loaded.<span class="hint-desktop"> On a computer you can also drag memos onto the drop box.</span></p>
   <p class="fine">© Luke Andrew Kelly. Everything runs on your device; your audio never leaves your browser.</p>
   </footer>
 </div>
@@ -723,7 +781,10 @@ async function saveZip(entries, name){
 
 /* ---------- UI ---------- */
 let memos = [], playing = null, abState = {}, openLyrics = {}, editMode = false, sortMode = 'new';
-try { sortMode = localStorage.getItem('lak-sort') || 'new'; } catch(e){}
+try { sortMode = localStorage.getItem('lak-sort') || 'new'; if (!/^(az|new|old|top)$/.test(sortMode)) sortMode = 'new'; } catch(e){}
+const recDate = m => m.created || m.added || 0;   // recording date from the file's tags, else the file's date, else when it was added
+const byName = new Intl.Collator(undefined, {numeric:true, sensitivity:'base'});
+const SORTS = { az: (x,y) => byName.compare(x.name, y.name) || recDate(y)-recDate(x), new: (x,y) => recDate(y)-recDate(x), old: (x,y) => recDate(x)-recDate(y), top: (x,y) => ((y.votes||0)-(x.votes||0)) || recDate(y)-recDate(x) };
 const player = $('#player');
 const fmt = s => { s=Math.max(0,s); const m=Math.floor(s/60), r=Math.round(s%60); return m+':'+String(r).padStart(2,'0'); };
 const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -779,7 +840,7 @@ function drawTabs(q){
 function visible(){
   const q = $('#search').value.trim().toLowerCase();
   return memos.filter(m => q ? (m.name+' '+fmtWhen(m.created||m.added)+' '+(m.lyrics||'')).toLowerCase().includes(q) : (bk.active==='all' || bk.map[m.id]===bk.active))
-    .sort((x,y)=> sortMode==='top' ? ((y.votes||0)-(x.votes||0)) || ((y.created||y.added)-(x.created||x.added)) : (y.created||y.added)-(x.created||x.added));
+    .sort(SORTS[sortMode] || SORTS.new);   // Play bucket and Next follow this order
 }
 /* play the bucket top to bottom, moving on to the next song when one ends */
 let playlist = null;
@@ -840,6 +901,7 @@ function render(){
   drawTabs(q);
   $('#resetAll').disabled = !memos.some(m => m.state==='done' && (m._rand || !same(m.knobs, m.baked)));
   $('#rollAll').disabled = !memos.some(m => m.state==='done');
+  drawEditBar(); drawNP();
   document.querySelectorAll('.sort button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sort===sortMode)));
   $('#count').textContent = memos.length ? `${shown.length} of ${memos.length}` : '';
   $('#dlAll').disabled = !downloads || !memos.some(m=>m.state==='done');
@@ -861,7 +923,7 @@ function render(){
       </div>
       <button class="icon lyr" aria-expanded="${!!openLyrics[m.id]}">Lyrics</button>
       <button class="icon dl" aria-label="Download polished ${m.name}" title="Download this song" ${done&&downloads?'':'disabled'}><svg viewBox="0 0 16 16"><path d="M7 1h2v8l3-3 1.4 1.4L8 12.8 2.6 7.4 4 6l3 3zM2 14h12v2H2z"/></svg></button>
-      ${editMode?`<button class="icon del" aria-label="Delete ${m.name}" title="Delete">✕</button>`:''}`;
+      ${editMode?`<button class="icon del" aria-label="Delete ${m.name}" title="Delete">✕</button><label class="sel" title="Tick to delete several at once"><input type="checkbox"></label>`:''}`;
     li.querySelector('.name').value = m.name;
     const when = li.querySelector('.when');
     if (m.state==='error'){ when.textContent = m.error; when.classList.add('err'); }
@@ -870,12 +932,15 @@ function render(){
     if ((q || bk.active==='all') && bk.map[m.id] !== undefined){ const t = document.createElement('b'); t.className='bkb'; t.textContent = 'B'+(bk.map[m.id]+1); t.title = 'Bucket '+(bk.map[m.id]+1)+': '+bk.names[bk.map[m.id]]; when.prepend(t); }
     li.querySelector('canvas').setAttribute('aria-label', done ? `Waveform. The polished song keeps ${fmt(m.start)} to ${fmt(m.end)} of ${fmt(m.total)}.` : 'Waveform');
     li.querySelector('canvas').title = done ? `Keeps ${fmt(m.start)} to ${fmt(m.end)} of ${fmt(m.total)}` : '';
-    li.querySelector('.name').addEventListener('change', async e => { m.name = e.target.value.trim()||m.name; await putMemo(strip(m)); });
+    li.querySelector('.name').addEventListener('change', async e => { const v = e.target.value.trim(); if (v && v !== m.name){ m.name = v; m.autoName = false; } e.target.value = m.name; await putMemo(strip(m)); if (sortMode==='az') render(); });   // typed by hand: Fix names never touches it again
     li.querySelector('.play').addEventListener('click', () => { if (playlist && !(playing && playing.id===m.id)) playlist = null; togglePlay(m); });
     li.querySelector('.vote').addEventListener('click', async e => { m.votes = (m.votes||0)+1; const b=e.currentTarget; b.querySelector('span').textContent=m.votes; b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); await putMemo(strip(m)); if (sortMode==='top') setTimeout(render, 350); });
     li.querySelectorAll('.ab button').forEach(b => b.addEventListener('click', () => { abState[m.id]=b.dataset.w; const was = playing&&playing.id===m.id&&!player.paused; if (playing&&playing.id===m.id){ player.pause(); playing=null; } if (was) togglePlay(m); else render(); }));
     li.querySelector('.dl').addEventListener('click', async () => saveFile(await stereoWav(await getBlob(m.id+':master')), safe(m.name)+' (polished).wav'));
     li.querySelector('.lyr').addEventListener('click', () => { openLyrics[m.id] = !openLyrics[m.id]; render(); });
+    const sel = li.querySelector('.sel input');
+    if (sel){ sel.setAttribute('aria-label', 'Select ' + m.name); sel.checked = picked.has(m.id); li.classList.toggle('picked', sel.checked);
+      sel.addEventListener('change', () => { if (sel.checked) picked.add(m.id); else picked.delete(m.id); li.classList.toggle('picked', sel.checked); drawEditBar(); }); }
     const del = li.querySelector('.del');
     if (del) del.addEventListener('click', async () => { if (!confirm(`Delete “${m.name}”? This removes the raw and polished versions.`)) return; if (playing&&playing.id===m.id){player.pause();playing=null;} await delMemo(m.id); memos=memos.filter(x=>x.id!==m.id); render(); });
     buildKnobs(li.querySelector('.knobs'), m, done);
@@ -895,6 +960,36 @@ function render(){
     }
     m._cv = cv; requestAnimationFrame(() => drawWave(cv, m));
   }
+}
+/* ---------- edit list: tick several, delete them together; fix Voice Memos code names ---------- */
+const picked = new Set();
+function drawEditBar(){
+  for (const id of [...picked]) if (!memos.some(m => m.id===id)) picked.delete(id);
+  const shown = visible(), all = shown.length && shown.every(m => picked.has(m.id));
+  $('#selAll').textContent = all ? 'Select none' : 'Select all';
+  $('#delSel').textContent = 'Delete selected' + (picked.size ? ` (${picked.size})` : ''); $('#delSel').disabled = !picked.size;
+}
+async function deletePicked(){
+  const ids = [...picked].filter(id => memos.some(m => m.id===id)); if (!ids.length) return;
+  if (!confirm(`Delete ${ids.length} song${ids.length>1?'s':''}? This removes the raw and polished versions and can’t be undone.`)) return;
+  for (const id of ids){ if (playing && playing.id===id){ player.pause(); playing = null; } if (playlist && playlist.ids.includes(id)) playlist = null;
+    try { await delMemo(id); } catch(e){} memos = memos.filter(x => x.id!==id); picked.delete(id); }
+  render(); setStatus(`Deleted ${ids.length} song${ids.length>1?'s':''}.`);
+}
+const nameIsAuto = m => m.autoName === false ? false : m.autoName === true ? true : RAW_MEMO.test(m.name);   // old saves: only Voice Memos code names count
+async function fixNames(force){ // force = the Fix names button; otherwise each saved song is checked once
+  let n = 0;
+  for (const m of memos){
+    if (!force && m.namesChecked) continue;
+    if (!nameIsAuto(m)){ if (!m.namesChecked){ m.namesChecked = 1; putMemo(strip(m)); } continue; }
+    if (!m.srcName) m.srcName = m.name;                       // old save named straight from the file: remember that name
+    let ab = null; try { const b = await getBlob(m.id+':orig'); if (b) ab = await b.arrayBuffer(); } catch(e){}
+    const name = autoTitle(ab, baseName(m.srcName), m.created);
+    m.namesChecked = 1; m.autoName = true;
+    if (name && name !== m.name && nameIsAuto(m)){ m.name = name; n++; }
+    await putMemo(strip(m));
+  }
+  return n;
 }
 const strip = m => { const {_cv, _rand, _home, ...rest} = m; if (_rand) rest.knobs = {...KNOB0, ..._home}; return rest; };   // dice values are never saved
 
@@ -925,6 +1020,100 @@ function recordedAt(ab){
   return null;
 }
 const fmtWhen = ms => new Date(ms).toLocaleString(undefined, {month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit'});
+
+/* ---------- song titles from the file's own tags ---------- */
+// m4a/mp4/qta: moov/udta/meta/ilst ©nam, moov/udta ©nam or titl, moov/meta keys 'com.apple.quicktime.title'
+// wav: LIST/INFO INAM, then bext description · mp3: ID3v2 TIT2 (TT2) · aiff: NAME chunk
+const RAW_MEMO = /^\d{8} \d{6}(-[0-9A-F]+)?$/i;   // Voice Memos' own file names, e.g. "20240115 143022-1A2B3C4D"
+const baseName = fn => String(fn||'').replace(/\.[^.]+$/,'').replace(/[_]+/g,' ').trim();
+function cleanTitle(t){ t = String(t||'').replace(/\u0000[\s\S]*$/,'').replace(/[\u0000-\u001f\ufeff]/g,' ').replace(/\s+/g,' ').trim(); return t.length > 200 ? t.slice(0,200) : t; }
+function readTitle(ab){
+  try {
+    const u = new Uint8Array(ab), dv = new DataView(ab), n = u.length;
+    const str = (o, len) => String.fromCharCode(...u.subarray(o, Math.min(n, o+len)));
+    const utf8 = (o, len) => new TextDecoder('utf-8').decode(u.subarray(o, Math.min(n, o+len)));
+    const latin = (o, len) => new TextDecoder('latin1').decode(u.subarray(o, Math.min(n, o+len)));
+    const tag = str(0,4), tag8 = str(4,4);
+    // ---- MP4 family
+    if (/^(ftyp|moov|wide|free|mdat|skip)$/.test(tag8)){
+      const boxes = (from, to) => { const out = []; let o = from;
+        while (o + 8 <= to){ let size = dv.getUint32(o), hdr = 8; const type = str(o+4, 4);
+          if (size === 1){ if (o+16 > to) break; size = dv.getUint32(o+8)*4294967296 + dv.getUint32(o+12); hdr = 16; } else if (size === 0) size = to - o;
+          if (size < hdr || o + size > to) break; out.push({type, s:o+hdr, e:o+size}); o += size; }
+        return out; };
+      const kid = (list, t) => list.find(b => b.type === t);
+      const metaKids = b => boxes(str(b.s+4,4) === 'hdlr' ? b.s : b.s+4, b.e);   // 'meta' is a full box in udta, a plain box in QuickTime moov/meta
+      const ilstData = item => { const d = boxes(item.s, item.e).find(b => b.type === 'data'); return d && d.e - d.s > 8 ? cleanTitle(utf8(d.s+8, d.e-d.s-8)) : ''; };
+      const moov = kid(boxes(0, n), 'moov'); if (!moov) return '';
+      const mk = boxes(moov.s, moov.e), udtas = [kid(mk,'udta'), ...mk.filter(b=>b.type==='trak').map(t => kid(boxes(t.s,t.e),'udta'))].filter(Boolean);
+      for (const ud of udtas){
+        const uk = boxes(ud.s, ud.e), meta = kid(uk, 'meta');
+        if (meta){ const t = metaTitle(meta); if (t) return t; }
+        const qn = kid(uk, '\xa9nam');   // QuickTime user-data text: 2-byte length, 2-byte language, text
+        if (qn && qn.e - qn.s > 4){ const len = dv.getUint16(qn.s); const t = cleanTitle(utf8(qn.s+4, Math.min(len, qn.e-qn.s-4))); if (t) return t; }
+        const ti = kid(uk, 'titl');      // 3GPP: version/flags, language, text
+        if (ti && ti.e - ti.s > 6){ const t = cleanTitle(utf8(ti.s+6, ti.e-ti.s-6)); if (t) return t; }
+      }
+      const qm = kid(mk, 'meta'); if (qm){ const t = metaTitle(qm); if (t) return t; }
+      return '';
+      function metaTitle(meta){ // iTunes-style ilst ©nam, or QuickTime keys + ilst indexed by key number
+        const q = metaKids(meta), keys = kid(q,'keys'), ilst = kid(q,'ilst'); if (!ilst) return '';
+        const nam = kid(boxes(ilst.s, ilst.e), '\xa9nam'); const t0 = nam && ilstData(nam); if (t0) return t0;
+        if (keys){ let o = keys.s + 8, idx = 0, want = 0; const cnt = dv.getUint32(keys.s+4);
+          for (let i=1; i<=cnt && o+8 <= keys.e; i++){ const sz = dv.getUint32(o); const name = str(o+8, sz-8); if (/^(com\.apple\.quicktime\.)?(title|displayname)$/.test(name) && !want) want = i; o += sz; }
+          if (want) for (const it of boxes(ilst.s, ilst.e)) if (dv.getUint32(it.s-4) === want){ const t = ilstData(it); if (t) return t; } }
+        return '';
+      }
+    }
+    // ---- WAV
+    if ((tag === 'RIFF' || tag === 'RF64') && str(8,4) === 'WAVE'){
+      let o = 12, bext = '';
+      while (o + 8 <= n){ const id = str(o,4), sz = dv.getUint32(o+4, true), s0 = o+8;
+        if (id === 'LIST' && str(s0,4) === 'INFO'){ let p = s0+4; const end = Math.min(n, s0+sz);
+          while (p + 8 <= end){ const sid = str(p,4), ssz = dv.getUint32(p+4, true); if (sid === 'INAM'){ const t = cleanTitle(utf8(p+8, ssz)); if (t) return t; } p += 8 + ssz + (ssz & 1); } }
+        if (id === 'bext' && !bext) bext = cleanTitle(utf8(s0, Math.min(256, sz)));
+        if (id === 'data' && (sz === 0xFFFFFFFF || s0 + sz > n)) break;
+        o = s0 + sz + (sz & 1); }
+      return bext;
+    }
+    // ---- MP3 (ID3v2)
+    if (str(0,3) === 'ID3'){
+      const ver = u[3], ss = o => (u[o]<<21)|(u[o+1]<<14)|(u[o+2]<<7)|u[o+3];
+      const end = Math.min(n, 10 + ss(6)); let o = 10;
+      if (u[5] & 0x40){ o += ver === 4 ? ss(10) : 4 + dv.getUint32(10); }   // skip extended header
+      const text = (p, len) => { const enc = u[p], b = u.subarray(p+1, p+len);
+        if (enc === 0) return cleanTitle(latin(p+1, len-1)); if (enc === 3) return cleanTitle(utf8(p+1, len-1));
+        const le = enc === 1 ? !(b[0] === 0xFE && b[1] === 0xFF) : false, start = enc === 1 && ((b[0]===0xFF&&b[1]===0xFE)||(b[0]===0xFE&&b[1]===0xFF)) ? 2 : 0;
+        return cleanTitle(new TextDecoder(le ? 'utf-16le' : 'utf-16be').decode(b.subarray(start, b.length - ((b.length-start) & 1)))); };
+      while (o + (ver === 2 ? 6 : 10) <= end){
+        if (ver === 2){ const id = str(o,3), sz = (u[o+3]<<16)|(u[o+4]<<8)|u[o+5]; if (!sz || id === '\0\0\0') break; if (id === 'TT2'){ const t = text(o+6, sz); if (t) return t; } o += 6 + sz; }
+        else { const id = str(o,4), sz = ver === 4 ? ss(o+4) : dv.getUint32(o+4); if (!sz || id === '\0\0\0\0') break; if (id === 'TIT2'){ const t = text(o+10, sz); if (t) return t; } o += 10 + sz; }
+      }
+      return '';
+    }
+    // ---- AIFF / AIFC
+    if (tag === 'FORM' && /^AIF[FC]$/.test(str(8,4))){
+      let o = 12;
+      while (o + 8 <= n){ const id = str(o,4), sz = dv.getUint32(o+4); if (id === 'NAME'){ const t = cleanTitle(utf8(o+8, sz)); if (t) return t; } if (id === 'SSND' && o+8+sz > n) break; o += 8 + sz + (sz & 1); }
+      return '';
+    }
+  } catch(e){}
+  return '';
+}
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function memoDateName(raw, fallbackMs){ // "Memo · Jan 15 2024, 2:30 PM" from the raw Voice Memos name (local time), else the recording date
+  const r = String(raw).match(/^(\d{4})(\d{2})(\d{2}) (\d{2})(\d{2})(\d{2})/);
+  let d = r ? new Date(+r[1], r[2]-1, +r[3], +r[4], +r[5], +r[6]) : new Date(fallbackMs || Date.now());
+  if (isNaN(d)) d = new Date(fallbackMs || Date.now());
+  const h = d.getHours(), h12 = h % 12 || 12;
+  return `Memo · ${MON[d.getMonth()]} ${d.getDate()} ${d.getFullYear()}, ${h12}:${String(d.getMinutes()).padStart(2,'0')} ${h < 12 ? 'AM' : 'PM'}`;
+}
+function autoTitle(ab, fileBase, createdMs){ // title tag, else a friendly date for raw Voice Memos names, else the file name
+  const t = ab ? readTitle(ab) : '';
+  if (t && !RAW_MEMO.test(t)) return t;
+  if (RAW_MEMO.test(fileBase)) return memoDateName(fileBase, createdMs);
+  return fileBase || 'Untitled memo';
+}
 
 /* ---------- lyric transcription (browser speech recognition, fed the master instead of the mic) ---------- */
 let trBusy = null;
@@ -1086,7 +1275,66 @@ async function togglePlay(m){
 }
 player.addEventListener('ended', () => { playing=null; if (playlist && nextInList()) return; render(); });
 player.addEventListener('pause', () => render());
-(function loop(){ if (playing && !player.paused && playing._cv) drawWave(playing._cv, playing); requestAnimationFrame(loop); })();
+let npLast = '', npMetaId = null;
+(function loop(){ if (playing && !player.paused && playing._cv) drawWave(playing._cv, playing); npTick(); requestAnimationFrame(loop); })();
+
+/* ---------- now playing bar + lock screen ---------- */
+const bucketOf = m => { const i = bk.map[m.id]; return i === undefined || !bk.names.length ? 'All' : `Bucket ${i+1} · ${bk.names[i]}`; };
+function npTick(){
+  const on = !!playing, d = on && isFinite(player.duration) ? player.duration : 0, t = on ? player.currentTime : 0;
+  const txt = on ? `${fmt(t)} / ${d ? fmt(d) : '–:––'}` : '';
+  if (txt !== npLast){ npLast = txt; $('#npTime').textContent = txt; $('#npFill').style.width = (d ? Math.min(100, t/d*100) : 0) + '%'; $('#npBar').setAttribute('aria-valuenow', d ? Math.round(t/d*100) : 0); }
+}
+function drawNP(){
+  const np = $('#np'), on = !!playing, paused = !on || player.paused;
+  np.classList.toggle('idle', !on);
+  $('#npName').textContent = on ? playing.name : 'Nothing playing';
+  $('#npBk').textContent = on ? bucketOf(playing) : '';
+  $('#npTitle').disabled = !on;
+  $('#npPlay').innerHTML = paused ? PLAY : PAUSE; $('#npPlay').setAttribute('aria-label', paused ? (on ? 'Play ' + playing.name : 'Play this bucket') : 'Pause ' + playing.name);
+  $('#npPlay').disabled = !on && !visible().some(m => m.state==='done') && !memos.some(m => m.state==='done');
+  $('#npNext').disabled = !memos.some(m => m.state==='done');
+  npLast = null; npTick();
+  if ('mediaSession' in navigator){
+    try {
+      if (on && npMetaId !== playing.id + '|' + playing.name){ npMetaId = playing.id + '|' + playing.name;
+        navigator.mediaSession.metadata = new MediaMetadata({ title: playing.name, artist: 'Luke Andrew Kelly', album: bucketOf(playing),
+          artwork: [{src:'icons/icon-192.png', sizes:'192x192', type:'image/png'}, {src:'icons/icon-512.png', sizes:'512x512', type:'image/png'}] }); }
+      if (!on){ npMetaId = null; }
+      navigator.mediaSession.playbackState = !on ? 'none' : paused ? 'paused' : 'playing';
+    } catch(e){}
+  }
+}
+function nextSong(){ // next in the bucket being played (or the list on screen), wrapping around
+  if (playlist){ if (!nextInList()) render(); return; }
+  let list = visible();
+  if (playing && !list.some(m => m.id===playing.id)){ const i = bk.map[playing.id]; list = memos.filter(m => bk.map[m.id]===i).sort(SORTS[sortMode] || SORTS.new); }
+  list = list.filter(m => m.state==='done'); if (!list.length) return;
+  const at = playing ? list.findIndex(m => m.id===playing.id) : -1, m = list[(at+1) % list.length];
+  if (playing && m.id === playing.id){ player.currentTime = 0; player.play(); return; }
+  togglePlay(m);
+}
+function npPlayPause(){
+  if (playing){ if (player.paused) player.play().catch(()=>{}); else player.pause(); return; }
+  const first = visible().find(m => m.state==='done'); if (first) playBucket(); else { const any = memos.find(m => m.state==='done'); if (any) togglePlay(any); }
+}
+$('#npPlay').addEventListener('click', npPlayPause);
+$('#npNext').addEventListener('click', nextSong);
+$('#npTitle').addEventListener('click', () => {
+  if (!playing) return; const id = playing.id;
+  let li = [...listEl.querySelectorAll('li.memo')].find(x => x._m && x._m.id===id);
+  if (!li){ $('#search').value = ''; bk.active = bk.map[id] ?? 'all'; saveBk(); render(); li = [...listEl.querySelectorAll('li.memo')].find(x => x._m && x._m.id===id); }
+  if (li){ li.scrollIntoView({block:'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); li.classList.remove('flash'); void li.offsetWidth; li.classList.add('flash'); }
+});
+{ const bar = $('#npBar'); const seek = e => { if (!playing || !isFinite(player.duration)) return; const r = bar.getBoundingClientRect(); player.currentTime = Math.min(1, Math.max(0, (e.clientX - r.left)/r.width)) * player.duration; npLast = null; npTick(); };
+  bar.addEventListener('pointerdown', e => { if (!playing) return; bar.setPointerCapture(e.pointerId); seek(e); });
+  bar.addEventListener('pointermove', e => { if (bar.hasPointerCapture(e.pointerId)) seek(e); }); }
+if ('mediaSession' in navigator){
+  const h = (a, f) => { try { navigator.mediaSession.setActionHandler(a, f); } catch(e){} };
+  h('play', () => npPlayPause()); h('pause', () => { if (playing && !player.paused) player.pause(); }); h('nexttrack', nextSong);
+  h('seekto', d => { if (playing && d && isFinite(d.seekTime)) player.currentTime = d.seekTime; });
+}
+player.addEventListener('play', drawNP); player.addEventListener('loadedmetadata', () => { npLast = null; npTick(); });
 
 /* ---------- queue ---------- */
 const queue = []; let busy = false;
@@ -1106,11 +1354,12 @@ async function addFiles(files){
     let ab; try { ab = await f.arrayBuffer(); } catch(e){ setStatus('Couldn’t open ' + f.name + '.'); continue; }
     const hash = await fingerprint(ab);
     if (known.has(hash)){ dupes.push(`${f.name} (same as ${known.get(hash).name.toUpperCase()})`); continue; }
-    const m = { id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random()), name: f.name.replace(/\.[^.]+$/,'').replace(/[_]+/g,' ').trim(),
+    const m = { id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random()), name: baseName(f.name), srcName: f.name, autoName: true,
                 added: Date.now(), state:'queued', step:'Waiting', hash };
     known.set(hash, m);
     try { const r = recordedAt(ab); if (r){ m.created = r.ms; m.createdSrc = 'file'; } else { m.created = f.lastModified || m.added; m.createdSrc = 'timestamp'; } }
     catch(e){ m.created = f.lastModified || m.added; m.createdSrc = 'timestamp'; }
+    m.name = autoTitle(ab, baseName(f.name), m.created); m.namesChecked = 1;
     memos.push(m); queue.push([m,f]); added++; render();
     try { if (!(await putBlob(m.id+':orig', f))) m._volatile = true; await putMemo(strip(m)); } catch(e){ setStatus('Couldn’t store ' + f.name + ': ' + (e && e.message || e)); }
   }
@@ -1155,6 +1404,10 @@ $('#bkShuffle').addEventListener('click', () => { deal(); bk.active = Math.floor
 $('#bkNext').addEventListener('click', () => { if (!bk.names.length) return; goBucket(bk.active==='all' ? 0 : (bk.active+1) % bk.names.length); });
 $('#bkJump').addEventListener('click', () => { const n = bk.names.length; if (n < 2) return; let i; do { i = Math.floor(Math.random()*n); } while (i === bk.active); goBucket(i); });
 $('#bkPlay').addEventListener('click', playBucket);
+$('#selAll').addEventListener('click', () => { const shown = visible(), all = shown.length && shown.every(m => picked.has(m.id)); shown.forEach(m => all ? picked.delete(m.id) : picked.add(m.id)); render(); });
+$('#delSel').addEventListener('click', deletePicked);
+$('#fixNames').addEventListener('click', async () => { const b = $('#fixNames'); b.disabled = true; setStatus('Reading song titles…');
+  const n = await fixNames(true); b.disabled = false; render(); setStatus(n ? `Renamed ${n} song${n>1?'s':''}. Names you typed yourself were left alone.` : 'All names already look good.'); });
 $('#rollAll').addEventListener('click', e => { let n = 0; memos.forEach(m => { if (roll(m)) n++; }); if (playing) updatePreview(); render();
   const b = e.currentTarget; b.classList.remove('roll'); void b.offsetWidth; b.classList.add('roll');
   setStatus(n ? `Rolled the dice on ${n} song${n>1?'s':''}. It’s just a preview: tap Keep it on one you like, or Reset.` : ''); });
@@ -1164,7 +1417,7 @@ const drawSurprise = () => { const b = $('#surprise'); b.setAttribute('aria-pres
 $('#surprise').addEventListener('click', () => { surpriseOn = !surpriseOn; try { localStorage.setItem('lak-surprise', surpriseOn ? '1' : '0'); } catch(e){} drawSurprise(); });
 drawSurprise();
 document.querySelectorAll('.sort button').forEach(b => b.addEventListener('click', () => { sortMode = b.dataset.sort; try{localStorage.setItem('lak-sort',sortMode);}catch(e){} render(); }));
-$('#edit').addEventListener('click', () => { editMode = !editMode; document.body.classList.toggle('editing', editMode); $('#edit').textContent = editMode ? 'Done' : 'Edit list'; render(); });
+$('#edit').addEventListener('click', () => { editMode = !editMode; if (!editMode) picked.clear(); document.body.classList.toggle('editing', editMode); $('#edit').textContent = editMode ? 'Done' : 'Edit list'; render(); });
 $('#dlAll').addEventListener('click', async () => {
   const done = memos.filter(m=>m.state==='done'); const entries=[]; const used=new Set();
   for (const m of done){ let nm=safe(m.name)+' (polished).wav', k=2; while(used.has(nm)) nm=safe(m.name)+` (polished ${k++}).wav`; used.add(nm); entries.push({name:nm, blob: await stereoWav(await getBlob(m.id+':master'))}); }
@@ -1187,6 +1440,7 @@ window.addEventListener('unhandledrejection', e => setStatus('Something failed: 
     render(); run();
   } catch(e){ goMemory(); render(); }
   importShared(); showStorage();
+  fixNames(false).then(n => { if (n){ render(); setStatus(`Gave ${n} song${n>1?'s':''} a real name instead of a Voice Memos code.`); } }).catch(() => {});
 })();
 /* Android Web Share Target: sw.js stashes shared files in IndexedDB 'lak-share' and opens ./?shared=1 */
 const fmtBytes = b => b >= 1e9 ? (b/1e9).toFixed(1)+' GB' : b >= 1e6 ? Math.round(b/1e6)+' MB' : Math.max(0, Math.round(b/1e3))+' KB';
