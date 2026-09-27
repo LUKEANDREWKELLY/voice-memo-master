@@ -385,6 +385,40 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 </style>
 </head>
 <body>
+<!-- ===== LUKE'S DAILY FLIRTING TIPS (very top; edit the tip text in #tipText) ===== -->
+<style>
+.tipcard{display:grid;grid-template-columns:auto 1fr;border-bottom:1px solid var(--grid);background:var(--paper);color:var(--ink)}
+.tipcard .tip-side{display:flex;flex-direction:column;justify-content:center;gap:4px;padding:8px 10px;background:var(--accent);color:var(--accent-ink);border-right:1px solid var(--grid);text-align:center;min-width:92px}
+.tipcard .tip-no{font-size:9px;font-weight:900;letter-spacing:.2em;text-transform:uppercase}
+.tipcard .tip-day{font-size:22px;font-weight:900;line-height:1;letter-spacing:-.02em}
+.tipcard .tip-mo{font-size:9px;font-weight:900;letter-spacing:.2em;text-transform:uppercase}
+.tipcard .tip-main{padding:7px 12px 8px;min-width:0}
+.tipcard .tip-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.tipcard h2{margin:0;font-size:15px;font-weight:900;letter-spacing:.02em;text-transform:uppercase;line-height:1.1}
+.tipcard h2 em{font-style:italic;color:var(--accent)}
+.tipcard .tip-stamp{display:inline-block;padding:1px 6px;border:1.5px solid var(--accent);color:var(--accent);font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;transform:rotate(-3deg)}
+.tipcard p{margin:0;font-size:12.5px;line-height:1.45;max-width:78ch}
+.tipcard p b{font-weight:900;text-transform:uppercase;font-size:10.5px;letter-spacing:.12em;background:var(--bg);border:1px solid var(--grid);padding:0 4px;margin-right:4px}
+.tipcard q{font-style:italic;font-weight:700;quotes:"\201C" "\201D"}
+.tipcard .tip-hl{background:linear-gradient(transparent 55%, rgba(138,3,3,.22) 55%)}
+@media (max-width:640px){
+  .tipcard .tip-side{min-width:62px;padding:6px}
+  .tipcard .tip-day{font-size:18px}
+  .tipcard .tip-main{padding:5px 8px 6px}
+  .tipcard h2{font-size:12.5px}
+  .tipcard p{font-size:11.5px;line-height:1.4}
+}
+</style>
+<section class="tipcard" id="tipCard" aria-label="Luke's Daily Flirting Tips">
+  <div class="tip-side" aria-hidden="true"><span class="tip-no" id="tipNo">Tip #1</span><span class="tip-day" id="tipDay">26</span><span class="tip-mo" id="tipMo">Sep</span></div>
+  <div class="tip-main">
+    <div class="tip-head"><h2>Luke’s Daily <em>Flirting</em> Tips</h2><span class="tip-stamp">Results guaranteed*</span></div>
+    <p id="tipText"><b>Tip for today</b>If you see a beautiful woman at a bar and you want her to have a crush on you, walk up to her, tap her on the shoulder three times. When she turns around, <span class="tip-hl">disappear</span>, then reappear in front of her, sitting on the actual bar, holding a glass of water, and say: <q>Baby, if this is what I could do now, imagine what I could do if we were dating.</q></p>
+  </div>
+</section>
+<script>(function(){ var d=new Date(), start=new Date(2026,8,26); var n=Math.max(1,Math.floor((new Date(d.getFullYear(),d.getMonth(),d.getDate())-start)/864e5)+1);
+  document.getElementById('tipNo').textContent='Tip #'+n; document.getElementById('tipDay').textContent=d.getDate();
+  document.getElementById('tipMo').textContent=d.toLocaleString('en-US',{month:'short'}); })();</script>
 <!-- ===== NOW PLAYING (pinned to the top) ===== -->
 <div class="np idle" id="np" role="region" aria-label="Now playing">
   <button class="np-play" id="npPlay" aria-label="Play"><svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg></button>
