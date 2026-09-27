@@ -43,11 +43,11 @@
   --accent:#8a0303; --accent-hover:#a30808; --accent-ink:#f2c230; --danger:#8a0303;
   --red:#8a0303; --wave:rgba(17,17,17,.38); --wave-kept:#111;   /* read by drawWave */
   --sans:"Inter", Arial, Helvetica, sans-serif;
-  --cols:26px 32px minmax(110px,1.3fr) 180px minmax(90px,1.5fr) 58px 58px 58px 42px 48px 54px 108px 44px 50px 28px;
-  --areas:"n p t d w vol bass treb tape phone ap ab v lyr dl";
+  --cols:26px 32px minmax(110px,1.3fr) 180px minmax(90px,1.5fr) 58px 58px 58px 42px 48px 34px 54px 108px 44px 50px 28px;
+  --areas:"n p t d w vol bass treb tape phone dice ap ab v lyr dl";
   color-scheme:light;
 }
-body.editing{--cols:26px 32px minmax(110px,1.3fr) 180px minmax(90px,1.5fr) 58px 58px 58px 42px 48px 54px 108px 44px 50px 28px 30px; --areas:"n p t d w vol bass treb tape phone ap ab v lyr dl del"}
+body.editing{--cols:26px 32px minmax(110px,1.3fr) 180px minmax(90px,1.5fr) 58px 58px 58px 42px 48px 34px 54px 108px 44px 50px 28px 30px; --areas:"n p t d w vol bass treb tape phone dice ap ab v lyr dl del"}
 *,*::before,*::after{box-sizing:border-box;border-radius:0!important}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:11px;line-height:1.25;font-variant-numeric:tabular-nums;font-feature-settings:'tnum','cv11';-webkit-font-smoothing:antialiased;min-height:100vh}
@@ -106,6 +106,22 @@ button:disabled:hover{background:var(--cell2)}
 .sort button+button{border-left:1px solid var(--grid)}
 .count{align-self:center;padding:0 6px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
 .ab{display:flex}
+.acts{display:flex;flex-wrap:wrap;border:1px solid var(--grid);border-bottom:none;background:var(--head)}
+.acts .grp{display:flex;flex-wrap:wrap}
+.acts .grp+.grp{margin-left:auto;border-left:1px solid var(--grid)}
+.acts button{border:none;border-right:1px solid var(--grid);min-height:22px;padding:0 8px;font-size:10px;text-transform:uppercase;letter-spacing:.05em;background:transparent;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.acts .grp:last-child button:last-child{border-right:none}
+.acts button:hover{background:var(--hi)}
+.acts button.primary{background:var(--accent);color:var(--accent-ink)}
+.acts button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.tabs{display:flex;overflow-x:auto;scrollbar-width:thin;border:1px solid var(--grid);border-bottom:none;background:var(--cell2)}
+.tabs button{flex:none;border:none;border-right:1px solid var(--grid);min-height:22px;padding:0 8px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;background:transparent;white-space:nowrap}
+.tabs button b{font-weight:900;margin-right:3px}
+.tabs button small{font-size:9px;font-weight:700;color:var(--muted);margin-left:3px}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tabs button[aria-selected="true"] small{color:var(--accent-ink)}
+.tabs .hint{align-self:center;padding:0 6px;font-size:10px;color:var(--muted);white-space:nowrap}
+.bkb{display:inline-block;margin-right:4px;padding:0 3px;border:1px solid var(--grid);background:var(--cell2);color:var(--ink);font-size:9px;font-weight:800;line-height:12px}
 .ab button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 
 /* the sheet */
@@ -136,6 +152,11 @@ canvas.wave{grid-area:w;width:100%;height:22px;display:block;cursor:pointer;back
 .phone[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 .tape{grid-area:tape;padding:0 4px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;background:transparent}
 .tape[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.dice{grid-area:dice;display:grid;place-items:center;padding:0;background:transparent;line-height:0}
+.dice svg,.dicebtn svg{width:12px;height:12px;fill:currentColor}
+.dice[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.dice.roll svg,.dicebtn.roll svg{animation:roll .45s ease-out}
+@keyframes roll{0%{transform:rotate(0) scale(1)}50%{transform:rotate(200deg) scale(1.25)}100%{transform:rotate(360deg) scale(1)}}
 .apply{grid-area:ap;padding:0 4px;font-size:10px;text-transform:uppercase;letter-spacing:.05em}
 .apply[hidden]{display:block;background:transparent;color:transparent;pointer-events:none}
 li.memo .ab{grid-area:ab}
@@ -192,6 +213,11 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   .tools{flex-wrap:wrap}
   .tools input{flex-basis:100%;min-height:40px;font-size:16px;border-right:none;border-bottom:1px solid var(--grid)}
   .sort button{min-height:40px;padding:0 14px}
+  .acts .grp{flex:1 1 100%}
+  .acts .grp+.grp{margin-left:0;border-left:none;border-top:1px solid var(--grid)}
+  .acts button{flex:1 1 auto;justify-content:center;min-height:44px;padding:0 8px;font-size:11px}
+  .acts .grp button:last-child{border-right:none}
+  .tabs button{min-height:44px;padding:0 12px;font-size:11px}
   .thead{display:none}
   li.memo{grid-template-columns:24px 44px minmax(0,1fr) auto 44px;grid-template-areas:"n p t t dl" "n p d d dl" "w w w w w" "k k k k k" "v v ab lyr lyr";border-bottom:2px solid var(--grid)}
   li.memo:has(.del){grid-template-areas:"n p t t dl" "n p d d dl" "w w w w w" "k k k k k" "v v ab lyr del"}
@@ -214,11 +240,12 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   .apply[hidden]{display:none}
   .knobs{flex-wrap:wrap}
   .knob{flex:1 1 30%}
-  li.memo .knobs>.tape,li.memo .knobs>.phone,li.memo .knobs>.apply{flex:1 1 25%;min-height:44px;padding:0 10px;font-size:11px;border-right:1px solid var(--grid);border-top:1px solid var(--grid)}
+  li.memo .knobs>.tape,li.memo .knobs>.phone,li.memo .knobs>.dice,li.memo .knobs>.apply{flex:1 1 20%;min-height:44px;padding:0 10px;font-size:11px;border-right:1px solid var(--grid);border-top:1px solid var(--grid)}
   .vote{min-height:44px;justify-content:center;font-size:12px}
   li.memo .ab button{min-height:44px;padding:0 12px;font-size:11px}
   .icon{min-height:44px;padding:0 12px;font-size:11px}
   .dl svg{width:14px;height:14px}
+  .dice svg{width:16px;height:16px}
   li.lyrics{padding-left:4px}
   .fab{display:flex;position:fixed;left:4px;right:4px;bottom:calc(4px + env(safe-area-inset-bottom,0px));z-index:20;width:auto;margin:0;min-height:44px;box-shadow:0 0 0 2px var(--bg)}
   .fab.hide{display:none}
@@ -263,7 +290,21 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
     <div class="ab sort" role="group" aria-label="Sort by"><button data-sort="top" aria-pressed="false">Top</button><button data-sort="new" aria-pressed="true">Newest</button></div>
     <span class="count" id="count"></span>
   </div>
-  <div class="thead" aria-hidden="true"><span>#</span><span>Play</span><span>Name</span><span>Date</span><span>Wave</span><span>Loud</span><span>Warmth</span><span>Sparkle</span><span>Tape</span><span>Phone</span><span>Keep</span><span>Raw/Polished</span><span>Votes</span><span>Lyrics</span><span>DL</span><span class="h-del">Del</span></div>
+  <div class="acts" id="acts">
+    <div class="grp" role="group" aria-label="Buckets">
+      <button id="bkShuffle" title="Deal all your songs into new random buckets">Shuffle</button>
+      <button id="bkNext" title="Go to the next bucket">Next</button>
+      <button id="bkJump" title="Jump to a random bucket">Surprise me</button>
+      <button id="bkPlay" class="primary" title="Play every song in this bucket, one after another">Play bucket</button>
+    </div>
+    <div class="grp" role="group" aria-label="Dice">
+      <button id="rollAll" class="dicebtn" title="Roll the dice on every song: random Loud, Warmth, Sparkle, Tape and Phone. Just a preview until you tap Keep it."><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 1h14v14H1zM2.6 2.6v10.8h10.8V2.6zM4 4h2.6v2.6H4zM9.4 9.4H12V12H9.4zM6.7 6.7h2.6v2.6H6.7z"/></svg>Randomize</button>
+      <button id="resetAll" title="Put every slider back to the saved sound">Reset</button>
+      <button id="surprise" aria-pressed="true" title="Roll the dice on every song each time the app opens (just a preview, nothing saved changes)">Surprise on open: On</button>
+    </div>
+  </div>
+  <div class="tabs" id="tabs" role="tablist" aria-label="Buckets"></div>
+  <div class="thead" aria-hidden="true"><span>#</span><span>Play</span><span>Name</span><span>Date</span><span>Wave</span><span>Loud</span><span>Warmth</span><span>Sparkle</span><span>Tape</span><span>Phone</span><span>Dice</span><span>Keep</span><span>Raw/Polished</span><span>Votes</span><span>Lyrics</span><span>DL</span><span class="h-del">Del</span></div>
   <ul id="list"></ul>
 
   <label for="file" class="add-btn fab" id="fab" role="button" tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>Add memo</label>
@@ -272,7 +313,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   <h2>About</h2>
   <p><strong>Voice Memo Master</strong> is the original creation of <strong>Luke Andrew Kelly, undiscovered musician</strong>. He built it in New York tonight and is revealing it to everybody, and he wants the X and Grok crowd, including the xAI team and Elon Musk, to see it.</p>
   <p><em>Dedicated to Elon Musk. Here's hoping he adopts me, or hires me to be his personal security guard — I'd charge him zero dollars a year. I know he's got a bunch of kids; I don't have a father.</em></p>
-  <p class="note" style="margin-top:0">Every song gets the same treatment: it tidies up the start and end (bye-bye chatter and fumbling before and after you play), cleans up hiss, gives your voice a little shine, and makes every song sit at the same loudness. Slide LOUD, WARMTH and SPARKLE to hear the change right away, then tap KEEP IT to save that sound. TAPE makes it sound like an old cassette. PHONE makes it clear and punchy on tiny phone speakers. Drag a slider sideways or up and down, scroll it, or use the arrow keys; double-click puts it back to 0. Tap RAW or POLISHED to compare. Your songs stay saved in this browser on this device. Download one song (on iPhone the share sheet pops up so you can Save to Files), or grab them all at once in a .zip. Add it to your home screen to use it like an app; it works offline once it has loaded.<span class="hint-desktop"> On a computer you can also drag memos onto the drop box.</span></p>
+  <p class="note" style="margin-top:0">Every song gets the same treatment: it tidies up the start and end (bye-bye chatter and fumbling before and after you play), cleans up hiss, gives your voice a little shine, and makes every song sit at the same loudness. Slide LOUD, WARMTH and SPARKLE to hear the change right away, then tap KEEP IT to save that sound. TAPE makes it sound like an old cassette. PHONE makes it clear and punchy on tiny phone speakers. Drag a slider sideways or up and down, scroll it, or use the arrow keys; double-click puts it back to 0. Tap RAW or POLISHED to compare. Your songs get dealt at random into up to 6 buckets: tap a tab to open one, SHUFFLE deals again, NEXT and SURPRISE ME hop around, PLAY BUCKET plays them one after another, and ALL shows everything. RANDOMIZE (the dice) tries a random sound on every song, or tap a song’s own dice. It’s only a preview until you tap KEEP IT, and RESET puts the saved sound back. Turn off SURPRISE ON OPEN if you don’t want fresh dice each time the app opens. Your songs stay saved in this browser on this device. Download one song (on iPhone the share sheet pops up so you can Save to Files), or grab them all at once in a .zip. Add it to your home screen to use it like an app; it works offline once it has loaded.<span class="hint-desktop"> On a computer you can also drag memos onto the drop box.</span></p>
   <p class="fine">© Luke Andrew Kelly. Everything runs on your device; your audio never leaves your browser.</p>
   </footer>
 </div>
@@ -687,6 +728,95 @@ const player = $('#player');
 const fmt = s => { s=Math.max(0,s); const m=Math.floor(s/60), r=Math.round(s%60); return m+':'+String(r).padStart(2,'0'); };
 const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 
+/* ---------- buckets: songs dealt at random into up to 6 small grids ---------- */
+const BNAMES = ['Deep cuts','Bangers','Night owls','B-sides','Wildcards','Gems','Oddballs','Heaters','Slow burns','Maybes','Keepers','Rainy day','Road trip','Hot takes','Lullabies','Late show'];
+const BMAX = 6;
+let bk = {names:[], map:{}, active:0};
+try { const s = JSON.parse(localStorage.getItem('lak-buckets')||'null'); if (s && s.map && Array.isArray(s.names)) bk = {names:s.names, map:s.map, active:(s.active==='all'||Number.isInteger(s.active))?s.active:0}; } catch(e){}
+const saveBk = () => { try { localStorage.setItem('lak-buckets', JSON.stringify(bk)); } catch(e){} };
+const shuffled = a => { a = [...a]; for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const freshName = () => shuffled(BNAMES.filter(n => !bk.names.includes(n)))[0] || 'Bucket';
+function deal(){ // random, even deal; fewer buckets when there are fewer songs
+  const n = Math.min(BMAX, memos.length); bk.names = shuffled(BNAMES).slice(0, n); bk.map = {};
+  shuffled(memos).forEach((m,i) => bk.map[m.id] = i % n);
+  bk.active = n ? (bk.active==='all' ? 'all' : Math.floor(Math.random()*n)) : 0; saveBk();
+}
+function syncBk(){ // drop deleted songs, drop new songs into a new bucket (while under 6) or the smallest one, close empty buckets
+  if (!memos.length){ if (bk.names.length){ bk = {names:[], map:{}, active:bk.active==='all'?'all':0}; saveBk(); } return; }
+  if (!Object.keys(bk.map).length){ deal(); return; }
+  const ids = new Set(memos.map(m=>m.id)); let ch = false;
+  for (const id in bk.map) if (!ids.has(id) || !(bk.map[id] < bk.names.length)){ delete bk.map[id]; ch = true; }
+  const sizes = () => { const z = bk.names.map(()=>0); for (const id in bk.map) z[bk.map[id]]++; return z; };
+  for (const m of memos) if (!(m.id in bk.map)){
+    const z = sizes(), empty = z.indexOf(0);
+    if (empty >= 0) bk.map[m.id] = empty;
+    else if (bk.names.length < BMAX){ bk.names.push(freshName()); bk.map[m.id] = bk.names.length-1; }
+    else bk.map[m.id] = z.indexOf(Math.min(...z));
+    ch = true; }
+  const z = sizes();
+  if (z.some(x=>!x)){ const remap = {}, names = [];
+    z.forEach((x,i) => { if (x){ remap[i] = names.length; names.push(bk.names[i]); } });
+    for (const id in bk.map) bk.map[id] = remap[bk.map[id]];
+    if (bk.active !== 'all') bk.active = remap[bk.active] ?? Math.max(0, Math.min(bk.active, names.length-1));
+    bk.names = names; ch = true; }
+  if (bk.active !== 'all' && !(bk.active < bk.names.length)){ bk.active = 0; ch = true; }
+  if (ch) saveBk();
+}
+const goBucket = i => { bk.active = i; saveBk(); render(); const t = document.querySelector('#tabs [aria-selected="true"]'); if (t && t.scrollIntoView) t.scrollIntoView({block:'nearest', inline:'nearest'}); };
+function drawTabs(q){
+  const tabs = $('#tabs'); tabs.innerHTML = '';
+  const mk = (key, html, label) => { const b = document.createElement('button'); b.setAttribute('role','tab'); b.innerHTML = html; b.setAttribute('aria-label', label);
+    b.setAttribute('aria-selected', String(!q && bk.active===key)); b.addEventListener('click', () => { if (q){ $('#search').value=''; } goBucket(key); }); tabs.appendChild(b); };
+  mk('all', `<b>All</b><small>${memos.length}</small>`, `All songs, ${memos.length}`);
+  const z = bk.names.map(()=>0); for (const id in bk.map) z[bk.map[id]]++;
+  bk.names.forEach((nm,i) => mk(i, `<b>${i+1}</b>${nm}<small>${z[i]}</small>`, `Bucket ${i+1}, ${nm}, ${z[i]} song${z[i]===1?'':'s'}`));
+  if (q){ const h = document.createElement('span'); h.className='hint'; h.textContent='Searching every bucket'; tabs.appendChild(h); }
+  const one = bk.names.length < 2;
+  $('#bkNext').disabled = one && bk.active!=='all'; $('#bkJump').disabled = one; $('#bkShuffle').disabled = memos.length < 2;
+  $('#bkPlay').textContent = playlist ? 'Stop' : (bk.active==='all' || q) ? 'Play all' : 'Play bucket';
+  $('#bkPlay').disabled = !playlist && !visible().some(m=>m.state==='done');
+}
+function visible(){
+  const q = $('#search').value.trim().toLowerCase();
+  return memos.filter(m => q ? (m.name+' '+fmtWhen(m.created||m.added)+' '+(m.lyrics||'')).toLowerCase().includes(q) : (bk.active==='all' || bk.map[m.id]===bk.active))
+    .sort((x,y)=> sortMode==='top' ? ((y.votes||0)-(x.votes||0)) || ((y.created||y.added)-(x.created||x.added)) : (y.created||y.added)-(x.created||x.added));
+}
+/* play the bucket top to bottom, moving on to the next song when one ends */
+let playlist = null;
+function playBucket(){
+  if (playlist){ playlist = null; player.pause(); render(); return; }
+  const ids = visible().filter(m=>m.state==='done').map(m=>m.id); if (!ids.length) return;
+  playlist = {ids, i:0}; const m = memos.find(x=>x.id===ids[0]);
+  if (playing && playing.id===m.id && !player.paused){ render(); return; }
+  if (playing && playing.id===m.id){ player.play(); render(); return; }
+  togglePlay(m);
+}
+function nextInList(){
+  while (playlist && ++playlist.i < playlist.ids.length){ const m = memos.find(x=>x.id===playlist.ids[playlist.i]); if (m && m.state==='done'){ togglePlay(m); return true; } }
+  playlist = null; return false;
+}
+
+/* ---------- dice: random sound as a live preview only (saved song and saved settings stay put until Keep it) ---------- */
+const DICE = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 1h14v14H1zM2.6 2.6v10.8h10.8V2.6zM4 4h2.6v2.6H4zM9.4 9.4H12V12H9.4zM6.7 6.7h2.6v2.6H6.7z"/></svg>';
+let surpriseOn = true;
+try { surpriseOn = localStorage.getItem('lak-surprise') !== '0'; } catch(e){}
+const pickStep = (lo, hi, step=0.5) => { const v = []; for (let x=Math.round(lo/step); x<=Math.round(hi/step); x++) if (x) v.push(x*step); return v[Math.floor(Math.random()*v.length)]; };
+const DICE_RANGE = {vol:[-3,6], bass:[-4,4], treble:[-4,4]};   // never 0, Loud stays in a safe window
+function roll(m){
+  if (m.state !== 'done') return false;
+  if (!m._rand){ m._home = {...KNOB0, ...(m.knobs||{})}; m._rand = true; }   // what's saved stays in _home; strip() writes that, never the dice
+  const b = {...KNOB0, ...(m.baked||{})};
+  m.knobs = { vol: pickStep(...DICE_RANGE.vol), bass: pickStep(...DICE_RANGE.bass), treble: pickStep(...DICE_RANGE.treble),
+              tape: b.tape || Math.random() < 0.5,      // already baked in? it stays on (a preview can't take it back out)
+              phone: b.phone || Math.random() < 0.25 };
+  return true;
+}
+function unroll(m){ // back to the saved sound
+  const had = m._rand || !same(m.knobs, m.baked);
+  m._rand = false; delete m._home; m.knobs = {...KNOB0, ...(m.baked||m.knobs||{})};
+  return had;
+}
+
 function drawWave(cv, m){
   const dpr = window.devicePixelRatio||1, W = cv.clientWidth, Hh = cv.clientHeight;
   cv.width = W*dpr; cv.height = Hh*dpr; const c = cv.getContext('2d'); c.scale(dpr,dpr);
@@ -705,7 +835,11 @@ const PLAY='<svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg>', PAUSE='
 
 function render(){
   const q = $('#search').value.trim().toLowerCase();
-  const shown = memos.filter(m => !q || (m.name+' '+fmtWhen(m.created||m.added)+' '+(m.lyrics||'')).toLowerCase().includes(q)).sort((x,y)=> sortMode==='top' ? ((y.votes||0)-(x.votes||0)) || ((y.created||y.added)-(x.created||x.added)) : (y.created||y.added)-(x.created||x.added));
+  syncBk();
+  const shown = visible();
+  drawTabs(q);
+  $('#resetAll').disabled = !memos.some(m => m.state==='done' && (m._rand || !same(m.knobs, m.baked)));
+  $('#rollAll').disabled = !memos.some(m => m.state==='done');
   document.querySelectorAll('.sort button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sort===sortMode)));
   $('#count').textContent = memos.length ? `${shown.length} of ${memos.length}` : '';
   $('#dlAll').disabled = !downloads || !memos.some(m=>m.state==='done');
@@ -733,10 +867,11 @@ function render(){
     if (m.state==='error'){ when.textContent = m.error; when.classList.add('err'); }
     else if (!done) when.textContent = m.step || 'Waiting';
     else when.textContent = (m.createdSrc==='file' ? '' : m.createdSrc==='upload' ? 'Added ' : 'File date ') + fmtWhen(m.created||m.added);
+    if ((q || bk.active==='all') && bk.map[m.id] !== undefined){ const t = document.createElement('b'); t.className='bkb'; t.textContent = 'B'+(bk.map[m.id]+1); t.title = 'Bucket '+(bk.map[m.id]+1)+': '+bk.names[bk.map[m.id]]; when.prepend(t); }
     li.querySelector('canvas').setAttribute('aria-label', done ? `Waveform. The polished song keeps ${fmt(m.start)} to ${fmt(m.end)} of ${fmt(m.total)}.` : 'Waveform');
     li.querySelector('canvas').title = done ? `Keeps ${fmt(m.start)} to ${fmt(m.end)} of ${fmt(m.total)}` : '';
     li.querySelector('.name').addEventListener('change', async e => { m.name = e.target.value.trim()||m.name; await putMemo(strip(m)); });
-    li.querySelector('.play').addEventListener('click', () => togglePlay(m));
+    li.querySelector('.play').addEventListener('click', () => { if (playlist && !(playing && playing.id===m.id)) playlist = null; togglePlay(m); });
     li.querySelector('.vote').addEventListener('click', async e => { m.votes = (m.votes||0)+1; const b=e.currentTarget; b.querySelector('span').textContent=m.votes; b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); await putMemo(strip(m)); if (sortMode==='top') setTimeout(render, 350); });
     li.querySelectorAll('.ab button').forEach(b => b.addEventListener('click', () => { abState[m.id]=b.dataset.w; const was = playing&&playing.id===m.id&&!player.paused; if (playing&&playing.id===m.id){ player.pause(); playing=null; } if (was) togglePlay(m); else render(); }));
     li.querySelector('.dl').addEventListener('click', async () => saveFile(await stereoWav(await getBlob(m.id+':master')), safe(m.name)+' (polished).wav'));
@@ -747,7 +882,7 @@ function render(){
     const cv = li.querySelector('canvas');
     cv.addEventListener('click', e => { if (!(playing&&playing.id===m.id)||!player.duration) return; const f=e.offsetX/cv.clientWidth, w=abState[m.id]||'master';
       player.currentTime = w==='master' ? Math.min(1,Math.max(0,(f-m.start/m.total)/((m.end-m.start)/m.total)))*player.duration : f*player.duration; });
-    listEl.appendChild(li);
+    li._m = m; listEl.appendChild(li);
     if (openLyrics[m.id]){
       const lp = document.createElement('li'); lp.className='lyrics';
       lp.innerHTML = '<div class="lyr-bar"><button class="icon tr" title="Listens to the song and types the words for you">Type it out</button><span class="tr-status"></span></div><textarea aria-label="Lyrics" placeholder="Lyrics for this song"></textarea>';
@@ -761,7 +896,7 @@ function render(){
     m._cv = cv; requestAnimationFrame(() => drawWave(cv, m));
   }
 }
-const strip = m => { const {_cv, ...rest} = m; return rest; };
+const strip = m => { const {_cv, _rand, _home, ...rest} = m; if (_rand) rest.knobs = {...KNOB0, ..._home}; return rest; };   // dice values are never saved
 
 
 /* ---------- recording date ---------- */
@@ -872,6 +1007,7 @@ function buildKnobs(host, m, done){
   apply.addEventListener('click', async () => {
     const f = await getBlob(m.id+':orig'); if (!f){ setStatus('The raw recording for this memo is missing, so it can’t be polished again.'); return; }
     if (playing && playing.id===m.id){ player.pause(); playing=null; }
+    m._rand = false; delete m._home;   // keeping the dice sound makes it the saved sound
     m.state='queued'; m.step='Waiting'; queue.push([m, new File([f], m.name+'.audio', {type:f.type})]); render(); run(); });
   const tape = document.createElement('button'); tape.className='tape'; tape.textContent='Tape';
   tape.title='Makes it sound like a worn old cassette: boxy, fuzzy, wobbly and hissy. Tap Keep it to save.';
@@ -885,6 +1021,12 @@ function buildKnobs(host, m, done){
   phone.addEventListener('click', () => { m.knobs.phone = !m.knobs.phone; phone.setAttribute('aria-pressed', String(m.knobs.phone)); refresh();
     if (playing && playing.id===m.id) updatePreview(); clearTimeout(saveT); saveT = setTimeout(() => putMemo(strip(m)), 400); });
   host.appendChild(phone);
+  const dice = document.createElement('button'); dice.className='dice'; dice.innerHTML = DICE;
+  dice.title = 'Roll the dice: random Loud, Warmth, Sparkle, Tape and Phone. Just a preview until you tap Keep it.';
+  dice.setAttribute('aria-label', 'Random sound for ' + m.name); dice.setAttribute('aria-pressed', String(!!m._rand)); dice.disabled = !done;
+  dice.addEventListener('click', () => { if (!roll(m)) return; if (playing && playing.id===m.id) updatePreview(); render();
+    const d2 = [...listEl.querySelectorAll('li.memo')].find(li => li._m === m); const b = d2 && d2.querySelector('.dice'); if (b){ b.classList.add('roll'); b.focus(); } });
+  host.appendChild(dice);
   host.appendChild(apply);
   refresh();
 }
@@ -942,7 +1084,7 @@ async function togglePlay(m){
   urlCache = URL.createObjectURL(blob); player.src = urlCache; playing = m; updatePreview();
   await player.play().catch(()=>{}); render();
 }
-player.addEventListener('ended', () => { playing=null; render(); });
+player.addEventListener('ended', () => { playing=null; if (playlist && nextInList()) return; render(); });
 player.addEventListener('pause', () => render());
 (function loop(){ if (playing && !player.paused && playing._cv) drawWave(playing._cv, playing); requestAnimationFrame(loop); })();
 
@@ -972,6 +1114,7 @@ async function addFiles(files){
     memos.push(m); queue.push([m,f]); added++; render();
     try { if (!(await putBlob(m.id+':orig', f))) m._volatile = true; await putMemo(strip(m)); } catch(e){ setStatus('Couldn’t store ' + f.name + ': ' + (e && e.message || e)); }
   }
+  if (added){ syncBk(); const last = memos[memos.length-1]; bk.active = added === 1 && bk.map[last.id] !== undefined ? bk.map[last.id] : 'all'; saveBk(); }
   render(); run();
   if (dupes.length){
     const msg = `Skipped ${dupes.length} duplicate${dupes.length>1?'s':''} already in your library: ${dupes.slice(0,5).join(', ')}${dupes.length>5?`, and ${dupes.length-5} more`:''}.`;
@@ -985,7 +1128,7 @@ async function run(){
     const [m,f] = queue.shift();
     setStatus(`Polishing “${m.name}”… ${queue.length} more in line.`);
     try{
-      const k = {...(m.knobs||KNOB0)};
+      const k = {...KNOB0, ...((m._rand ? m._home : m.knobs) || {})};   // a dice preview is never baked unless you tap Keep it
       const r = await master(f, s => { m.step = s; const el = [...listEl.querySelectorAll('li.memo')].find(li => li.querySelector('.name')?.value===m.name); if (el) el.querySelector('.when').textContent = s; }, k);
       await putBlob(m.id+':master', r.blob);
       Object.assign(m, {state:'done', start:r.start, end:r.end, total:r.total, lufs:r.lufs, wave:r.wave, baked:k, mono:true});
@@ -1008,6 +1151,18 @@ fileIn.addEventListener('change', () => { addFiles([...fileIn.files]); fileIn.va
 ['dragleave','drop'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove('over'); }));
 drop.addEventListener('drop', e => addFiles([...e.dataTransfer.files]));
 $('#search').addEventListener('input', render);
+$('#bkShuffle').addEventListener('click', () => { deal(); bk.active = Math.floor(Math.random()*bk.names.length); saveBk(); render(); setStatus('Dealt your songs into ' + bk.names.length + ' new bucket' + (bk.names.length>1?'s':'') + '.'); });
+$('#bkNext').addEventListener('click', () => { if (!bk.names.length) return; goBucket(bk.active==='all' ? 0 : (bk.active+1) % bk.names.length); });
+$('#bkJump').addEventListener('click', () => { const n = bk.names.length; if (n < 2) return; let i; do { i = Math.floor(Math.random()*n); } while (i === bk.active); goBucket(i); });
+$('#bkPlay').addEventListener('click', playBucket);
+$('#rollAll').addEventListener('click', e => { let n = 0; memos.forEach(m => { if (roll(m)) n++; }); if (playing) updatePreview(); render();
+  const b = e.currentTarget; b.classList.remove('roll'); void b.offsetWidth; b.classList.add('roll');
+  setStatus(n ? `Rolled the dice on ${n} song${n>1?'s':''}. It’s just a preview: tap Keep it on one you like, or Reset.` : ''); });
+$('#resetAll').addEventListener('click', () => { let n = 0; memos.forEach(m => { if (m.state==='done' && unroll(m)){ n++; putMemo(strip(m)); } }); if (playing) updatePreview(); render();
+  setStatus(n ? `Put ${n} song${n>1?'s':''} back to the saved sound.` : ''); });
+const drawSurprise = () => { const b = $('#surprise'); b.setAttribute('aria-pressed', String(surpriseOn)); b.textContent = 'Surprise on open: ' + (surpriseOn ? 'On' : 'Off'); };
+$('#surprise').addEventListener('click', () => { surpriseOn = !surpriseOn; try { localStorage.setItem('lak-surprise', surpriseOn ? '1' : '0'); } catch(e){} drawSurprise(); });
+drawSurprise();
 document.querySelectorAll('.sort button').forEach(b => b.addEventListener('click', () => { sortMode = b.dataset.sort; try{localStorage.setItem('lak-sort',sortMode);}catch(e){} render(); }));
 $('#edit').addEventListener('click', () => { editMode = !editMode; document.body.classList.toggle('editing', editMode); $('#edit').textContent = editMode ? 'Done' : 'Edit list'; render(); });
 $('#dlAll').addEventListener('click', async () => {
@@ -1028,6 +1183,7 @@ window.addEventListener('unhandledrejection', e => setStatus('Something failed: 
     // anything interrupted mid-polish, or a finished song whose polished file never got saved, gets re-run
     for (const m of memos) if (m.state==='done'){ try { if (!(await hasBlob(m.id+':master'))) m.state = 'queued'; } catch(e){} }
     for (const m of memos) if (m.state!=='done' && m.state!=='error'){ const f = await getBlob(m.id+':orig'); if (f) queue.push([m,f]); }
+    if (surpriseOn) memos.forEach(roll);   // fresh dice every time the app opens (preview only)
     render(); run();
   } catch(e){ goMemory(); render(); }
   importShared(); showStorage();

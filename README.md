@@ -13,6 +13,9 @@ cut the talking and handling noise before and after the song → reduce room his
 - Original vs. master toggle per memo, live Volume/Bass/Treble preview knobs, **Apply** to re‑master with those settings
 - Lyrics box with browser speech‑recognition transcription (Chrome/Edge desktop)
 - Search, sort (Top / Newest), upvotes, rename, delete (Edit list)
+- **Buckets:** songs are dealt at random into up to 6 small grids (tabs 1–6 plus ALL). SHUFFLE re-deals, NEXT / SURPRISE ME hop between buckets, PLAY BUCKET plays one after another. The deal and the open tab are remembered; new songs go into the smallest bucket; search looks in every bucket.
+- **Dice (RANDOMIZE):** random Loud / Warmth / Sparkle (never 0, Loud kept between −3 and +6), Tape (50%) and Phone (25%) for every song or one song. Preview only: the saved song and saved settings don't change until you tap **Keep it**; **Reset** goes back to the saved sound. **Surprise on open** (default on) rolls fresh dice each time the app opens.
+- Saved songs take half the space (stored mono, downloaded as stereo 24-bit WAV); a meter shows how much browser storage is used
 - Duplicate detection (SHA‑256), recording date read from the file (Voice Memos / m4a, BWF, ShurePlus MOTIV)
 - Download a single master as WAV, or **Download all masters** as a .zip
 - Memos are stored on your device (IndexedDB). Nothing is uploaded anywhere.
