@@ -1,7 +1,7 @@
 {
  "version": 2,
  "artist": "Luke Andrew motherfucking Kelly",
- "updated": "2026-09-27T03:52:32.745Z",
+ "updated": "2026-09-27T03:52:38.510Z",
  "shelves": [
   {
    "n": 1,
@@ -21,8 +21,8 @@
    "n": 3,
    "repo": "voice-memo-gallery-3",
    "site": "https://lukeandrewkelly.github.io/voice-memo-gallery-3/",
-   "bytes": 96192,
-   "songs": 1
+   "bytes": 0,
+   "songs": 0
   }
  ],
  "songs": [
@@ -47587,88 +47587,6 @@
    "url": "/voice-memo-master/songs/ac4cdd369d9c41d1aa78.mp3"
   },
   {
-   "id": "e7d614b60ed44371af89",
-   "title": "TEST gallery tone B",
-   "date": "2026-09-27T02:55:07.993Z",
-   "duration": 12,
-   "bucket": "Slow burns",
-   "bucketNo": 2,
-   "peaks": [
-    98,
-    58,
-    99,
-    81,
-    48,
-    98,
-    68,
-    41,
-    98,
-    56,
-    98,
-    83,
-    47,
-    99,
-    69,
-    40,
-    99,
-    58,
-    98,
-    82,
-    48,
-    98,
-    70,
-    41,
-    97,
-    58,
-    98,
-    83,
-    48,
-    98,
-    68,
-    40,
-    98,
-    58,
-    97,
-    84,
-    47,
-    99,
-    70,
-    40,
-    98,
-    57,
-    98,
-    83,
-    47,
-    98,
-    69,
-    40,
-    99,
-    58,
-    98,
-    83,
-    48,
-    98,
-    69,
-    40,
-    97,
-    57,
-    98,
-    81,
-    47,
-    99,
-    69,
-    40
-   ],
-   "shelf": 3,
-   "path": "tracks/e7d614b60ed44371af89-5777eee4.mp3",
-   "url": "/voice-memo-gallery-3/tracks/e7d614b60ed44371af89-5777eee4.mp3",
-   "bytes": 96192,
-   "kbps": 64,
-   "hash": "5777eee40e40643cf1b18b4e",
-   "sig": "[{\"vol\":0,\"bass\":0,\"treble\":0,\"tape\":false,\"phone\":false},0,12,-10.162855406236641]",
-   "added": "2026-09-27T03:51:36.253Z"
-  },
-  {
    "id": "ac663365063f4447ab3f",
    "title": "clean floors v2 2",
    "date": "2023-02-07T05:40:46.000Z",
@@ -48361,8 +48279,9 @@
   }
  ],
  "removed": [
-  "0047277c307b4f14aee7"
+  "0047277c307b4f14aee7",
+  "e7d614b60ed44371af89"
  ],
  "photoBytes": 551284,
- "totalBytes": 1141559188
+ "totalBytes": 1141462996
 }
