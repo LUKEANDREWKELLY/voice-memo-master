@@ -1,0 +1,132 @@
+[
+{
+"sha": "f0ab531",
+"date": "2026-09-26T22:17:48-04:00",
+"msg": "Subtext under the name + send-me-money buttons, and a public build log of tonight's changes"
+},
+{
+"sha": "b72a38e",
+"date": "2026-09-26T22:17:45-04:00",
+"msg": "Photo banner slider at the top (swipe, auto-advance, full-screen tap) + sharper sans-serif Human Tradition mark"
+},
+{
+"sha": "033784f",
+"date": "2026-09-26T22:16:02-04:00",
+"msg": "Luke's Daily Flirting Tips card at the very top"
+},
+{
+"sha": "eb71aa4",
+"date": "2026-09-26T22:14:52-04:00",
+"msg": "Fix songs stuck on Waiting (missing audio, watchdog, never-stuck queue), iPhone-safe photo adding, service worker skips portfolio/gallery/json, denser phone layout"
+},
+{
+"sha": "07125f9",
+"date": "2026-09-26T22:14:30-04:00",
+"msg": "Name: Luke Andrew motherfucking Kelly everywhere"
+},
+{
+"sha": "d78b747",
+"date": "2026-09-26T22:13:24-04:00",
+"msg": "Name: Luke Andrew fvckin’ Kelly everywhere"
+},
+{
+"sha": "e82e006",
+"date": "2026-09-26T22:11:01-04:00",
+"msg": "Portfolio: tidy footer on phones"
+},
+{
+"sha": "616439e",
+"date": "2026-09-26T22:10:21-04:00",
+"msg": "portfolio: delete photo 8d93a621432decf1"
+},
+{
+"sha": "ed770b8",
+"date": "2026-09-26T22:10:19-04:00",
+"msg": "portfolio: remove photo 8d93a621432decf1 from pics.json"
+},
+{
+"sha": "1ac409c",
+"date": "2026-09-26T22:09:50-04:00",
+"msg": "portfolio: add 1 photo to pics.json"
+},
+{
+"sha": "be043a7",
+"date": "2026-09-26T22:09:49-04:00",
+"msg": "portfolio: add photo 8d93a621432decf1"
+},
+{
+"sha": "8ff6309",
+"date": "2026-09-26T22:09:20-04:00",
+"msg": "Portfolio: name is Luke Andrew fvckin' Kelly (header, title, og), best-frames reel banner"
+},
+{
+"sha": "6216f9e",
+"date": "2026-09-26T22:07:19-04:00",
+"msg": "portfolio: delete photo 8d93a621432decf1"
+},
+{
+"sha": "dba5e2e",
+"date": "2026-09-26T22:07:18-04:00",
+"msg": "portfolio: remove photo 8d93a621432decf1 from pics.json"
+},
+{
+"sha": "0aefee5",
+"date": "2026-09-26T22:06:48-04:00",
+"msg": "portfolio: add 1 photo to pics.json"
+},
+{
+"sha": "4979548",
+"date": "2026-09-26T22:06:47-04:00",
+"msg": "portfolio: add photo 8d93a621432decf1"
+},
+{
+"sha": "131e072",
+"date": "2026-09-26T22:06:09-04:00",
+"msg": "Portfolio: Luke Andrew Kelly — Photographs (portfolio/), owner upload with in-browser best-photo picker and lo-fi treatment"
+},
+{
+"sha": "f39be71",
+"date": "2026-09-26T21:56:14-04:00",
+"msg": "Photo row: add photos (resized, kept on device), full-screen viewer, move/delete in Edit list"
+},
+{
+"sha": "20ec00d",
+"date": "2026-09-26T21:53:54-04:00",
+"msg": "Real song names from file tags (+ fix old Voice Memos code names), select/delete several, now playing bar + lock screen, A-Z/Newest/Oldest sort"
+},
+{
+"sha": "7e0918d",
+"date": "2026-09-26T21:44:04-04:00",
+"msg": "Buckets (random deal into up to 6 grids, shuffle, surprise me, play bucket) and dice randomize (preview only, surprise on open)"
+},
+{
+"sha": "1292dd4",
+"date": "2026-09-26T21:39:04-04:00",
+"msg": "Saved songs take half the space (mono storage, stereo downloads), storage meter"
+},
+{
+"sha": "b7030f1",
+"date": "2026-09-26T21:36:37-04:00",
+"msg": "Stronger TAPE: 180 Hz-4.5 kHz band-limit, mid bump, more drive, wow/flutter, hiss"
+},
+{
+"sha": "240a880",
+"date": "2026-09-26T21:33:58-04:00",
+"msg": "Storage fix (per-item fallback, persistent storage), PHONE toggle, plain words, less boom, beige cells, Human Tradition brand"
+},
+{
+"sha": "274800e",
+"date": "2026-09-26T21:27:39-04:00",
+"msg": "Spreadsheet redesign: Volume up to +12 dB with preview limiter, per-memo Tape toggle"
+},
+{
+"sha": "3cf0fa2",
+"date": "2026-09-26T21:23:55-04:00",
+"msg": "Spreadsheet redesign"
+},
+{
+"sha": "05d75cf",
+"date": "2026-09-26T21:19:27-04:00",
+"msg": "Voice Memo Master by Luke Andrew Kelly"
+}
+]
