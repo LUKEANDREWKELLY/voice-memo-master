@@ -1,5 +1,15 @@
 [
 {
+"sha": "c38a7f7",
+"date": "2026-09-26T22:48:57-04:00",
+"msg": "Hearts and playlists: tap ♥ on any song for a Favorites tab, make named playlists, add songs with +♫, reorder, rename, and play them straight through"
+},
+{
+"sha": "43e7aa7",
+"date": "2026-09-26T22:45:42-04:00",
+"msg": "Build log data"
+},
+{
 "sha": "d65cca7",
 "date": "2026-09-26T22:45:42-04:00",
 "msg": "Downloads now sound exactly like what you hear: reverse, speed and pitch get baked right into the file (and the name says so). Plus a download button up in the now-playing bar"
