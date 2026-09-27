@@ -58,7 +58,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:11p
 body{padding-top:calc(var(--npH) + env(safe-area-inset-top,0px))}
 li.memo{scroll-margin-top:calc(var(--npH) + env(safe-area-inset-top,0px) + 8px)}
 /* now playing: pinned to the top of the screen */
-.np{position:fixed;top:0;left:0;right:0;z-index:40;display:grid;grid-template-columns:28px minmax(0,1fr) auto auto;grid-template-rows:24px 7px;grid-template-areas:"pp tt tm nx" "bar bar bar bar";
+.np{position:fixed;top:0;left:0;right:0;z-index:40;display:grid;grid-template-columns:28px minmax(0,1fr) auto 30px auto;grid-template-rows:24px 7px;grid-template-areas:"pp tt tm dl nx" "bar bar bar bar bar";
   padding-top:env(safe-area-inset-top,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);background:#111;color:var(--accent-ink);border-bottom:1px solid var(--grid)}
 .np button{border:none;border-right:1px solid #3a3a3a;background:transparent;color:var(--accent-ink);min-height:0}
 .np button:hover{background:#2a2a2a}
@@ -71,6 +71,11 @@ li.memo{scroll-margin-top:calc(var(--npH) + env(safe-area-inset-top,0px) + 8px)}
 .np-bk:empty{display:none}
 .np.idle .np-name{font-weight:600;text-transform:none;letter-spacing:0;color:#bfa13a}
 .np-time{grid-area:tm;align-self:center;padding:0 8px;font-size:10.5px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums;border-right:1px solid #3a3a3a;line-height:24px}
+.np-dl{grid-area:dl;display:grid;place-items:center;padding:0}
+.np-dl svg{width:11px;height:11px;fill:currentColor}
+.np-dl:disabled{opacity:.35}
+.np-dl.busy,li.memo .dl.busy{animation:dlpulse 1s ease-in-out infinite}
+@keyframes dlpulse{50%{opacity:.35}}
 .np-next{grid-area:nx;padding:0 10px!important;font-size:10px;text-transform:uppercase;letter-spacing:.06em;border-right:none!important}
 .np-bar{grid-area:bar;position:relative;cursor:pointer;touch-action:none;background:#111}
 .np-bar::before{content:"";position:absolute;left:0;right:0;top:2px;height:3px;background:#444}
@@ -362,7 +367,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   .wrap{padding:3px 3px calc(56px + env(safe-area-inset-bottom,0px))}
   .topbanner{font-size:10.5px;padding-left:4px;padding-right:4px}
   :root{--npH:57px}
-  .np{grid-template-columns:44px minmax(0,1fr) auto auto;grid-template-rows:44px 12px}
+  .np{grid-template-columns:44px minmax(0,1fr) auto 40px auto;grid-template-rows:44px 12px}
   .np-play svg{width:14px;height:14px}
   .np-title{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px}
   .np-name{max-width:100%;font-size:12px}
@@ -427,7 +432,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 /* phones only (≤640px): denser toolbars and rows so more songs fit; tap targets stay ≥30px. Laptop layout untouched. */
 @media (max-width:640px){
   :root{--npH:43px}
-  .np{grid-template-columns:36px minmax(0,1fr) auto auto;grid-template-rows:34px 8px}
+  .np{grid-template-columns:36px minmax(0,1fr) auto 34px auto;grid-template-rows:34px 8px}
   .np-play svg{width:12px;height:12px}
   .np-title{flex-direction:row;align-items:center;gap:5px}
   .np-name{font-size:11px}
@@ -697,6 +702,7 @@ body.dropping::after{content:'Drop your songs anywhere';position:fixed;inset:8px
   <button class="np-play" id="npPlay" aria-label="Play"><svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg></button>
   <button class="np-title" id="npTitle" title="Show this song in the list"><span class="np-name" id="npName">Nothing playing</span><span class="np-bk" id="npBk"></span></button>
   <span class="np-time" id="npTime"></span>
+  <button class="np-dl" id="npDl" title="Download this song (with its effects)" aria-label="Download this song" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M7 1h2v8l3-3 1.4 1.4L8 12.8 2.6 7.4 4 6l3 3zM2 14h12v2H2z"/></svg></button>
   <button class="np-next" id="npNext" title="Next song in this bucket">Next</button>
   <div class="np-bar" id="npBar" role="slider" aria-label="Song position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="-1"><div class="np-fill" id="npFill"></div></div>
 </div>
@@ -1464,7 +1470,7 @@ function render(){
         <button data-w="orig" aria-pressed="${which==='orig'}" ${done?'':'disabled'}>Raw</button><button data-w="master" aria-pressed="${which==='master'}" ${done?'':'disabled'}>Polished</button>
       </div>
       <button class="icon lyr" aria-expanded="${!!openLyrics[m.id]}">Lyrics</button>
-      <button class="icon dl" aria-label="Download polished ${m.name}" title="Download this song" ${done&&downloads?'':'disabled'}><svg viewBox="0 0 16 16"><path d="M7 1h2v8l3-3 1.4 1.4L8 12.8 2.6 7.4 4 6l3 3zM2 14h12v2H2z"/></svg></button>
+      <button class="icon dl" aria-label="Download ${m.name}${fxActive(m) ? ' with effects (' + fxLabel(fxOf(m)) + ')' : ''}" title="${fxActive(m) ? 'Download with effects: ' + fxLabel(fxOf(m)) : 'Download this song'}" ${done&&downloads?'':'disabled'}><svg viewBox="0 0 16 16"><path d="M7 1h2v8l3-3 1.4 1.4L8 12.8 2.6 7.4 4 6l3 3zM2 14h12v2H2z"/></svg></button>
       ${editMode?`<button class="icon del" aria-label="Delete ${m.name}" title="Delete">✕</button><label class="sel" title="Tick to delete several at once"><input type="checkbox"></label>`:''}`;
     li.querySelector('.name').value = m.name;
     const when = li.querySelector('.when');
@@ -1481,7 +1487,7 @@ function render(){
     li.querySelector('.play').addEventListener('click', () => { if (playlist && !(playing && playing.id===m.id)) playlist = null; togglePlay(m); });
     li.querySelector('.vote').addEventListener('click', async e => { m.votes = (m.votes||0)+1; const b=e.currentTarget; b.querySelector('span').textContent=m.votes; b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); await putMemo(strip(m)); if (sortMode==='top') setTimeout(render, 350); });
     li.querySelectorAll('.ab button').forEach(b => b.addEventListener('click', () => { abState[m.id]=b.dataset.w; const was = playing&&playing.id===m.id&&!player.paused; if (playing&&playing.id===m.id){ player.pause(); playing=null; } if (was) togglePlay(m); else render(); }));
-    li.querySelector('.dl').addEventListener('click', async () => saveFile(await stereoWav(await getBlob(m.id+':master')), safe(m.name)+' (polished).wav'));
+    li.querySelector('.dl').addEventListener('click', e => downloadSong(m, e.currentTarget));
     li.querySelector('.lyr').addEventListener('click', () => { openLyrics[m.id] = !openLyrics[m.id]; render(); });
     const sel = li.querySelector('.sel input');
     if (sel){ sel.setAttribute('aria-label', 'Select ' + m.name); sel.checked = picked.has(m.id); li.classList.toggle('picked', sel.checked);
@@ -1829,6 +1835,53 @@ async function togglePlay(m){
   urlCache = URL.createObjectURL(src); player.src = urlCache; fxRate(m); playing = m; updatePreview();
   await player.play().catch(()=>{}); render();
 }
+
+/* ---------- downloads with the effects baked in ---------- */
+const FX_NOTE = 'Downloads include effects';
+const fxLabel = f => [f.rev ? 'reverse' : '', f.speed !== 1 ? (+f.speed) + 'x' : '', f.pitch ? (f.pitch > 0 ? '+' : '') + f.pitch : ''].filter(Boolean).join(', ');
+async function masterFloats(blob){   // polished master -> float samples at its own rate (no resampling)
+  const u = new Uint8Array(await blob.arrayBuffer()), w = wavInfo(u);
+  if (w && w.bits === 24 && w.ch >= 1 && w.ch <= 2){
+    const n = Math.floor(w.dataLen / (3 * w.ch)), L = new Float32Array(n), R = w.ch === 2 ? new Float32Array(n) : null; let o = w.dataOff;
+    const rd = () => { let v = u[o] | (u[o+1] << 8) | (u[o+2] << 16); if (v & 0x800000) v -= 0x1000000; o += 3; return v / 8388608; };
+    for (let i = 0; i < n; i++){ L[i] = rd(); if (R) R[i] = rd(); }
+    const dv = new DataView(u.buffer); let rate = SR; try { let q = 12; while (q + 8 <= u.length){ const id = String.fromCharCode(u[q],u[q+1],u[q+2],u[q+3]), len = dv.getUint32(q+4, true); if (id === 'fmt '){ rate = dv.getUint32(q+12, true); break; } q += 8 + len + (len & 1); } } catch(e){}
+    let same = !!R; if (R) for (let i = 0; i < n; i += 997) if (L[i] !== R[i]){ same = false; break; }
+    return {L, R: same ? null : R, rate};
+  }
+  const AC = window.OfflineAudioContext || window.webkitOfflineAudioContext, ctx = new AC(1, 2, SR);
+  const buf = await new Promise((ok, no) => { const r = ctx.decodeAudioData(u.buffer.slice(0), ok, no); if (r && r.then) r.then(ok, no); });
+  return {L: buf.getChannelData(0), R: buf.numberOfChannels > 1 ? buf.getChannelData(1) : null, rate: buf.sampleRate};
+}
+function wav24(L, R, sr){   // stereo 24-bit, same format as the normal download (mono is written to both sides)
+  const n = L.length, bytes = n * 6, out = new Uint8Array(44 + bytes), v = new DataView(out.buffer);
+  const w = (o, t) => { for (let i = 0; i < t.length; i++) out[o+i] = t.charCodeAt(i); };
+  w(0,'RIFF'); v.setUint32(4, 36 + bytes, true); w(8,'WAVE'); w(12,'fmt '); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,2,true);
+  v.setUint32(24, sr, true); v.setUint32(28, sr * 6, true); v.setUint16(32, 6, true); v.setUint16(34, 24, true); w(36,'data'); v.setUint32(40, bytes, true);
+  const put = (o, x) => { let q = Math.round(Math.max(-1, Math.min(1, x || 0)) * 8388607); if (q < 0) q += 0x1000000; out[o] = q & 255; out[o+1] = (q >> 8) & 255; out[o+2] = (q >> 16) & 255; };
+  for (let i = 0, o = 44; i < n; i++, o += 6){ put(o, L[i]); put(o + 3, R ? R[i] : L[i]); }
+  return new Blob([out], {type:'audio/wav'});
+}
+async function songFile(m, prog){   // -> {blob, name}: exactly today's download when no effects are on
+  const master = await getBlob(m.id + ':master'); if (!master) return {blob: null, name: ''};
+  const f = fxOf(m);
+  if (!fxActive(m)) return {blob: await stereoWav(master), name: safe(m.name) + ' (polished).wav'};
+  let {L, R, rate} = await masterFloats(master);
+  if (f.rev){ L = L.slice().reverse(); if (R) R = R.slice().reverse(); }
+  if (f.speed !== 1 || f.pitch) [L, R] = await stProcess(L, R, f.speed, f.pitch, prog);
+  return {blob: wav24(L, R, rate), name: safe(m.name) + ` (${fxLabel(f)}).wav`};
+}
+async function downloadSong(m, btn){
+  if (btn){ if (btn.classList.contains('busy')) return; btn.classList.add('busy'); btn.disabled = true; }
+  try {
+    const say = pc => { const t = `Baking the effects into “${m.name}”… ${Math.round(pc * 100)}%`; setStatus(t); fxNote(m.id, `Baking ${Math.round(pc * 100)}%`, true); };
+    if (fxActive(m)) say(0);
+    const {blob, name} = await songFile(m, say);
+    if (fxActive(m)) fxNote(m.id, FX_NOTE, false);
+    await saveFile(blob, name);
+  } catch(e){ fxNote(m.id, FX_NOTE, false); setStatus('Couldn’t make that download: ' + (e && e.message || e)); }
+  finally { if (btn){ btn.classList.remove('busy'); btn.disabled = false; } }
+}
 /* ---------- effects strip: REVERSE / SPEED / PITCH (preview only, never changes the saved song) ---------- */
 const FX_LS = 'vmm_fx', FX0 = {rev:false, speed:1, pitch:0};
 let fxAll = {}; try { fxAll = JSON.parse(localStorage.getItem(FX_LS) || '{}') || {}; } catch(e){ fxAll = {}; }
@@ -1860,7 +1913,7 @@ async function fxSource(m, which, blob){   // the audio to play: the saved file,
     if (f.rev){ L = L.slice().reverse(); if (R) R = R.slice().reverse(); }
     if (f.pitch){ [L, R] = await stPitch(L, R, f.pitch, p => fxNote(m.id, `Rendering ${Math.round(p*100)}%`, true)); }
     const out = wav16(L, R, buf.sampleRate); fxCache = {key, blob: out};
-    fxNote(m.id, 'Preview only', false); setStatus('');
+    fxNote(m.id, FX_NOTE, false); setStatus('');
     return out;
   } catch(e){
     fxNote(m.id, 'Couldn’t render', false); setStatus('Couldn’t cook those effects on this device, so it plays without them.');
@@ -1868,20 +1921,21 @@ async function fxSource(m, which, blob){   // the audio to play: the saved file,
   }
 }
 function decodeFx(ctx, blob){ return blob.arrayBuffer().then(ab => new Promise((ok, no) => { const r = ctx.decodeAudioData(ab, ok, no); if (r && r.then) r.then(ok, no); })); }
-async function stPitch(L, R, semis, prog){
+async function stPitch(L, R, semis, prog){ return stProcess(L, R, 1, semis, prog); }
+async function stProcess(L, R, tempo, semis, prog){
   stMod = stMod || await import(new URL('vendor/soundtouch.js', document.baseURI).href);
-  const st = new stMod.SoundTouch(); st.pitchSemitones = semis; st.tempo = 1;
+  const st = new stMod.SoundTouch(); st.pitchSemitones = semis; st.tempo = tempo;
   const N = L.length, PAD = 16384;
   const source = { extract(t, n, pos){ let k = 0; for (; k < n; k++){ const i = pos + k; if (i >= N + PAD) break;
       const l = i < N ? L[i] : 0; t[2*k] = l; t[2*k+1] = R ? (i < N ? R[i] : 0) : l; } return k; } };
   const flt = new stMod.SimpleFilter(source, st), CH = 16384, tmp = new Float32Array(CH * 2);
-  const oL = new Float32Array(N), oR = R ? new Float32Array(N) : null;
+  const M = Math.round(N / tempo), oL = new Float32Array(M), oR = R ? new Float32Array(M) : null;
   let w = 0, t0 = performance.now();
-  while (w < N){
-    const n = flt.extract(tmp, Math.min(CH, N - w)); if (!n) break;
+  while (w < M){
+    const n = flt.extract(tmp, Math.min(CH, M - w)); if (!n) break;
     for (let k = 0; k < n; k++){ oL[w+k] = tmp[2*k]; if (oR) oR[w+k] = tmp[2*k+1]; }
     w += n;
-    if (performance.now() - t0 > 40){ prog && prog(w / N); await new Promise(r => setTimeout(r, 0)); t0 = performance.now(); }
+    if (performance.now() - t0 > 40){ prog && prog(w / M); await new Promise(r => setTimeout(r, 0)); t0 = performance.now(); }
   }
   return [oL, oR];
 }
@@ -1912,12 +1966,12 @@ async function fxReload(m, flipped){   // effects changed on the song that's pla
 function fxStrip(m){
   const f = fxOf(m), li = document.createElement('li'); li.className = 'fxrow'; li.dataset.id = m.id;
   li.setAttribute('aria-label', 'Effects for ' + m.name);
-  li.innerHTML = `<span class="fx-h" title="Effects: just for listening. Your saved song never changes.">FX</span>
+  li.innerHTML = `<span class="fx-h" title="Effects: you hear them now, and the Download button bakes them into the file. Your saved song never changes.">FX</span>
     <button class="fx-rev" aria-pressed="${f.rev}" title="Play it backwards">Reverse</button>
     <label class="fx-cell fx-speed"><span>Speed</span><input type="range" min="0.5" max="2" step="0.05"><output></output></label>
     <label class="fx-cell fx-pitch"><span>Pitch</span><input type="range" min="-12" max="12" step="1"><output></output></label>
     <button class="fx-reset" title="Back to normal: forward, 1×, original pitch">Reset</button>
-    <span class="fx-note" aria-live="polite">Preview only</span>`;
+    <span class="fx-note" aria-live="polite">${FX_NOTE}</span>`;
   const sp = li.querySelector('.fx-speed input'), so = li.querySelector('.fx-speed output'), pi = li.querySelector('.fx-pitch input'), po = li.querySelector('.fx-pitch output');
   const rev = li.querySelector('.fx-rev'), rst = li.querySelector('.fx-reset');
   const showSp = v => so.textContent = (+v).toFixed(2) + '×', showPi = v => po.textContent = (v > 0 ? '+' : '') + v + ' st';
@@ -1957,6 +2011,7 @@ function drawNP(){
   $('#npPlay').innerHTML = paused ? PLAY : PAUSE; $('#npPlay').setAttribute('aria-label', paused ? (on ? 'Play ' + playing.name : 'Play this bucket') : 'Pause ' + playing.name);
   $('#npPlay').disabled = !on && !visible().some(m => m.state==='done') && !memos.some(m => m.state==='done');
   $('#npNext').disabled = !memos.some(m => m.state==='done');
+  if (!$('#npDl').classList.contains('busy')){ $('#npDl').disabled = !on || !downloads; $('#npDl').title = on && fxActive(playing) ? 'Download with effects: ' + fxLabel(fxOf(playing)) : 'Download this song'; }
   npLast = null; npTick();
   if ('mediaSession' in navigator){
     try {
@@ -1983,6 +2038,7 @@ function npPlayPause(){
 }
 $('#npPlay').addEventListener('click', npPlayPause);
 $('#npNext').addEventListener('click', nextSong);
+$('#npDl').addEventListener('click', e => { if (playing) downloadSong(playing, e.currentTarget); });
 $('#npTitle').addEventListener('click', () => {
   if (!playing) return; const id = playing.id;
   let li = [...listEl.querySelectorAll('li.memo')].find(x => x._m && x._m.id===id);
@@ -2150,7 +2206,9 @@ document.querySelectorAll('.sort button').forEach(b => b.addEventListener('click
 $('#edit').addEventListener('click', () => { editMode = !editMode; if (!editMode) picked.clear(); document.body.classList.toggle('editing', editMode); $('#edit').textContent = editMode ? 'Done' : 'Select / delete'; render(); });
 $('#dlAll').addEventListener('click', async () => {
   const done = memos.filter(m=>m.state==='done'); const entries=[]; const used=new Set();
-  for (const m of done){ let nm=safe(m.name)+' (polished).wav', k=2; while(used.has(nm)) nm=safe(m.name)+` (polished ${k++}).wav`; used.add(nm); entries.push({name:nm, blob: await stereoWav(await getBlob(m.id+':master'))}); }
+  for (let i = 0; i < done.length; i++){ const m = done[i]; setStatus(`Getting song ${i+1} of ${done.length} ready${fxActive(m) ? ' (baking its effects)' : ''}…`);
+    const {blob, name} = await songFile(m, pc => setStatus(`Getting song ${i+1} of ${done.length} ready (baking its effects ${Math.round(pc*100)}%)…`)); if (!blob) continue;
+    let nm = name, k = 2; while (used.has(nm)) nm = name.replace(/\)\.wav$/, ` ${k++}).wav`); used.add(nm); entries.push({name:nm, blob}); }
   saveZip(entries, 'Luke Andrew motherfucking Kelly songs.zip');
 });
 
