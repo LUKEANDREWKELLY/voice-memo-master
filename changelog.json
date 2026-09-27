@@ -1,5 +1,15 @@
 [
 {
+"sha": "d64e43f",
+"date": "2026-09-26T22:27:35-04:00",
+"msg": "Top of the page is now three columns side by side, so you get to the songs way faster (phones still stack)"
+},
+{
+"sha": "7b63e4c",
+"date": "2026-09-26T22:25:17-04:00",
+"msg": "Build log data"
+},
+{
 "sha": "c95093f",
 "date": "2026-09-26T22:25:16-04:00",
 "msg": "Movie-poster tagline above the résumé: nobody's gonna fact-check a guy who says he escaped the moon"
