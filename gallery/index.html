@@ -72,14 +72,6 @@ header p.sub{margin:6px 0 0;font-size:12px;font-weight:600;color:#f7dc85}
 .bar button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 .bar .play-all{background:var(--accent);color:var(--accent-ink)}
 .bar .count{display:flex;align-items:center;padding:0 10px;font-weight:800;border-right:none}
-.sound{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--grid);background:var(--paper2)}
-.sound>*{display:flex;align-items:center;gap:6px;min-height:26px;padding:0 8px;border-right:1px solid var(--grid)}
-.sound .h{background:var(--head);font-weight:900;letter-spacing:.14em}
-.sound label span{font-weight:900;text-transform:uppercase;letter-spacing:.08em;font-size:10px}
-.sound input{width:110px;accent-color:var(--accent);margin:0}
-.sound output{min-width:34px;font-weight:800}
-.sound button{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
-.sound .note{color:var(--muted);font-style:italic;border-right:none;margin-left:auto}
 /* list */
 .thead,.song{display:grid;grid-template-columns:30px 34px minmax(140px,1.4fr) minmax(120px,2fr) 60px 50px 44px}
 .thead{background:var(--head);border-bottom:1px solid var(--grid);font-size:9.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
@@ -134,15 +126,42 @@ footer a{font-weight:800}
   .song canvas{min-height:26px}
   .bar input[type=search]{flex:1 1 100%;min-height:32px;border-bottom:1px solid var(--grid);border-right:none}
   .bar button{flex:1 1 auto;min-height:30px}
-  .sound label{flex:1 1 100%;border-right:none;border-bottom:1px solid var(--grid)}
-  .sound label span{width:62px}
-  .sound input{flex:1;width:auto;min-width:0}
-  .sound .h,.sound button{flex:1 1 auto;justify-content:center;border-bottom:1px solid var(--grid)}
-  .sound .h,.sound button{order:0}
-  .sound label{order:1}
-  .sound .note{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+
+.sound{display:flex;align-items:stretch;border-bottom:1px solid var(--grid);background:var(--paper2)}
+.snd-top{display:contents}
+.snd-h{order:0;display:flex;align-items:center;gap:6px;padding:0 10px;min-height:34px;background:var(--head);font-weight:900;letter-spacing:.14em;border-right:1px solid var(--grid)}
+.snd-h i{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid currentColor;transition:transform .15s}
+.sound.folded .snd-h i{transform:rotate(-90deg)}
+.snd-body{order:1;display:flex}
+.snd-body[hidden]{display:none}
+.snd-row{display:contents}
+.sk{display:flex;flex-direction:column;justify-content:center;gap:1px;padding:2px 8px;border-right:1px solid var(--grid);min-width:118px}
+.sk span{display:flex;justify-content:space-between;gap:6px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;font-size:9.5px}
+.sk output{font-weight:800;letter-spacing:0;font-variant-numeric:tabular-nums}
+.sk input{width:100%;margin:0;accent-color:var(--accent);height:16px}
+.fx-rev{padding:0 12px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;border-right:1px solid var(--grid)}
+.fx-rev[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.snd-sum{order:2;flex:1;display:flex;align-items:center;min-width:0;padding:0 10px;color:var(--muted);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.snd-sum.busy{color:var(--accent);font-style:normal;font-weight:900}
+.snd-reset{order:3;padding:0 12px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;border-left:1px solid var(--grid)}
+.snd-reset:disabled{opacity:.45}
+@media (max-width:640px){
+  .sound{display:block}
+  .snd-top{display:flex;border-bottom:1px solid var(--grid)}
+  .sound.folded .snd-top{border-bottom:none}
+  .snd-h{min-height:36px}
+  .snd-sum{font-size:10.5px}
+  .snd-body{display:block}
+  .snd-row{display:grid;grid-template-columns:1fr 1fr 1fr}
+  .snd-row+.snd-row{border-top:1px solid var(--grid)}
+  .sk{min-width:0;padding:3px 7px}
+  .sk:last-child{border-right:none}
+  .sk input{height:22px}
+  .fx-rev{min-height:40px}
+}
+.build{display:block;margin-top:4px;font-size:10px;opacity:.7}
 </style>
 </head>
 <body>
@@ -170,17 +189,24 @@ footer a{font-weight:800}
   <button class="play-all" id="playAll">Play all</button>
   <span class="count" id="count"></span>
 </div>
-<div class="sound" role="group" aria-label="Your sound">
-  <span class="h">SOUND</span>
-  <label><span>Loud</span><input type="range" id="sLoud" min="-6" max="6" step="1" value="0"><output id="oLoud">0</output></label>
-  <label><span>Warmth</span><input type="range" id="sWarm" min="-6" max="6" step="1" value="0"><output id="oWarm">0</output></label>
-  <label><span>Sparkle</span><input type="range" id="sSpark" min="-6" max="6" step="1" value="0"><output id="oSpark">0</output></label>
-  <button id="sReset">Reset</button>
-  <span class="note">Just on your device</span>
+<div class="sound" id="sound" role="group" aria-label="Your sound">
+  <div class="snd-top"><button class="snd-h" id="sndFold" aria-expanded="true" aria-controls="sndBody">SOUND<i aria-hidden="true"></i></button><span class="snd-sum" id="sndSum" aria-live="polite">Normal · just on your device</span><button class="snd-reset" id="sReset">Reset</button></div>
+  <div class="snd-body" id="sndBody">
+    <div class="snd-row">
+      <label class="sk"><span>Loud <output id="oLoud">0</output></span><input type="range" id="sLoud" min="-6" max="6" step="1" value="0"></label>
+      <label class="sk"><span>Warmth <output id="oWarm">0</output></span><input type="range" id="sWarm" min="-6" max="6" step="1" value="0"></label>
+      <label class="sk"><span>Sparkle <output id="oSpark">0</output></span><input type="range" id="sSpark" min="-6" max="6" step="1" value="0"></label>
+    </div>
+    <div class="snd-row">
+      <button class="fx-rev" id="fxRev" aria-pressed="false" title="Play it backwards">Reverse</button>
+      <label class="sk"><span>Speed <output id="oSpeed">1.00×</output></span><input type="range" id="sSpeed" min="0.5" max="2" step="0.05" value="1" aria-label="Speed"></label>
+      <label class="sk"><span>Pitch <output id="oPitch">0</output></span><input type="range" id="sPitch" min="-12" max="12" step="1" value="0" aria-label="Pitch in half steps"></label>
+    </div>
+  </div>
 </div>
 <div class="thead" aria-hidden="true"><span>#</span><span>Play</span><span>Song</span><span>Wave</span><span>Time</span><span>Share</span><span>Get</span></div>
 <ul class="list" id="list"><li class="empty">Loading the songs…</li></ul>
-<footer>© Luke Andrew motherfucking Kelly, undiscovered musician. Polished with <a href="../">Voice Memo Master</a>, which he built in New York in one night.</footer>
+<footer>© Luke Andrew motherfucking Kelly, undiscovered musician. Polished with <a href="../">Voice Memo Master</a>, which he built in New York in one night.<span class="build">Gallery build Sep 26, 11:30 PM ET</span></footer>
 <audio id="player" preload="none"></audio>
 <div class="toast" id="toast" hidden role="status"></div>
 <div class="landed" id="landed" hidden role="status" aria-live="polite"></div>
@@ -197,13 +223,14 @@ const when = d => { try { return new Date(d).toLocaleDateString('en-US', {month:
 let songs = [], sortMode = 'new', playing = null, npLast = '';
 try { sortMode = localStorage.getItem('vmm_gal_sort') || 'new'; } catch(e){}
 const SORTS = { new:(a,b) => (b.date||'').localeCompare(a.date||''), old:(a,b) => (a.date||'').localeCompare(b.date||''), az:(a,b) => a.title.localeCompare(b.title, undefined, {sensitivity:'base', numeric:true}) };
+const srcOf = s => s.url ? (/^https?:|^\//.test(s.url) ? s.url : '../' + s.url) : '../' + s.file;   // shelf 1 lives in gallery/tracks, shelves 2 and 3 on their own sites (same origin)
 function shown(){ const q = $('#q').value.trim().toLowerCase(); return songs.filter(s => !q || (s.title + ' ' + (s.bucket||'') + ' ' + when(s.date)).toLowerCase().includes(q)).sort(SORTS[sortMode] || SORTS.new); }
 function toast(t){ const el = $('#toast'); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 2200); }
 function drawWave(cv, s){
   const dpr = devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight; if (!W) return;
   cv.width = W * dpr; cv.height = H * dpr; const c = cv.getContext('2d'); c.scale(dpr, dpr);
-  const pk = s.peaks || [], n = pk.length || 1, bw = W / n, pos = playing === s && player.duration ? player.currentTime / player.duration : -1;
-  for (let i = 0; i < pk.length; i++){ const h = Math.max(1, pk[i] / 99 * (H - 6)); c.fillStyle = pos >= 0 && (i + .5) / n <= pos ? '#8a0303' : '#111'; c.fillRect(i * bw, (H - h) / 2, Math.max(1, bw - 1), h); }
+  const pk = s.peaks || [], n = pk.length || 1, bw = W / n, pos = playing === s && player.duration ? fracNow() : -1;
+  for (let i = 0; i < pk.length; i++){ const h = Math.max(1, pk[i] / 99 * (H - 6)); c.fillStyle = pos >= 0 && (playRev && playing === s ? (i + .5) / n >= pos : (i + .5) / n <= pos) ? '#8a0303' : '#111'; c.fillRect(i * bw, (H - h) / 2, Math.max(1, bw - 1), h); }
   if (pos >= 0){ c.fillStyle = '#8a0303'; c.fillRect(pos * W, 0, 2, H); }
 }
 function render(){
@@ -224,7 +251,7 @@ function render(){
     li.querySelector('.play').addEventListener('click', () => toggle(s));
     li.querySelector('.share').addEventListener('click', () => share(s));
     const cv = li.querySelector('canvas'); s._cv = cv;
-    cv.addEventListener('click', e => { const f = e.offsetX / cv.clientWidth; if (playing !== s){ toggle(s, f); return; } if (player.duration) player.currentTime = f * player.duration; });
+    cv.addEventListener('click', e => { const f = e.offsetX / cv.clientWidth; if (playing !== s){ toggle(s, f); return; } if (player.duration) player.currentTime = (playRev ? 1 - f : f) * player.duration; });
     listEl.appendChild(li); requestAnimationFrame(() => drawWave(cv, s));
   }
   drawNP();
@@ -234,6 +261,79 @@ async function share(s){
   if (navigator.share){ try { await navigator.share({title, url}); return; } catch(e){ if (e && e.name === 'AbortError') return; } }
   try { await navigator.clipboard.writeText(url); toast('Link copied'); } catch(e){ prompt('Copy this link:', url); }
 }
+/* effects: REVERSE / SPEED / PITCH, done the same way as the app: speed = the browser's own pitch-keeping stretch;
+   reverse and pitch = fetch the same-origin MP3, decode it, flip it and/or shift it with SoundTouch, and play that copy */
+const FX0 = {rev:false, speed:1, pitch:0}; let fx = Object.assign({}, FX0), fxCache = null, stMod = null, fxBusy = '', playTok = 0, playRev = false, fxCtx = null;
+try { Object.assign(fx, JSON.parse(localStorage.getItem('vmm_gal_fx') || '{}')); } catch(e){}
+function fxClean(){ fx.speed = Math.round(Math.min(2, Math.max(0.5, +fx.speed || 1)) * 100) / 100; fx.pitch = Math.round(Math.min(12, Math.max(-12, +fx.pitch || 0))); fx.rev = !!fx.rev;
+  try { if (fx.rev || fx.speed !== 1 || fx.pitch) localStorage.setItem('vmm_gal_fx', JSON.stringify(fx)); else localStorage.removeItem('vmm_gal_fx'); } catch(e){} }
+fxClean();
+const sgn = v => (v > 0 ? '+' : '') + v;
+function drawSum(){ const el = $('#sndSum'); if (!el) return; el.classList.toggle('busy', !!fxBusy);
+  const bits = []; if (snd.loud) bits.push('Loud ' + sgn(snd.loud)); if (snd.warm) bits.push('Warmth ' + sgn(snd.warm)); if (snd.spark) bits.push('Sparkle ' + sgn(snd.spark));
+  if (fx.rev) bits.push('Reverse'); if (fx.speed !== 1) bits.push(fx.speed.toFixed(2) + '×'); if (fx.pitch) bits.push(sgn(fx.pitch) + ' st');
+  el.textContent = fxBusy || (bits.length ? bits.join(' · ') : 'Normal · just on your device'); $('#sReset').disabled = !bits.length; }
+function fxBusySay(t){ fxBusy = t; drawSum(); }
+function fxRate(){ try { player.preservesPitch = true; player.webkitPreservesPitch = true; player.mozPreservesPitch = true; } catch(e){} player.defaultPlaybackRate = fx.speed; player.playbackRate = fx.speed; }
+async function stPitch(L, R, semis, prog){
+  stMod = stMod || await import(new URL('../vendor/soundtouch.js', document.baseURI).href);
+  const st = new stMod.SoundTouch(); st.pitchSemitones = semis; st.tempo = 1;
+  const N = L.length, PAD = 16384;
+  const source = { extract(t, n, pos){ let k = 0; for (; k < n; k++){ const i = pos + k; if (i >= N + PAD) break;
+      const l = i < N ? L[i] : 0; t[2*k] = l; t[2*k+1] = R ? (i < N ? R[i] : 0) : l; } return k; } };
+  const flt = new stMod.SimpleFilter(source, st), CH = 16384, tmp = new Float32Array(CH * 2), oL = new Float32Array(N), oR = R ? new Float32Array(N) : null;
+  let w = 0, t0 = performance.now();
+  while (w < N){ const n = flt.extract(tmp, Math.min(CH, N - w)); if (!n) break;
+    for (let k = 0; k < n; k++){ oL[w+k] = tmp[2*k]; if (oR) oR[w+k] = tmp[2*k+1]; } w += n;
+    if (performance.now() - t0 > 40){ prog && prog(w / N); await new Promise(r => setTimeout(r, 0)); t0 = performance.now(); } }
+  return [oL, oR];
+}
+function wav16(L, R, sr){
+  const ch = R ? 2 : 1, n = L.length, ab = new ArrayBuffer(44 + n * ch * 2), v = new DataView(ab);
+  const w4 = (o, s) => { for (let i = 0; i < 4; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  w4(0, 'RIFF'); v.setUint32(4, 36 + n * ch * 2, true); w4(8, 'WAVE'); w4(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, ch, true);
+  v.setUint32(24, sr, true); v.setUint32(28, sr * ch * 2, true); v.setUint16(32, ch * 2, true); v.setUint16(34, 16, true); w4(36, 'data'); v.setUint32(40, n * ch * 2, true);
+  const pcm = new Int16Array(ab, 44);
+  for (let i = 0; i < n; i++){ const a = Math.max(-1, Math.min(1, L[i] || 0)); if (R){ const b = Math.max(-1, Math.min(1, R[i] || 0)); pcm[2*i] = a * 32767; pcm[2*i+1] = b * 32767; } else pcm[i] = a * 32767; }
+  return new Blob([ab], {type:'audio/wav'});
+}
+async function fxSrc(s){ // -> {url, rev}: what to play for song s with the effects as they are right now
+  const url = srcOf(s), rev = fx.rev, pitch = fx.pitch; if (!rev && !pitch) return {url, rev:false};
+  const key = [s.id, rev, pitch].join('|'); if (fxCache && fxCache.key === key) return {url: fxCache.url, rev};
+  const what = rev && pitch ? 'Reversing + pitching' : rev ? 'Reversing' : 'Pitching';
+  fxBusySay(what + '…');
+  try {
+    const r = await fetch(url); if (!r.ok) throw new Error('HTTP ' + r.status); const ab = await r.arrayBuffer();
+    const AC = window.AudioContext || window.webkitAudioContext, ctx = actx || (fxCtx = fxCtx || new AC());
+    const buf = await new Promise((ok, no) => { const p = ctx.decodeAudioData(ab, ok, no); if (p && p.then) p.then(ok, no); });
+    let L = buf.getChannelData(0), R = buf.numberOfChannels > 1 ? buf.getChannelData(1) : null;
+    if (R){ let same = true; for (let i = 0; i < L.length; i += 997) if (L[i] !== R[i]){ same = false; break; } if (same) R = null; }
+    if (rev){ L = L.slice().reverse(); if (R) R = R.slice().reverse(); }
+    if (pitch) [L, R] = await stPitch(L, R, pitch, p => fxBusySay(`${what} ${Math.round(p * 100)}%`));
+    const out = URL.createObjectURL(wav16(L, R, buf.sampleRate)); if (fxCache) URL.revokeObjectURL(fxCache.url); fxCache = {key, url: out};
+    fxBusySay(''); return {url: out, rev};
+  } catch(e){ fxBusySay(''); toast('That effect didn’t work on this device, so it plays normally'); return {url, rev:false}; }
+}
+async function fxReload(flipped){ // effects changed while a song plays: swap the audio and keep the spot
+  if (!playing) return; const s = playing, was = !player.paused, t = player.currentTime, d = player.duration || 0, tok = ++playTok;
+  const src = await fxSrc(s); if (tok !== playTok || playing !== s) return;
+  const flip = src.rev !== playRev; player.src = src.url; playRev = src.rev; fxRate();
+  await new Promise(r => { player.addEventListener('loadedmetadata', r, {once:true}); setTimeout(r, 4000); }); if (tok !== playTok) return;
+  const at = flip && d ? Math.max(0, d - t) : t; try { player.currentTime = Math.min(at, Math.max(0, (player.duration || at) - 0.05)); } catch(e){}
+  if (was) await player.play().catch(() => {}); render();
+}
+const fracNow = () => player.duration ? (playRev ? 1 - player.currentTime / player.duration : player.currentTime / player.duration) : -1;
+function drawFx(){ $('#fxRev').setAttribute('aria-pressed', String(fx.rev)); $('#sSpeed').value = fx.speed; $('#sPitch').value = fx.pitch;
+  $('#oSpeed').textContent = fx.speed.toFixed(2) + '×'; $('#oPitch').textContent = sgn(fx.pitch); drawSum(); }
+$('#fxRev').addEventListener('click', () => { fx.rev = !fx.rev; fxClean(); drawFx(); fxReload(true); });
+$('#sSpeed').addEventListener('input', () => { fx.speed = +$('#sSpeed').value; fxClean(); drawFx(); fxRate(); });
+$('#sSpeed').addEventListener('dblclick', () => { $('#sSpeed').value = 1; $('#sSpeed').dispatchEvent(new Event('input')); });
+{ let pT = null; $('#sPitch').addEventListener('input', () => { fx.pitch = +$('#sPitch').value; fxClean(); drawFx(); clearTimeout(pT); pT = setTimeout(() => fxReload(false), 350); }); }
+$('#sPitch').addEventListener('dblclick', () => { $('#sPitch').value = 0; $('#sPitch').dispatchEvent(new Event('input')); });
+{ const fold = $('#sndFold'), body = $('#sndBody'); let open; try { open = localStorage.getItem('vmm_gal_sndopen'); } catch(e){}
+  const set = o => { body.hidden = !o; fold.setAttribute('aria-expanded', String(o)); $('#sound').classList.toggle('folded', !o); };
+  set(open === null || open === undefined ? innerWidth > 640 : open === '1');
+  fold.addEventListener('click', () => { const o = body.hidden; set(o); try { localStorage.setItem('vmm_gal_sndopen', o ? '1' : '0'); } catch(e){} }); }
 /* sound: Web Audio on the same-origin audio, set up on the first play */
 let actx = null, gLoud, fWarm, fSpark, lim;
 const snd = { loud:0, warm:0, spark:0 }; try { Object.assign(snd, JSON.parse(localStorage.getItem('vmm_gal_sound') || '{}')); } catch(e){}
@@ -245,20 +345,24 @@ function graph(){
     src.connect(fWarm).connect(fSpark).connect(gLoud).connect(lim).connect(actx.destination); applySound(); } catch(e){ actx = null; }
 }
 function applySound(){
+  drawSum();
   for (const [k, id] of [['loud','Loud'],['warm','Warm'],['spark','Spark']]){ $('#s' + id).value = snd[k]; $('#o' + id).textContent = (snd[k] > 0 ? '+' : '') + snd[k]; }
   if (!actx) return; gLoud.gain.value = Math.pow(10, snd.loud / 20); fWarm.gain.value = snd.warm; fSpark.gain.value = snd.spark;
 }
 for (const [k, id] of [['loud','Loud'],['warm','Warm'],['spark','Spark']]){ const el = $('#s' + id);
   el.addEventListener('input', () => { snd[k] = +el.value; applySound(); try { localStorage.setItem('vmm_gal_sound', JSON.stringify(snd)); } catch(e){} });
   el.addEventListener('dblclick', () => { el.value = 0; el.dispatchEvent(new Event('input')); }); }
-$('#sReset').addEventListener('click', () => { snd.loud = snd.warm = snd.spark = 0; applySound(); try { localStorage.removeItem('vmm_gal_sound'); } catch(e){} });
-applySound();
+$('#sReset').addEventListener('click', () => { snd.loud = snd.warm = snd.spark = 0; applySound(); try { localStorage.removeItem('vmm_gal_sound'); } catch(e){}
+  const was = Object.assign({}, fx); Object.assign(fx, FX0); fxClean(); drawFx(); fxRate(); if (was.rev || was.pitch) fxReload(was.rev); });
+applySound(); drawFx();
 /* playback */
 async function toggle(s, frac){
   graph();
   if (playing === s){ if (player.paused) player.play().catch(() => {}); else player.pause(); return; }
-  playing = s; player.src = '../' + s.file; player.load();
-  if (frac){ player.addEventListener('loadedmetadata', () => { if (player.duration) player.currentTime = frac * player.duration; }, {once:true}); }
+  const tok = ++playTok; if (!player.paused) player.pause(); playing = s; render(); meta();
+  const src = await fxSrc(s); if (tok !== playTok || playing !== s) return;
+  player.src = src.url; playRev = src.rev; fxRate(); player.load();
+  if (frac){ player.addEventListener('loadedmetadata', () => { if (player.duration) player.currentTime = (playRev ? 1 - frac : frac) * player.duration; }, {once:true}); }
   await player.play().catch(() => {}); render(); meta();
 }
 function next(step = 1){ const list = shown(); if (!list.length) return; const i = playing ? list.indexOf(playing) : -1; const s = list[(i + step + list.length) % list.length]; if (s === playing){ player.currentTime = 0; player.play().catch(() => {}); return; } toggle(s); }
