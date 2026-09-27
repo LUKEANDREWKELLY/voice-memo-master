@@ -522,9 +522,41 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 .tagline q::before,.tagline q::after{color:#fff}
 .tagline small{display:block;margin-top:8px;font-size:10px;font-weight:800;letter-spacing:.3em;text-transform:uppercase;color:#fff;opacity:.8}
 @media (max-width:640px){.tagline{margin:8px 8px 8px;padding:10px 10px 9px;box-shadow:3px 3px 0 var(--accent)}.tagline small{font-size:8.5px;letter-spacing:.22em;margin-top:6px}}
+/* top section: three columns on desktop, stacked on phones */
+.topgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.15fr);align-items:stretch;border-bottom:2px solid var(--grid);background:var(--paper)}
+.tg-col{min-width:0;display:flex;flex-direction:column}
+.tg-col+.tg-col{border-left:2px solid var(--grid)}
+.topgrid .tipcard,.topgrid .memoir,.topgrid .bands{border-bottom:1px solid var(--grid)}
+.topgrid .tg-col>*:last-child{border-bottom:none}
+.topgrid .mm-body{max-width:none}
+.topgrid .tagline{margin:12px 12px 12px}
+.topgrid .cv{border-bottom:none}
+.topgrid .cv-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+.topgrid .cv-stats>div{grid-template-columns:62px minmax(0,1fr);grid-template-rows:auto;border-bottom:1px solid var(--grid)}
+.topgrid .cv-stats>div:nth-child(2n){border-right:none}
+.topgrid .cv-stats>div:first-child{grid-column:1 / -1;border-right:none}
+.topgrid .cv-stats>div:last-child,.topgrid .cv-stats>div:nth-child(4){border-bottom:none}
+.topgrid .cv-stats dt{border-bottom:none;border-right:1px solid var(--grid);display:flex;align-items:center}
+.topgrid .cv-stats dd{white-space:normal}
+.topgrid .cv-cols{grid-template-columns:1fr}
+.topgrid .cv-sec+.cv-sec{border-left:none;border-top:1px solid var(--grid)}
+.topgrid .cv-actors{width:auto}
+@media (max-width:1000px){.topgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.tg-c3{grid-column:1 / -1;border-left:none!important;border-top:2px solid var(--grid)}}
+@media (max-width:640px){.topgrid{display:block;border-bottom:1px solid var(--grid)}.tg-col+.tg-col{border-left:none;border-top:1px solid var(--grid)}.topgrid .tagline{margin:8px 8px 8px}}
 </style>
 </head>
 <body>
+<!-- ===== NOW PLAYING (pinned to the top) ===== -->
+<div class="np idle" id="np" role="region" aria-label="Now playing">
+  <button class="np-play" id="npPlay" aria-label="Play"><svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg></button>
+  <button class="np-title" id="npTitle" title="Show this song in the list"><span class="np-name" id="npName">Nothing playing</span><span class="np-bk" id="npBk"></span></button>
+  <span class="np-time" id="npTime"></span>
+  <button class="np-next" id="npNext" title="Next song in this bucket">Next</button>
+  <div class="np-bar" id="npBar" role="slider" aria-label="Song position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="-1"><div class="np-fill" id="npFill"></div></div>
+</div>
+<!-- ===== TOP SECTION: three columns (stacks on phones) ===== -->
+<div class="topgrid">
+<div class="tg-col tg-c1">
 <!-- ===== LUKE'S DAILY FLIRTING TIPS (very top; edit the tip text in #tipText) ===== -->
 <style>
 .tipcard{display:grid;grid-template-columns:auto 1fr;border-bottom:1px solid var(--grid);background:var(--paper);color:var(--ink)}
@@ -559,14 +591,6 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 <script>(function(){ var d=new Date(), start=new Date(2026,8,26); var n=Math.max(1,Math.floor((new Date(d.getFullYear(),d.getMonth(),d.getDate())-start)/864e5)+1);
   document.getElementById('tipNo').textContent='Tip #'+n; document.getElementById('tipDay').textContent=d.getDate();
   document.getElementById('tipMo').textContent=d.toLocaleString('en-US',{month:'short'}); })();</script>
-<!-- ===== NOW PLAYING (pinned to the top) ===== -->
-<div class="np idle" id="np" role="region" aria-label="Now playing">
-  <button class="np-play" id="npPlay" aria-label="Play"><svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg></button>
-  <button class="np-title" id="npTitle" title="Show this song in the list"><span class="np-name" id="npName">Nothing playing</span><span class="np-bk" id="npBk"></span></button>
-  <span class="np-time" id="npTime"></span>
-  <button class="np-next" id="npNext" title="Next song in this bucket">Next</button>
-  <div class="np-bar" id="npBar" role="slider" aria-label="Song position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="-1"><div class="np-fill" id="npFill"></div></div>
-</div>
 <!-- ===== MEMOIR BLURB (very top) ===== -->
 <section class="memoir short" id="memoir" aria-labelledby="mmTitle">
   <div class="mm-band"><span class="mm-stamp" aria-hidden="true">FOR SALE</span><span class="mm-dash" aria-hidden="true">—</span><a class="mm-jump" href="#songs">Songs ↓</a><h2 class="mm-title" id="mmTitle"><span class="sr-file">FOR SALE — </span>Luke Andrew <em>motherfucking</em> Kelly: A Memoir <span class="mm-inc">(Incomplete)</span></h2></div>
@@ -577,14 +601,18 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   </div>
 </section>
 <script>document.getElementById('mmMore').addEventListener('click', e => { const m = document.getElementById('memoir'), open = m.classList.toggle('short') === false; e.currentTarget.setAttribute('aria-expanded', String(open)); e.currentTarget.textContent = open ? 'Read less' : 'Read more'; });</script>
+</div>
+<div class="tg-col tg-c2">
+<!-- ===== TAGLINE ===== -->
+<figure class="tagline" aria-label="Tagline"><q>Nobody’s gonna fact-check a guy who says he escaped the moon.</q><small>This fall · Luke Andrew motherfucking Kelly</small></figure>
 <!-- ===== DEDICATION STRIP: favorite bands ===== -->
 <details class="bands fold" id="foldBands" data-key="lak-fold-bands" open>
   <summary><h2 id="bandsTitle">This is dedicated to the legacy of Luke Andrew motherfucking Kelly's favorite bands</h2><span class="fold-ind" aria-hidden="true"></span></summary>
   <ul><li><a href="https://www.georgewatsky.com/" target="_blank" rel="noopener">Watsky</a></li><li><a href="https://www.profgampo.com/" target="_blank" rel="noopener">Prof</a></li><li><a href="https://www.ajrbrothers.com/" target="_blank" rel="noopener">AJR</a></li><li><a href="https://boniver.org/" target="_blank" rel="noopener">Bon Iver</a></li><li><a href="https://www.aurora-music.com/" target="_blank" rel="noopener">Aurora</a></li><li><a href="https://www.thinlizzyofficial.com/" target="_blank" rel="noopener">Thin Lizzy</a></li><li><a href="https://www.thelonebellow.com/" target="_blank" rel="noopener">The Lone Bellow</a></li><li><a href="https://en.wikipedia.org/wiki/The_Jackson_5" target="_blank" rel="noopener">The Jackson 5</a></li><li><a href="https://www.joanjett.com/" target="_blank" rel="noopener">Joan Jett and the Blackhearts</a></li><li><a href="https://www.haimofficial.com/" target="_blank" rel="noopener">Haim</a></li><li><a href="https://www.gretavanfleet.com/" target="_blank" rel="noopener">Greta Van Fleet</a></li><li><a href="https://andygrammer.com/" target="_blank" rel="noopener">Andy Grammer</a></li><li><a href="https://www.bensonboone.com/" target="_blank" rel="noopener">Benson Boone</a></li><li><a href="https://www.jukeboxtheghost.com/" target="_blank" rel="noopener">Jukebox the Ghost</a></li><li><a href="https://www.samhunt.com/" target="_blank" rel="noopener">Sam Hunt</a></li><li><a href="https://hozier.com/" target="_blank" rel="noopener">Hozier</a></li><li><a href="https://open.spotify.com/search/Fletcher%20Gill" target="_blank" rel="noopener">Fletcher Gill</a></li><li><a href="https://www.arkellsmusic.com/" target="_blank" rel="noopener">Arkells</a></li><li><a href="https://www.tinymovingparts.com/" target="_blank" rel="noopener">Tiny Moving Parts</a></li><li><a href="https://www.officialkaleo.com/" target="_blank" rel="noopener">Kaleo</a></li><li><a href="https://www.sylvanesso.com/" target="_blank" rel="noopener">Sylvan Esso</a></li></ul>
   <p class="bands-note">The Galactic Federation believes that this is of utmost importance if we are going to save this planet.</p>
 </details>
-<!-- ===== TAGLINE ===== -->
-<figure class="tagline" aria-label="Tagline"><q>Nobody’s gonna fact-check a guy who says he escaped the moon.</q><small>This fall · Luke Andrew motherfucking Kelly</small></figure>
+</div>
+<div class="tg-col tg-c3">
 <!-- ===== RÉSUMÉ ===== -->
 <details class="cv fold" id="foldCv" data-key="lak-fold-cv" open>
   <summary><h2 class="cv-h">Résumé</h2><span class="cv-sub">Curriculum vitae · abridged</span><span class="fold-ind" aria-hidden="true"></span></summary>
@@ -615,6 +643,8 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
     </section>
   </div>
 </details>
+</div>
+</div>
 <script>(function(){ var mob = matchMedia('(max-width:640px)').matches;   // phones: folded by default; your choice is remembered
   document.querySelectorAll('details.fold').forEach(function(d){ var k = d.dataset.key, v = null; try { v = localStorage.getItem(k); } catch(e){}
     d.open = v === null ? !mob : v === '1';
