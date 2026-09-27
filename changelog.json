@@ -1,5 +1,15 @@
 [
 {
+"sha": "d65cca7",
+"date": "2026-09-26T22:45:42-04:00",
+"msg": "Downloads now sound exactly like what you hear: reverse, speed and pitch get baked right into the file (and the name says so). Plus a download button up in the now-playing bar"
+},
+{
+"sha": "d36dba5",
+"date": "2026-09-26T22:45:10-04:00",
+"msg": "Build log data"
+},
+{
 "sha": "13de894",
 "date": "2026-09-26T22:45:10-04:00",
 "msg": "Drop songs anywhere (whole folders too), a clear count of added vs skipped after every upload, and an Undo button when you rename a song"
