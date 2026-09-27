@@ -242,8 +242,7 @@ button:disabled:hover{background:var(--cell2)}
 .tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
 .tabs button[aria-selected="true"] small{color:var(--accent-ink)}
 .tabs .hint{align-self:center;padding:0 6px;font-size:10px;color:var(--muted);white-space:nowrap}
-#editbar{display:none}
-body.editing #editbar{display:flex}
+#editbar{display:flex}
 #editbar .grp+.grp{margin-left:0;border-left:none}
 body.editing li.memo::before{display:none}
 .sel{grid-area:n;display:flex;align-items:center;justify-content:center;background:var(--head);cursor:pointer;border-right:1px solid var(--grid)}
@@ -569,6 +568,42 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 .topgrid .cv-actors{width:auto}
 @media (max-width:1000px){.topgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.tg-c3{grid-column:1 / -1;border-left:none!important;border-top:2px solid var(--grid)}}
 @media (max-width:640px){.topgrid{display:block;border-bottom:1px solid var(--grid)}.tg-col+.tg-col{border-left:none;border-top:1px solid var(--grid)}.topgrid .tagline{margin:8px 8px 8px}}
+/* dense dashboard top: tips | memoir | bands */
+.tg-dense{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) minmax(0,1fr)!important;border-bottom:1px solid var(--grid)}
+.tg-dense .tg-col+.tg-col{border-left:1px solid var(--grid)}
+.tg-dense .tg-col>*{flex:1}
+.tg-dense .tipcard{border-bottom:none}
+.tg-dense .tipcard .tip-side{min-width:44px;padding:4px 5px;gap:1px}
+.tg-dense .tipcard .tip-day{font-size:16px}
+.tg-dense .tipcard .tip-no,.tg-dense .tipcard .tip-mo{font-size:7.5px;letter-spacing:.12em}
+.tg-dense .tipcard .tip-main{padding:3px 7px 4px}
+.tg-dense .tipcard .tip-head{gap:5px;margin-bottom:2px}
+.tg-dense .tipcard h2{font-size:11px}
+.tg-dense .tipcard .tip-stamp{font-size:7px;padding:0 4px;border-width:1px}
+.tg-dense .tipcard p{font-size:10.5px;line-height:1.3}
+.tg-dense .tipcard p b{font-size:8px;padding:0 3px}
+.tg-dense .memoir{border-bottom:none}
+.tg-dense .mm-band{padding:3px 7px;gap:3px 7px}
+.tg-dense .mm-stamp{font-size:8.5px;padding:1px 5px 0;border-width:1.5px;box-shadow:1px 1px 0 var(--grid)}
+.tg-dense .mm-dash{display:none}
+.tg-dense .mm-title{font-size:11.5px;line-height:1.1}
+.tg-dense .mm-inc{font-size:7px;padding:0 3px;vertical-align:1px}
+.tg-dense .mm-body{padding:3px 7px 4px}
+.tg-dense .mm-text{font-size:10.5px;line-height:1.3}
+.tg-dense .mm-sign{font-size:9px;margin-top:2px}
+.tg-dense .bands{border-bottom:none}
+.tg-dense .bands>summary{padding:3px 7px;min-height:0}
+.tg-dense .bands h2{font-size:8.5px;letter-spacing:.05em;line-height:1.2}
+.tg-dense .bands ul{padding:3px 7px 1px;font-size:10px;line-height:1.45}
+.tg-dense .bands li:not(:last-child)::after{margin:0 4px}
+.tg-dense .bands-note{padding:0 7px 3px;font-size:8.5px;margin:0}
+.tg-dense .fold-ind{width:15px;height:15px;font-size:10px}
+.tg-dense~.tagline{margin:0;padding:3px 8px;transform:none;box-shadow:none;border:none;border-bottom:1px solid var(--grid);display:flex;align-items:baseline;justify-content:center;gap:10px;flex-wrap:wrap}
+.tg-dense~.tagline q{display:inline;font-size:13px;line-height:1.15}
+.tg-dense~.tagline small{display:inline;margin:0;font-size:8px;letter-spacing:.2em}
+.tg-dense~.cv>summary{padding:3px 8px}
+@media (max-width:1000px){.tg-dense{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}.tg-dense .tg-c3{border-top:1px solid var(--grid)}}
+@media (max-width:640px){.tg-dense .tg-col+.tg-col{border-left:none;border-top:1px solid var(--grid)}.tg-dense .memoir.short .mm-text{-webkit-line-clamp:2}.tg-dense .mm-more{min-height:26px;margin-top:2px;font-size:9px}.tg-dense .mm-jump{min-height:22px;font-size:8.5px}.tg-dense~.tagline q{font-size:11.5px}.tg-dense .bands>summary{min-height:28px}}
 </style>
 </head>
 <body>
@@ -581,7 +616,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   <div class="np-bar" id="npBar" role="slider" aria-label="Song position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="-1"><div class="np-fill" id="npFill"></div></div>
 </div>
 <!-- ===== TOP SECTION: three columns (stacks on phones) ===== -->
-<div class="topgrid">
+<div class="topgrid tg-dense">
 <div class="tg-col tg-c1">
 <!-- ===== LUKE'S DAILY FLIRTING TIPS (very top; edit the tip text in #tipText) ===== -->
 <style>
@@ -617,6 +652,8 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 <script>(function(){ var d=new Date(), start=new Date(2026,8,26); var n=Math.max(1,Math.floor((new Date(d.getFullYear(),d.getMonth(),d.getDate())-start)/864e5)+1);
   document.getElementById('tipNo').textContent='Tip #'+n; document.getElementById('tipDay').textContent=d.getDate();
   document.getElementById('tipMo').textContent=d.toLocaleString('en-US',{month:'short'}); })();</script>
+</div>
+<div class="tg-col tg-c2">
 <!-- ===== MEMOIR BLURB (very top) ===== -->
 <section class="memoir short" id="memoir" aria-labelledby="mmTitle">
   <div class="mm-band"><span class="mm-stamp" aria-hidden="true">FOR SALE</span><span class="mm-dash" aria-hidden="true">—</span><a class="mm-jump" href="#songs">Songs ↓</a><h2 class="mm-title" id="mmTitle"><span class="sr-file">FOR SALE — </span>Luke Andrew <em>motherfucking</em> Kelly: A Memoir <span class="mm-inc">(Incomplete)</span></h2></div>
@@ -628,9 +665,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 </section>
 <script>document.getElementById('mmMore').addEventListener('click', e => { const m = document.getElementById('memoir'), open = m.classList.toggle('short') === false; e.currentTarget.setAttribute('aria-expanded', String(open)); e.currentTarget.textContent = open ? 'Read less' : 'Read more'; });</script>
 </div>
-<div class="tg-col tg-c2">
-<!-- ===== TAGLINE ===== -->
-<figure class="tagline" aria-label="Tagline"><q>Nobody’s gonna fact-check a guy who says he escaped the moon.</q><small>This fall · Luke Andrew motherfucking Kelly</small></figure>
+<div class="tg-col tg-c3">
 <!-- ===== DEDICATION STRIP: favorite bands ===== -->
 <details class="bands fold" id="foldBands" data-key="lak-fold-bands" open>
   <summary><h2 id="bandsTitle">This is dedicated to the legacy of Luke Andrew motherfucking Kelly's favorite bands</h2><span class="fold-ind" aria-hidden="true"></span></summary>
@@ -638,9 +673,11 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   <p class="bands-note">The Galactic Federation believes that this is of utmost importance if we are going to save this planet.</p>
 </details>
 </div>
-<div class="tg-col tg-c3">
+</div>
+<!-- ===== TAGLINE ===== -->
+<figure class="tagline" aria-label="Tagline"><q>Nobody’s gonna fact-check a guy who says he escaped the moon.</q><small>This fall · Luke Andrew motherfucking Kelly</small></figure>
 <!-- ===== RÉSUMÉ ===== -->
-<details class="cv fold" id="foldCv" data-key="lak-fold-cv" open>
+<details class="cv fold" id="foldCv" data-key="lak-fold-cv2" data-closed="1" open>
   <summary><h2 class="cv-h">Résumé</h2><span class="cv-sub">Curriculum vitae · abridged</span><span class="fold-ind" aria-hidden="true"></span></summary>
   <div class="cv-body">
     <p class="cv-name">Luke Andrew <em>Motherfucking</em> Kelly</p>
@@ -669,11 +706,9 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
     </section>
   </div>
 </details>
-</div>
-</div>
 <script>(function(){ var mob = matchMedia('(max-width:640px)').matches;   // phones: folded by default; your choice is remembered
   document.querySelectorAll('details.fold').forEach(function(d){ var k = d.dataset.key, v = null; try { v = localStorage.getItem(k); } catch(e){}
-    d.open = v === null ? !mob : v === '1';
+    d.open = v === null ? (!mob && !d.dataset.closed) : v === '1';
     d.addEventListener('toggle', function(){ try { localStorage.setItem(k, d.open ? '1' : '0'); } catch(e){} }); }); })();</script>
 <!-- ===== TOP BANNER: edit the text below (id="topBanner") ===== -->
 <div class="topbanner" id="topBanner" role="note">Debuting: 'Song for Barbara Walters' — the much-awaited, anticipated single from Luke Andrew motherfucking Kelly — releasing on Elon Musk's birthday. Dedicated to the possibility of Nathan Fielder being featured on the track.</div>
@@ -708,7 +743,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
       <p class="sub">Voice memos, trimmed to the song and polished the same way every time.</p>
     </div>
     <div class="head-actions">
-      <button id="edit">Edit list</button>
+      <button id="edit">Select / delete</button>
       <button id="dlAll" disabled>Download all songs</button>
     </div>
   </header>
@@ -1942,7 +1977,7 @@ $('#bkShuffle').addEventListener('click', () => { deal(); bk.active = Math.floor
 $('#bkNext').addEventListener('click', () => { if (!bk.names.length) return; goBucket(bk.active==='all' ? 0 : (bk.active+1) % bk.names.length); });
 $('#bkJump').addEventListener('click', () => { const n = bk.names.length; if (n < 2) return; let i; do { i = Math.floor(Math.random()*n); } while (i === bk.active); goBucket(i); });
 $('#bkPlay').addEventListener('click', playBucket);
-$('#selAll').addEventListener('click', () => { const shown = visible(), all = shown.length && shown.every(m => picked.has(m.id)); shown.forEach(m => all ? picked.delete(m.id) : picked.add(m.id)); render(); });
+$('#selAll').addEventListener('click', () => { if (!editMode) $('#edit').click(); const shown = visible(), all = shown.length && shown.every(m => picked.has(m.id)); shown.forEach(m => all ? picked.delete(m.id) : picked.add(m.id)); render(); });
 $('#delSel').addEventListener('click', deletePicked);
 $('#fixNames').addEventListener('click', async () => { const b = $('#fixNames'); b.disabled = true; setStatus('Reading song titles…');
   const n = await fixNames(true); b.disabled = false; render(); setStatus(n ? `Renamed ${n} song${n>1?'s':''}. Names you typed yourself were left alone.` : 'All names already look good.'); });
@@ -1955,7 +1990,7 @@ const drawSurprise = () => { const b = $('#surprise'); b.setAttribute('aria-pres
 $('#surprise').addEventListener('click', () => { surpriseOn = !surpriseOn; try { localStorage.setItem('lak-surprise', surpriseOn ? '1' : '0'); } catch(e){} drawSurprise(); });
 drawSurprise();
 document.querySelectorAll('.sort button').forEach(b => b.addEventListener('click', () => { sortMode = b.dataset.sort; try{localStorage.setItem('lak-sort',sortMode);}catch(e){} render(); }));
-$('#edit').addEventListener('click', () => { editMode = !editMode; if (!editMode) picked.clear(); document.body.classList.toggle('editing', editMode); $('#edit').textContent = editMode ? 'Done' : 'Edit list'; render(); });
+$('#edit').addEventListener('click', () => { editMode = !editMode; if (!editMode) picked.clear(); document.body.classList.toggle('editing', editMode); $('#edit').textContent = editMode ? 'Done' : 'Select / delete'; render(); });
 $('#dlAll').addEventListener('click', async () => {
   const done = memos.filter(m=>m.state==='done'); const entries=[]; const used=new Set();
   for (const m of done){ let nm=safe(m.name)+' (polished).wav', k=2; while(used.has(nm)) nm=safe(m.name)+` (polished ${k++}).wav`; used.add(nm); entries.push({name:nm, blob: await stereoWav(await getBlob(m.id+':master'))}); }
