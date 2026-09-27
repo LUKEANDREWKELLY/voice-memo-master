@@ -1,5 +1,15 @@
 [
 {
+"sha": "03a55aa",
+"date": "2026-09-26T22:41:49-04:00",
+"msg": "New Just added sort: fresh uploads jump straight to the top with a note saying so, and Newest is now Newest rec. since it goes by the day you recorded it"
+},
+{
+"sha": "e8269a3",
+"date": "2026-09-26T22:39:28-04:00",
+"msg": "Build log data"
+},
+{
 "sha": "56dfea4",
 "date": "2026-09-26T22:39:27-04:00",
 "msg": "Logo glow-up: 'Built by' stands on its own and Human Tradition gets its own black box with a red drop shadow"
