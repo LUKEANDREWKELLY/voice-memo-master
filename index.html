@@ -340,6 +340,21 @@ li.memo .ab button[aria-pressed="true"]{background:var(--accent);color:var(--acc
   .plbar>*{min-height:30px;flex:1 1 auto;justify-content:center;border-bottom:1px solid var(--grid)}
   .plbar .plt,.plbar .plhint{flex:1 1 100%}
 }
+.hear{display:grid;grid-template-columns:1fr auto;border-bottom:1px solid var(--grid);background:#111}
+.hear-go{display:flex;align-items:center;gap:8px;min-height:36px;padding:0 10px;color:var(--accent-ink);text-decoration:none;font-size:11.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+.hear-go svg{width:14px;height:14px;fill:currentColor;flex:none}
+.hear-go .hn{font-weight:700;letter-spacing:.04em;text-transform:none;opacity:.85}
+.hear-go .ar{margin-left:auto}
+.hear-go:hover,.hear-go:focus-visible{background:#2a2a2a}
+.hear-sh{min-height:36px;padding:0 12px;border:0;border-left:1px solid #444;background:#111;color:var(--accent-ink);font:inherit;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+.hear-sh:hover{background:#2a2a2a}
+.empty-hello{padding:22px 12px 18px}
+.hear-big{display:flex;align-items:center;justify-content:center;gap:10px;max-width:420px;margin:0 auto;min-height:56px;padding:0 18px;border:1px solid var(--grid);background:var(--accent);color:var(--accent-ink);text-decoration:none;font-size:15px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+.hear-big svg{width:18px;height:18px;fill:currentColor}
+.hear-big:hover{background:var(--accent-hover)}
+.empty-hello small{display:block;margin-top:10px;font-size:12px;font-weight:700;color:var(--muted)}
+@media (max-width:640px){.hear-go,.hear-sh{min-height:44px}.hear-go{font-size:11px;letter-spacing:.06em;gap:6px;padding:0 8px}.hear-sh{padding:0 9px}}
+.hear-go{white-space:nowrap;overflow:hidden;min-width:0}
 .gal-link{display:block;margin:0 0 6px;padding:5px 8px;border:1px solid var(--grid);background:var(--accent);color:var(--accent-ink);font-size:10.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;text-decoration:none}
 .gal-link:hover{background:var(--accent-hover)}
 .pub{grid-area:pub;display:grid;place-items:center;padding:0;line-height:0;background:transparent}
@@ -916,6 +931,7 @@ body.dropping::after{content:'Drop your songs anywhere';position:fixed;inset:8px
 </div>
 </aside>
 <main class="mainc">
+<div class="hear"><a class="hear-go" href="gallery/"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.5v13L14 8z"/></svg>Hear the public gallery <span class="hn" id="hearN"></span><span class="ar">&rarr;</span></a><button class="hear-sh" id="hearShare" type="button" title="Share the public gallery link">Share link</button></div>
 <!-- ===== PHOTOS: one row of thumbnails (stored on this device) ===== -->
 <section class="photos empty" id="photos" aria-label="Photos" aria-roledescription="carousel">
   <div class="bn" id="bn">
@@ -1003,7 +1019,7 @@ body.dropping::after{content:'Drop your songs anywhere';position:fixed;inset:8px
     <div class="sheet-sec">
       Publishing puts your polished songs (made small, about 0.7 MB a minute) and your photos on your public gallery page, so anyone with the link can listen. No key is needed to listen.
       <button id="pubAllTop" class="pub-big">Publish all songs</button>
-      <div class="btnrow"><a id="galLink" href="gallery/" target="_blank" rel="noopener">Open the public gallery</a></div>
+      <div class="btnrow"><a id="galLink" href="https://lukeandrewkelly.github.io/voice-memo-master/gallery/" target="_blank" rel="noopener">Open the public gallery</a></div>
     </div>
     <div class="sheet-sec">
       <h3>Your GitHub key <span class="keystate" id="keyState"></span></h3>
@@ -1617,6 +1633,7 @@ function drawWave(cv, m){
 const PLAY='<svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg>', PAUSE='<svg viewBox="0 0 16 16"><path d="M3 2h4v12H3zM9 2h4v12H9z"/></svg>';
 
 function render(){
+  { const hn = $('#hearN'), n = pubManifest && pubManifest.songs ? pubManifest.songs.length : 0; if (hn) hn.textContent = n ? `· ${n} song${n === 1 ? '' : 's'}` : ''; }
   const q = $('#search').value.trim().toLowerCase();
   syncBk();
   const shown = visible();
@@ -1627,7 +1644,7 @@ function render(){
   document.querySelectorAll('.sort button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sort===sortMode)));
   $('#count').textContent = memos.length ? `${shown.length} of ${memos.length}` : '';
   $('#dlAll').disabled = !downloads || !memos.some(m=>m.state==='done');
-  if (!memos.length){ listEl.innerHTML = '<li class="empty">No memos yet. Drop some in above.</li>'; return; }
+  if (!memos.length){ listEl.innerHTML = '<li class="empty empty-hello"><a class="hear-big" href="gallery/"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.5v13L14 8z"/></svg>Listen to Luke’s songs</a><small>Or add your own voice memos above.</small></li>'; return; }
   listEl.innerHTML = '';
   for (const m of shown){
     const li = document.createElement('li'); li.className='memo';
@@ -2815,6 +2832,9 @@ async function publishPhotos(){
 function drawKeyState(){ const k = getKey(), el = $('#keyState'); el.textContent = k ? '· saved on this device' : '· none yet'; el.className = 'keystate ' + (k ? 'ok' : 'bad'); $('#keyForget').disabled = !k; $('#keyCheck').disabled = !k; $('#keySteps').hidden = !!k; $('#keyStepsShow').hidden = !k; }
 function openPub(){ drawKeyState(); $('#pubSheet').hidden = false; document.body.style.overflow = 'hidden'; $('#pubClose').focus(); if (pubManifest) drawSpace(pubManifest); if (getKey()) readManifest().then(({data}) => { pubManifest = data; syncPubMap(); drawSpace(data); }).catch(() => {}); }
 function closePub(){ $('#pubSheet').hidden = true; document.body.style.overflow = ''; $('#pubOpen').focus(); render(); }
+$('#hearShare').addEventListener('click', async () => { const url = 'https://lukeandrewkelly.github.io/voice-memo-master/gallery/', title = 'Songs by Luke Andrew motherfucking Kelly';
+  if (navigator.share){ try { await navigator.share({title, url}); return; } catch(e){ if (e && e.name === 'AbortError') return; } }
+  try { await navigator.clipboard.writeText(url); setStatus('Gallery link copied: ' + url); } catch(e){ prompt('Copy this link:', url); } });
 $('#pubOpen').addEventListener('click', openPub); $('#pubClose').addEventListener('click', closePub);
 $('#pubSheet').addEventListener('click', e => { if (e.target === $('#pubSheet')) closePub(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#pubSheet').hidden) closePub(); });
