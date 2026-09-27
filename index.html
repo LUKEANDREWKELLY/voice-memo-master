@@ -656,6 +656,31 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   :root{--cols:24px 30px minmax(90px,1.3fr) 118px minmax(80px,1.5fr) 54px 54px 54px 40px 44px 32px 50px 100px 40px 44px 26px}
   body.editing{--cols:24px 30px minmax(90px,1.3fr) 118px minmax(80px,1.5fr) 54px 54px 54px 40px 44px 32px 50px 100px 40px 44px 26px 28px}
 }
+/* banner editor */
+.bn-edbtn{border:none;border-left:1px solid #444;background:transparent;color:var(--accent-ink);min-height:22px;padding:0 8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.bn-edbtn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.bn-grab{display:none}
+.photos.bn-editing .bn-track{overflow:hidden;touch-action:none;cursor:grab}
+.photos.bn-editing .bn-slide{cursor:grab}
+.photos.bn-editing .bn-grab{display:block;position:absolute;inset:0;z-index:1;pointer-events:none;outline:3px dashed var(--accent-ink);outline-offset:-5px}
+.photos.bn-editing .bn-grab span{position:absolute;top:8px;left:50%;transform:translateX(-50%);padding:2px 8px;background:rgba(17,17,17,.78);color:var(--accent-ink);font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.bn-slide img{transition:none}
+.bn-panel{border:1px solid var(--grid);border-top:none;background:var(--paper)}
+.bnp-row{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:3px 6px;border-bottom:1px solid var(--grid)}
+.bnp-row:last-child{border-bottom:none}
+.bnp-lbl{font-size:9px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;background:var(--ink);color:var(--accent-ink);padding:1px 6px}
+.bnp-hint{font-size:10px;color:var(--muted)}
+.bn-strip{display:flex;flex-wrap:wrap;gap:4px;padding:5px 6px;border-bottom:1px solid var(--grid);user-select:none;-webkit-user-select:none}
+.bn-th{position:relative;width:72px;height:44px;border:2px solid var(--grid);background:#1b1b1b;cursor:grab;touch-action:none;flex:none}
+.bn-th img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.bn-th b{position:absolute;left:0;top:0;padding:0 4px;background:rgba(17,17,17,.8);color:var(--accent-ink);font-size:9px;line-height:1.4}
+.bn-th.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-ink)}
+.bn-th.drag{z-index:5;cursor:grabbing;box-shadow:4px 4px 0 var(--grid);opacity:.92}
+.bnp-ctl button{min-height:26px;padding:0 9px;font-size:10px;text-transform:uppercase;letter-spacing:.05em}
+.bnp-ctl .bnp-del{color:var(--accent)}
+.bnp-zoom{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.bnp-zoom input{width:120px;accent-color:var(--accent)}
+@media (max-width:640px){.bn-edbtn{min-height:36px;padding:0 10px}.bn-th{width:64px;height:40px}.bnp-ctl button{min-height:36px;flex:1 1 auto}.bnp-zoom{flex:1 1 100%}.bnp-zoom input{flex:1;width:auto}}
 </style>
 </head>
 <body>
@@ -811,8 +836,17 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
     <div class="bn-track" id="bnTrack" tabindex="0" aria-label="Photos, swipe for more"></div>
     <button class="bn-nav bn-prev" id="bnPrev" aria-label="Previous photo">‹</button><button class="bn-nav bn-next" id="bnNext" aria-label="Next photo">›</button>
     <div class="bn-bar"><span class="bn-count" id="bnCount" aria-live="polite"></span><span class="bn-dots" id="bnDots" aria-hidden="true"></span>
-      <span class="bn-ed"><button class="ph-l" id="bnLeft" aria-label="Move this photo left">‹ Move</button><button class="ph-del" id="bnDel" aria-label="Delete this photo">Delete</button><button class="ph-r" id="bnRight" aria-label="Move this photo right">Move ›</button></span></div>
+      <button class="bn-edbtn" id="bnEdit" aria-pressed="false" title="Reorder photos and adjust how each one sits in the banner">Edit banner</button><span class="bn-ed"><button class="ph-l" id="bnLeft" aria-label="Move this photo left">‹ Move</button><button class="ph-del" id="bnDel" aria-label="Delete this photo">Delete</button><button class="ph-r" id="bnRight" aria-label="Move this photo right">Move ›</button></span></div>
+    <div class="bn-grab" id="bnGrab" aria-hidden="true"><span>Drag the photo to reposition it</span></div>
     <label for="phFile" class="ph-add" id="phAdd" role="button" tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>Add photos</label>
+  </div>
+  <div class="bn-panel" id="bnPanel" hidden>
+    <div class="bnp-row"><span class="bnp-lbl">Order</span><span class="bnp-hint">Drag thumbnails to reorder. Tap one to adjust it.</span></div>
+    <div class="bn-strip" id="bnStrip" role="list" aria-label="Banner photo order"></div>
+    <div class="bnp-row bnp-ctl"><span class="bnp-lbl">Fit</span>
+      <label class="bnp-zoom">Zoom <input type="range" id="bnZoom" min="1" max="3" step="0.05" value="1" aria-label="Zoom this photo"></label>
+      <button id="bnUp" title="Nudge up" aria-label="Nudge up">↑</button><button id="bnDown" title="Nudge down" aria-label="Nudge down">↓</button><button id="bnLeftN" title="Nudge left" aria-label="Nudge left">←</button><button id="bnRightN" title="Nudge right" aria-label="Nudge right">→</button>
+      <button id="bnCenter">Reset</button><button id="bnDel2" class="bnp-del">Delete</button><button id="bnDone" class="primary">Done</button></div>
   </div>
   <input type="file" id="phFile" class="sr-file" accept="image/*" multiple tabindex="-1" aria-hidden="true">
 </section>
@@ -2166,6 +2200,7 @@ async function addPhotos(files){
   else if (failed.length || noSave) setBanner(`Added ${ok} of ${N} photos. ` + why);
   setStatus(ok ? `Added ${ok} photo${ok>1?'s':''}.` : 'No photos were added.');
 }
+let bnEditing = false;
 let bnAt = 0, bnHold = 0, bnHover = false, bnScrollT = null;
 const bnReduce = matchMedia('(prefers-reduced-motion: reduce)');
 function drawPhotos(){
@@ -2175,8 +2210,8 @@ function drawPhotos(){
   const tr = $('#bnTrack'); tr.innerHTML = '';
   photos.forEach((p, i) => {
     const d = document.createElement('div'); d.className = 'bn-slide'; d.dataset.i = i; d.setAttribute('role','group'); d.setAttribute('aria-roledescription','slide'); d.setAttribute('aria-label', `Photo ${i+1} of ${photos.length}`);
-    const im = document.createElement('img'); im.alt = ''; im.decoding = 'async'; d.appendChild(im);   // src is filled in only near the current slide (saves memory on phones)
-    d.addEventListener('click', () => { if (bnDragged) return; if (!editMode) openLb(i); });
+    const im = document.createElement('img'); im.alt = ''; im.decoding = 'async'; bnCrop(im, p); d.appendChild(im);   // src is filled in only near the current slide (saves memory on phones)
+    d.addEventListener('click', () => { if (bnDragged || bnEditing) return; if (!editMode) openLb(i); });
     tr.appendChild(d);
   });
   $('#phAdd').lastChild.textContent = photos.length ? 'Add' : 'Add photos';
@@ -2203,7 +2238,7 @@ let bnDragged = false;
   tr.addEventListener('scroll', () => { clearTimeout(bnScrollT); bnScrollT = setTimeout(bnUpdate, 60); }, {passive:true});
   // mouse drag (touch swipes are native scrolling)
   let x0 = null, s0 = 0;
-  tr.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') return; x0 = e.clientX; s0 = tr.scrollLeft; bnDragged = false; tr.style.scrollSnapType = 'none'; });
+  tr.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse' || bnEditing) return; x0 = e.clientX; s0 = tr.scrollLeft; bnDragged = false; tr.style.scrollSnapType = 'none'; });
   window.addEventListener('pointermove', e => { if (x0 === null) return; const dx = e.clientX - x0; if (Math.abs(dx) > 5) bnDragged = true; tr.scrollLeft = s0 - dx; });
   window.addEventListener('pointerup', e => { if (x0 === null) return; const dx = e.clientX - x0; x0 = null; tr.style.scrollSnapType = '';
     if (bnDragged){ const k0 = Math.round(s0/tr.clientWidth), k = Math.abs(dx) > tr.clientWidth*0.15 ? k0 + (dx < 0 ? 1 : -1) : k0; bnGo(Math.max(0, Math.min(photos.length-1, k))); } setTimeout(() => { bnDragged = false; }, 0); });
@@ -2214,7 +2249,7 @@ let bnDragged = false;
   bn.addEventListener('focusin', () => { bnHold = Date.now() + 10000; });
   window.addEventListener('resize', () => { const t = $('#bnTrack'); t.scrollLeft = bnAt * t.clientWidth; });
   setInterval(() => { // gentle auto-advance: every 5 s, paused on hover/touch/focus, hidden tab, edit mode, open viewer, or reduced motion
-    if (photos.length < 2 || bnHover || Date.now() < bnHold || document.hidden || editMode || bnReduce.matches || !$('#lb').hidden) return; bnGo(bnAt + 1); }, 5000);
+    if (photos.length < 2 || bnHover || Date.now() < bnHold || document.hidden || editMode || bnEditing || bnReduce.matches || !$('#lb').hidden) return; bnGo(bnAt + 1); }, 5000);
 }
 $('#bnPrev').addEventListener('click', () => { bnHold = Date.now() + 8000; bnGo(bnAt-1); }); $('#bnNext').addEventListener('click', () => { bnHold = Date.now() + 8000; bnGo(bnAt+1); });
 $('#bnLeft').addEventListener('click', () => bnMove(-1)); $('#bnRight').addEventListener('click', () => bnMove(1)); $('#bnDel').addEventListener('click', bnDelete);
@@ -2230,6 +2265,62 @@ document.addEventListener('keydown', e => { if ($('#lb').hidden) return; if (e.k
 $('#phFile').addEventListener('change', () => { addPhotos([...$('#phFile').files]); $('#phFile').value = ''; });
 $('#phAdd').addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' '){ e.preventDefault(); $('#phFile').click(); } });
 $('#edit').addEventListener('click', () => drawPhotos());
+/* ---------- banner editor: drag thumbnails to reorder, drag the photo / zoom to set how it sits in the narrow frame ---------- */
+function bnCrop(im, p){ const fx = p.fx ?? 50, fy = p.fy ?? 50, z = p.zoom || 1;
+  im.style.objectPosition = fx + '% ' + fy + '%'; im.style.transformOrigin = fx + '% ' + fy + '%'; im.style.transform = z > 1 ? 'scale(' + z + ')' : ''; }
+async function bnSave(ps){ try { await phTx('readwrite', st => { let q = null; ps.forEach(p => { if (!p._volatile) q = st.put(p); }); return q; }); } catch(e){} }
+function bnCur(){ return photos[bnAt]; }
+function bnRefreshCur(){ const p = bnCur(), d = $('#bnTrack').children[bnAt]; if (p && d) bnCrop(d.firstChild, p); $('#bnZoom').value = p ? (p.zoom || 1) : 1;
+  [...$('#bnStrip').children].forEach((t, i) => t.classList.toggle('on', i === bnAt)); }
+function bnDrawStrip(){ const s = $('#bnStrip'); s.innerHTML = '';
+  photos.forEach((p, i) => { const t = document.createElement('div'); t.className = 'bn-th' + (i === bnAt ? ' on' : ''); t.setAttribute('role','listitem'); t.dataset.id = p.id; t.title = 'Drag to reorder, tap to adjust';
+    const im = document.createElement('img'); im.src = phUrl(p, 'thumb'); im.alt = 'Photo ' + (i+1); im.draggable = false; const n = document.createElement('b'); n.textContent = i + 1; t.append(im, n); s.appendChild(t); });
+  bnRefreshCur(); }
+function bnSetEditing(on){ bnEditing = on; const ph = $('#photos'); ph.classList.toggle('bn-editing', on); $('#bnPanel').hidden = !on;
+  $('#bnEdit').setAttribute('aria-pressed', String(on)); $('#bnEdit').textContent = on ? 'Done editing' : 'Edit banner';
+  if (on){ bnDrawStrip(); const tr = $('#bnTrack'); tr.scrollLeft = bnAt * tr.clientWidth; } }
+$('#bnEdit').addEventListener('click', () => bnSetEditing(!bnEditing));
+$('#bnDone').addEventListener('click', () => bnSetEditing(false));
+const _bnUpdate = bnUpdate; bnUpdate = function(k){ _bnUpdate(k); if (bnEditing) bnRefreshCur(); };
+const _drawPhotos = drawPhotos; drawPhotos = function(){ _drawPhotos(); if (bnEditing){ if (!photos.length) bnSetEditing(false); else bnDrawStrip(); } };
+// reorder: pointer drag on thumbnails (mouse and touch)
+{ const s = $('#bnStrip'); let drag = null;
+  s.addEventListener('pointerdown', e => { const t = e.target.closest('.bn-th'); if (!t) return; e.preventDefault();
+    drag = { t, x0: e.clientX, y0: e.clientY, moved: false, id: e.pointerId, timer: null };
+    if (e.pointerType !== 'mouse') drag.timer = setTimeout(() => { if (drag){ drag.moved = true; t.classList.add('drag'); } }, 180);
+    try { s.setPointerCapture(e.pointerId); } catch(_){} });
+  s.addEventListener('pointermove', e => { if (!drag) return; const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
+    if (!drag.moved){ if (Math.hypot(dx, dy) < 6) return; drag.moved = true; drag.t.classList.add('drag'); clearTimeout(drag.timer); }
+    drag.t.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+    drag.t.style.visibility = 'hidden'; const under = document.elementFromPoint(e.clientX, e.clientY); drag.t.style.visibility = '';
+    const o = under && under.closest && under.closest('.bn-th'); if (!o || o === drag.t) return;
+    const r = o.getBoundingClientRect(), after = e.clientX > r.left + r.width / 2, before0 = drag.t.getBoundingClientRect();
+    s.insertBefore(drag.t, after ? o.nextSibling : o);
+    const b1 = drag.t.getBoundingClientRect(); drag.x0 += b1.left - before0.left; drag.y0 += b1.top - before0.top;
+    drag.t.style.transform = 'translate(' + (e.clientX - drag.x0) + 'px,' + (e.clientY - drag.y0) + 'px)'; });
+  const end = async () => { if (!drag) return; const d = drag; drag = null; clearTimeout(d.timer); d.t.classList.remove('drag'); d.t.style.transform = '';
+    if (!d.moved){ const i = [...s.children].indexOf(d.t); bnHold = Date.now() + 8000; bnGo(i, false); bnRefreshCur(); return; }
+    const ids = [...s.children].map(t => t.dataset.id), cur = bnCur() && bnCur().id;
+    ids.forEach((id, k) => { const p = photos.find(x => x.id === id); if (p) p.order = k + 1; });
+    await bnSave(photos); const newAt = ids.indexOf(d.t.dataset.id); bnAt = newAt < 0 ? 0 : newAt; drawPhotos(); };
+  s.addEventListener('pointerup', end); s.addEventListener('pointercancel', end); }
+// position: drag on the banner photo while editing
+{ const bn = $('#bn'); let pan = null;
+  bn.addEventListener('pointerdown', e => { if (!bnEditing || e.target.closest('button,label,.bn-bar')) return; const p = bnCur(), d = $('#bnTrack').children[bnAt]; if (!p || !d) return;
+    e.preventDefault(); const r = d.getBoundingClientRect(), im = d.firstChild, iw = im.naturalWidth || p.w || r.width, ih = im.naturalHeight || p.h || r.height, z = p.zoom || 1;
+    const sc = Math.max(r.width / iw, r.height / ih); const ox = Math.max(1, iw * sc * z - r.width), oy = Math.max(1, ih * sc * z - r.height);
+    pan = { x0: e.clientX, y0: e.clientY, fx: p.fx ?? 50, fy: p.fy ?? 50, ox, oy, p }; try { bn.setPointerCapture(e.pointerId); } catch(_){} });
+  bn.addEventListener('pointermove', e => { if (!pan) return; const p = pan.p;
+    p.fx = Math.max(0, Math.min(100, pan.fx - (e.clientX - pan.x0) / pan.ox * 100)); p.fy = Math.max(0, Math.min(100, pan.fy - (e.clientY - pan.y0) / pan.oy * 100)); bnRefreshCur(); });
+  const done = () => { if (!pan) return; const p = pan.p; pan = null; bnSave([p]); };
+  bn.addEventListener('pointerup', done); bn.addEventListener('pointercancel', done); }
+$('#bnZoom').addEventListener('input', e => { const p = bnCur(); if (!p) return; p.zoom = +e.target.value; bnRefreshCur(); });
+$('#bnZoom').addEventListener('change', () => { const p = bnCur(); if (p) bnSave([p]); });
+const bnNudge = (dx, dy) => { const p = bnCur(); if (!p) return; p.fx = Math.max(0, Math.min(100, (p.fx ?? 50) + dx)); p.fy = Math.max(0, Math.min(100, (p.fy ?? 50) + dy)); bnRefreshCur(); bnSave([p]); };
+$('#bnUp').addEventListener('click', () => bnNudge(0, -5)); $('#bnDown').addEventListener('click', () => bnNudge(0, 5));
+$('#bnLeftN').addEventListener('click', () => bnNudge(-5, 0)); $('#bnRightN').addEventListener('click', () => bnNudge(5, 0));
+$('#bnCenter').addEventListener('click', () => { const p = bnCur(); if (!p) return; p.fx = 50; p.fy = 50; p.zoom = 1; bnRefreshCur(); bnSave([p]); });
+$('#bnDel2').addEventListener('click', bnDelete);
 (async () => { try { photos = (await phTx('readonly', st => st.getAll())) || []; } catch(e){ photos = []; } drawPhotos(); showStorage(); })();
 
 async function importShared(){
