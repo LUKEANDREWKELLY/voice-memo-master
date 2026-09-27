@@ -504,6 +504,19 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 .buildlog li time{padding:4px 6px;font-weight:900;border-right:1px solid var(--paper2);color:var(--accent);font-variant-numeric:tabular-nums}
 .buildlog li span{padding:4px 8px}
 .buildlog .bl-note{padding:4px 8px;font-size:10px;color:var(--muted)}
+.cv-name{margin:0;padding:6px 12px 5px;border-bottom:1px solid var(--grid);background:var(--ink);color:var(--accent-ink);font-size:22px;font-weight:900;letter-spacing:.04em;line-height:1.05;text-transform:uppercase}
+.cv-name em{font-style:italic;color:#fff;text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:3px;text-underline-offset:3px}
+.cv-cast{border-top:1px solid var(--grid);padding:6px 12px 8px;background:var(--paper-hi)}
+.cv-cast h3{margin:0 0 4px;font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+.cv-actors{display:flex;flex-wrap:wrap;margin:0 0 6px;padding:0;list-style:none;border:1px solid var(--grid);width:max-content;max-width:100%}
+.cv-actors li{padding:3px 8px;border-right:1px solid var(--grid);font-size:11px;font-weight:800;white-space:nowrap;background:var(--paper)}
+.cv-actors li:last-child{border-right:none}
+.cv-actors li.gos{background:var(--accent);color:var(--accent-ink)}
+.cv-actors li.gos+li.gos{opacity:.85}.cv-actors li.gos+li.gos+li.gos{opacity:.7}
+.cv-actors li.nf{background:var(--bg)}
+.cv-bio{margin:0;font-size:11.5px;line-height:1.45;max-width:80ch;font-style:italic}
+.cv-bio strong{font-style:normal;font-weight:900;color:var(--accent)}
+@media (max-width:640px){.cv-name{font-size:15px;padding:4px 8px}.cv-cast{padding:4px 8px 6px}.cv-actors{width:100%}.cv-actors li{flex:1 1 auto;text-align:center;font-size:10px;padding:2px 5px;border-bottom:1px solid var(--grid)}.cv-bio{font-size:10.5px}}
 </style>
 </head>
 <body>
@@ -569,6 +582,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 <details class="cv fold" id="foldCv" data-key="lak-fold-cv" open>
   <summary><h2 class="cv-h">Résumé</h2><span class="cv-sub">Curriculum vitae · abridged</span><span class="fold-ind" aria-hidden="true"></span></summary>
   <div class="cv-body">
+    <p class="cv-name">Luke Andrew <em>Motherfucking</em> Kelly</p>
     <dl class="cv-stats">
       <div><dt>Name</dt><dd>Luke Andrew motherfucking Kelly</dd></div>
       <div><dt>Height</dt><dd>6'0"</dd></div>
@@ -588,6 +602,10 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
         <p class="cv-stmt">I want to be an actor, but I'm not an actor because I was born in a cult. I was kidnapped as a child. I finally escaped. I just want to be as famous as Matthew McConaughey. I am personally offended that I have not been cast in every single Christopher Nolan film he has ever made. I am not blaming him personally, but I am telling him now: this is his chance to make up for lost time.</p>
       </section>
     </div>
+    <section class="cv-cast"><h3>If you like these actors, you’re going to love him:</h3>
+      <ul class="cv-actors"><li>Tom Hardy</li><li>Matthew McConaughey</li><li>Shia LaBeouf</li><li>Tom Cruise</li><li class="gos">Ryan Gosling</li><li class="gos">Ryan Gosling</li><li class="gos">Ryan Gosling</li><li class="nf">Nathan Fielder</li></ul>
+      <p class="cv-bio">It’s sort of like if Ryan Gosling and Nathan Fielder had a son, and the son was raised by reptilians on the moon, and then he finally escaped to find his father, Nathan Fielder, and Steve Jobs, and he’s back, and he’s ready to be hired for Hollywood. <strong>Trust me — he has a higher IQ than you probably think he does.</strong></p>
+    </section>
   </div>
 </details>
 <script>(function(){ var mob = matchMedia('(max-width:640px)').matches;   // phones: folded by default; your choice is remembered
