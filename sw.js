@@ -1,6 +1,6 @@
 /* Voice Memo Master service worker: offline app shell + Android Web Share Target.
    All paths are relative to the SW scope, so the app works from any subpath (e.g. GitHub Pages). */
-const VERSION = 'vmm-v10';
+const VERSION = 'vmm-v11';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './og-image.png',
   './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png'];
 
@@ -30,6 +30,8 @@ self.addEventListener('fetch', e => {
   const req = e.request, url = new URL(req.url);
   const scope = new URL(self.registration.scope);
   // Other pages on this site (portfolio, public gallery) and published files/manifests are never served from this cache
+  // Gallery shelves 2 and 3 are other sites on this origin (e.g. /voice-memo-gallery-2/): never touch them
+  if (url.origin === location.origin && !url.pathname.startsWith(scope.pathname)) return;
   if (url.origin === location.origin && (url.pathname.startsWith(scope.pathname + 'portfolio/') || url.pathname.startsWith(scope.pathname + 'gallery/') ||
       url.pathname.startsWith(scope.pathname + 'songs/') || url.pathname.startsWith(scope.pathname + 'photos/') || url.pathname.endsWith('.json'))) return;
 

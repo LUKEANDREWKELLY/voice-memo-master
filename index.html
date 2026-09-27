@@ -387,6 +387,22 @@ li.memo .ab button[aria-pressed="true"]{background:var(--accent);color:var(--acc
 .meter i{position:absolute;left:0;top:0;bottom:0;background:var(--ink)}
 .meter.warn i{background:var(--accent)}
 .pubmsg{min-height:16px;font-weight:700}
+.qpick{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--grid);margin:4px 0}
+.qpick label{display:flex;flex-direction:column;gap:1px;padding:6px 8px;border-right:1px solid var(--grid);cursor:pointer;background:var(--paper2)}
+.qpick label:last-child{border-right:0}
+.qpick label:has(input:checked){background:var(--ink);color:var(--accent-ink)}
+.qpick input{position:absolute;opacity:0;pointer-events:none}
+.qpick label:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:-2px}
+.qpick b{font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.qpick span{font-size:10.5px;font-weight:700;opacity:.85}
+.pubest{font-weight:700}
+.shelf{margin:0 0 6px}
+.shelf-top{display:flex;justify-content:space-between;gap:8px;font-size:11px}
+.shelf-top b{font-weight:900;letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shelf-top span{font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.shelf.warn .meter i{background:var(--accent)}
+.shelf-total{border-top:1px solid var(--grid);padding-top:6px;margin-top:2px}
+.shelf-total .meter{height:14px}
 .pubmsg.err{color:var(--accent)}
 .publive{margin-top:3px;padding:3px 6px;border:1px solid var(--grid);background:var(--paper2);font-weight:800;font-variant-numeric:tabular-nums}
 .publive.ok{background:var(--ink);color:var(--accent-ink)}
@@ -1017,9 +1033,27 @@ body.dropping::after{content:'Drop your songs anywhere';position:fixed;inset:8px
   <div class="sheet-box">
     <div class="sheet-head"><h2 id="pubTitle">Publish</h2><button id="pubClose">Close</button></div>
     <div class="sheet-sec">
-      Publishing puts your polished songs (made small, about 0.7 MB a minute) and your photos on your public gallery page, so anyone with the link can listen. No key is needed to listen.
+      Publishing puts your polished songs (made small) and your photos on your public gallery page, so anyone with the link can listen on any phone. No login needed to listen.
       <button id="pubAllTop" class="pub-big">Publish all songs</button>
-      <div class="btnrow"><a id="galLink" href="https://lukeandrewkelly.github.io/voice-memo-master/gallery/" target="_blank" rel="noopener">Open the public gallery</a></div>
+      <div class="pubmsg" id="pubMsg" aria-live="polite"></div>
+      <div class="publive" id="pubLiveLine" hidden aria-live="polite"></div>
+      <div class="btnrow"><a id="galLink" href="gallery/" target="_blank" rel="noopener">Open the public gallery</a></div>
+    </div>
+    <div class="sheet-sec">
+      <h3>Sound quality</h3>
+      <div class="qpick" role="radiogroup" aria-label="Sound quality for published songs">
+        <label><input type="radio" name="pubq" value="standard"><b>Standard</b><span>96 kbps · 0.72 MB/min</span></label>
+        <label><input type="radio" name="pubq" value="compact"><b>Compact</b><span>64 kbps · 0.48 MB/min</span></label>
+        <label><input type="radio" name="pubq" value="tiny"><b>Tiny</b><span>48 kbps · 0.36 MB/min</span></label>
+      </div>
+      <div id="pubEst" class="pubest"></div>
+      <p class="fine" style="margin:4px 0 0">All mono. Compact sounds close to Standard for voice and guitar and fits half again as many songs. Songs already published keep the quality they went up with.</p>
+    </div>
+    <div class="sheet-sec">
+      <h3>Space on the gallery</h3>
+      <div id="pubShelves"></div>
+      <div id="pubSpace">Not checked yet.</div>
+      <p class="fine" style="margin:4px 0 0">Each shelf is a free GitHub Pages site (about 1 GB each). Songs fill shelf 1 to about 900 MB, then move on to shelf 2, then 3. Listeners never notice.</p>
     </div>
     <div class="sheet-sec">
       <h3>Your GitHub key <span class="keystate" id="keyState"></span></h3>
@@ -1027,26 +1061,19 @@ body.dropping::after{content:'Drop your songs anywhere';position:fixed;inset:8px
       <ol id="keySteps">
         <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub’s new key page</a> (sign in if it asks).</li>
         <li>Name it “Voice Memo Master publish” and pick when it expires.</li>
-        <li>Under <b>Repository access</b> choose <b>Only select repositories</b> and pick <b>voice-memo-master</b>.</li>
+        <li>Under <b>Repository access</b> choose <b>Only select repositories</b> and pick <b>all three</b>: <b>voice-memo-master</b>, <b>voice-memo-gallery-2</b> and <b>voice-memo-gallery-3</b>.</li>
         <li>Under <b>Permissions → Repository permissions</b>, set <b>Contents</b> to <b>Read and write</b>. Leave everything else alone.</li>
         <li>Tap <b>Generate token</b>, copy it, paste it here and tap Save key.</li>
       </ol>
       <div class="keyrow" style="margin-top:6px"><input id="keyIn" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste your key (starts with github_pat_)" aria-label="GitHub key"><button id="keySave" class="primary">Save key</button></div>
       <div class="btnrow"><button id="keyCheck">Check key</button><button id="keyForget">Forget key</button></div>
-      <p style="margin:6px 0 0" class="fine">The key stays only in this browser on this device. It’s never put on the site or sent anywhere except GitHub.</p>
+      <p style="margin:6px 0 0" class="fine">The key stays only in this browser on this device. It’s never put on the site and only ever sent to api.github.com.</p>
     </div>
     <div class="sheet-sec">
-      <h3>Space on the gallery</h3>
-      <div class="meter" id="pubMeter"><i style="width:0"></i></div>
-      <div id="pubSpace">Not checked yet.</div>
-    </div>
-    <div class="sheet-sec">
-      <h3>Publish</h3>
-      <div>To publish songs, tap the <b>Pub</b> arrow on a song, or tick songs (<b>Select / delete</b>) and tap <b>Publish selected</b>. Tap Pub again on a published song to take it off.</div>
+      <h3>More</h3>
+      <div>To publish just some songs, tap the <b>Pub</b> arrow on a song, or tick songs (<b>Select / delete</b>) and tap <b>Publish selected</b>. Tap Pub again on a published song to take it off. Publishing again skips songs that are already up, so if it stops halfway, just tap Publish again.</div>
       <button id="pubAll" class="pub-big">Publish all songs</button>
       <div class="btnrow"><button id="pubPhotos">Publish photos</button></div>
-      <div class="pubmsg" id="pubMsg" aria-live="polite"></div>
-      <div class="publive" id="pubLiveLine" hidden aria-live="polite"></div>
     </div>
   </div>
 </div>
@@ -2639,83 +2666,82 @@ $('#bnLeftN').addEventListener('click', () => bnNudge(-5, 0)); $('#bnRightN').ad
 $('#bnCenter').addEventListener('click', () => { const p = bnCur(); if (!p) return; p.fx = 50; p.fy = 50; p.zoom = 1; bnRefreshCur(); bnSave([p]); });
 $('#bnDel2').addEventListener('click', bnDelete);
 (async () => { try { photos = (await phTx('readonly', st => st.getAll())) || []; } catch(e){ photos = []; } drawPhotos(); showStorage(); })();
-/* ---------- publish: songs (small MP3s) + photos to the public gallery via the GitHub Git Data API (one commit per batch) ---------- */
+/* ---------- publish: songs (small mono MP3s) + photos to the public gallery, spread over up to 3 "shelves" (free GitHub Pages sites), via the Git Data API ---------- */
 // The key lives only in this device's localStorage and is only ever sent to api.github.com.
-const GH_REPO = 'LUKEANDREWKELLY/voice-memo-master', GH_API = 'https://api.github.com', KEY_LS = 'vmm_github_token';   // shared with the portfolio's owner mode
+const GH_OWNER = 'LUKEANDREWKELLY', GH_API = 'https://api.github.com', KEY_LS = 'vmm_github_token';   // shared with the portfolio's owner mode
+const GH_REPO = GH_OWNER + '/voice-memo-master', HOME_REPO = 'voice-memo-master', INDEX_PATH = 'gallery/gallery.json';
 try { const old = localStorage.getItem('lak-gh-key'); if (old && !localStorage.getItem(KEY_LS)) localStorage.setItem(KEY_LS, old); localStorage.removeItem('lak-gh-key'); } catch(e){}
-const SITE_LIMIT = 1e9, SITE_WARN = 0.9e9, MP3_KBPS = 96;   // GitHub Pages sites should stay under ~1 GB; 96 kbps mono ≈ 0.72 MB a minute
+// Every shelf is a project site under lukeandrewkelly.github.io, so it's the same origin as the gallery: playback just works.
+const SHELVES = [
+  {n:1, repo:'voice-memo-master',    dir:'gallery/tracks/', base:'/voice-memo-master/gallery/tracks/'},
+  {n:2, repo:'voice-memo-gallery-2', dir:'tracks/',         base:'/voice-memo-gallery-2/tracks/'},
+  {n:3, repo:'voice-memo-gallery-3', dir:'tracks/',         base:'/voice-memo-gallery-3/tracks/'}];
+const SHELF_SITE = 1e9;   // GitHub Pages: about 1 GB per site
+const SHELF_FILL = (() => { try { const t = +localStorage.getItem('vmm_test_shelf_cap'); if (t > 0) return t; } catch(e){} return 0.9e9; })();   // fill a shelf to ~900 MB, then move to the next
+const APP_BYTES = 4e6;    // the app itself also lives on shelf 1
+const QUALITY = { standard:{kbps:96, label:'Standard'}, compact:{kbps:64, label:'Compact'}, tiny:{kbps:48, label:'Tiny'} };
+const getQuality = () => { try { const q = localStorage.getItem('vmm_pub_quality'); if (QUALITY[q]) return q; } catch(e){} return 'compact'; };
+const perMin = kbps => kbps * 1000 / 8 * 60;
 const getKey = () => { try { return localStorage.getItem(KEY_LS) || ''; } catch(e){ return ''; } };
 const pubId = m => String(m.id).replace(/[^A-Za-z0-9]/g,'').slice(0, 20).toLowerCase();
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const pubSay = (t, err) => { const el = $('#pubMsg'); if (el){ el.textContent = t; el.classList.toggle('err', !!err); } setStatus(t); };
 class PubErr extends Error {}
+const repoApi = repo => `/repos/${GH_OWNER}/${repo}`;
+const needAll = 'Make a new key that includes all three: voice-memo-master, voice-memo-gallery-2 and voice-memo-gallery-3, each with Contents: Read and write.';
 async function gh(path, opt = {}, tries = 0){
   const key = getKey(); if (!key) throw new PubErr('No key saved yet. Tap Publish at the top and paste your GitHub key.');
   let r;
   try { r = await fetch(GH_API + path, { ...opt, cache:'no-store', headers: { 'Accept':'application/vnd.github+json', 'Authorization':'Bearer ' + key, 'X-GitHub-Api-Version':'2022-11-28', ...(opt.body ? {'Content-Type':'application/json'} : {}), ...(opt.headers||{}) } }); }
-  catch(e){ if (tries < 3){ await sleep(1500 * (tries+1)); return gh(path, opt, tries+1); } throw new PubErr('Couldn’t reach GitHub. Check your internet and try again.'); }
-  if ((r.status === 403 || r.status === 429) && tries < 6){
+  catch(e){ if (tries < 4){ await sleep(1500 * 2**tries); return gh(path, opt, tries+1); } throw new PubErr('Couldn’t reach GitHub. Check your internet and try again. Everything already published stays live.'); }
+  if ((r.status === 403 || r.status === 429) && tries < 6){   // rate limits and secondary rate limits: wait and carry on
     const ra = +r.headers.get('retry-after'), left = r.headers.get('x-ratelimit-remaining'), reset = +r.headers.get('x-ratelimit-reset');
-    if (ra || left === '0' || r.status === 429){ const wait = Math.min(15*60, ra || (reset ? Math.max(5, reset - Date.now()/1000) : 60 * (tries+1)));
+    let secondary = false; if (!ra && left !== '0' && r.status === 403){ try { secondary = /secondary rate|abuse/i.test((await r.clone().json()).message || ''); } catch(e){} }
+    if (ra || left === '0' || r.status === 429 || secondary){ const wait = Math.min(15*60, ra || (left === '0' && reset ? Math.max(5, reset - Date.now()/1000) : 30 * 2**tries));
       pubSay(`GitHub asked us to slow down. Waiting ${Math.ceil(wait)} seconds, then carrying on…`); await sleep(wait*1000); return gh(path, opt, tries+1); }
   }
-  if ((r.status >= 500) && tries < 3){ await sleep(2000 * (tries+1)); return gh(path, opt, tries+1); }
+  if ((r.status >= 500) && tries < 4){ await sleep(2000 * 2**tries); return gh(path, opt, tries+1); }
   return r;
 }
-async function ghFail(r, what){
+async function ghFail(r, what, repo = HOME_REPO){
   let msg = ''; try { msg = (await r.json()).message || ''; } catch(e){}
   if (r.status === 401) return new PubErr('That key didn’t work (it may be mistyped, expired or deleted). Make a new one and paste it in Publish.');
-  if (r.status === 403 && /not accessible|permission|forbidden/i.test(msg)) return new PubErr('The key can’t write to voice-memo-master. Make a new key with only that repository and Contents: Read and write.');
-  if (r.status === 404) return new PubErr('The key can’t see the voice-memo-master repository. When you make the key, pick Only select repositories → voice-memo-master.');
-  if (r.status === 413 || /too large|too big|size/i.test(msg)) return new PubErr(`${what} is too big for GitHub. Try a shorter song.`);
-  if (/quota|storage|space|exceed/i.test(msg)) return new PubErr('GitHub says the gallery is out of space. Take some songs off first.');
+  if (r.status === 404 || (r.status === 403 && /not accessible|permission|forbidden/i.test(msg))) return new PubErr(`Your key needs access to ${repo} too. ${needAll} Everything already published stays live.`);
+  if (r.status === 413 || /too large|too big/i.test(msg)) return new PubErr(`${what} is too big for GitHub. Try a shorter song.`);
+  if (/quota|storage|exceed/i.test(msg)) return new PubErr(`GitHub says ${repo} is out of space. Take some songs off first.`);
   return new PubErr(`GitHub said no while ${what.toLowerCase()} (${r.status}${msg ? ': ' + msg : ''}).`);
 }
 const b64 = u8 => { let s = ''; for (let i=0;i<u8.length;i+=0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i+0x8000)); return btoa(s); };
 const unb64 = t => Uint8Array.from(atob(t.replace(/\s/g,'')), c => c.charCodeAt(0));
-const emptyManifest = () => ({version:1, artist:'Luke Andrew motherfucking Kelly', updated:null, songs:[], photos:[]});
-async function readManifest(ref = 'main'){ // -> {sha, data}
-  const r = await gh(`/repos/${GH_REPO}/contents/songs.json?ref=${ref}`);
-  if (r.status === 404) return {sha:null, data:emptyManifest()};
-  if (!r.ok) throw await ghFail(r, 'Reading the song list');
+const emptyIndex = () => ({version:2, artist:'Luke Andrew motherfucking Kelly', updated:null, shelves:[], songs:[], photos:[]});
+async function readRepoJson(repo, path, ref){
+  const r = await gh(`${repoApi(repo)}/contents/${path}?ref=${ref}`);
+  if (r.status === 404) return null;
+  if (!r.ok) throw await ghFail(r, 'Reading the song list', repo);
   const j = await r.json(); let text;
   if (j.content && j.encoding === 'base64') text = new TextDecoder().decode(unb64(j.content));
-  else { const raw = await gh(`/repos/${GH_REPO}/contents/songs.json?ref=${ref}`, {headers:{Accept:'application/vnd.github.raw'}}); text = await raw.text(); }
-  let data; try { data = JSON.parse(text); } catch(e){ data = emptyManifest(); }
-  data.songs = data.songs || []; data.photos = data.photos || []; return {sha:j.sha, data};
+  else { const raw = await gh(`${repoApi(repo)}/contents/${path}?ref=${ref}`, {headers:{Accept:'application/vnd.github.raw'}}); text = await raw.text(); }
+  try { return JSON.parse(text); } catch(e){ return null; }
 }
+function normIndex(d){ const x = Object.assign(emptyIndex(), d || {}); x.version = 2; x.songs = (x.songs || []).map(e => e.shelf ? e : {...e, shelf:1, path: e.path || e.file, url: e.url || '/voice-memo-master/' + e.file}); x.photos = x.photos || []; return x; }
+async function readIndex(ref = 'main'){ // -> {data}; the old root songs.json (written by older copies of the app) is folded in, and left in place so they keep working
+  const d = normIndex(await readRepoJson(HOME_REPO, INDEX_PATH, ref)), old = await readRepoJson(HOME_REPO, 'songs.json', ref);
+  if (old){ const ids = new Set(d.songs.map(e => e.id)), pids = new Set(d.photos.map(p => p.id)), o = normIndex(old);   // fold in anything an older copy of the app published
+    const gone = new Set(d.removed || []);   // songs taken off with this version stay off, even though the old list still names them
+    for (const e of o.songs) if (!ids.has(e.id) && !gone.has(e.id)) d.songs.push(e); for (const p of o.photos) if (!pids.has(p.id)) d.photos.push(p); }
+  return {data: d};
+}
+const shelfBytes = (d, n) => (d.songs||[]).filter(e => (e.shelf||1) === n).reduce((a,e) => a + (e.bytes||0), 0);
+const photoBytes = d => (d.photos||[]).reduce((a,e) => a + (e.bytes||0), 0);
+function recountShelves(d){ d.shelves = SHELVES.map(s => ({n:s.n, repo:s.repo, site:`https://lukeandrewkelly.github.io/${s.repo}/`, bytes: shelfBytes(d, s.n), songs: d.songs.filter(e => (e.shelf||1) === s.n).length}));
+  d.photoBytes = photoBytes(d); d.totalBytes = d.shelves.reduce((a,s) => a + s.bytes, 0) + d.photoBytes; }
 function syncPubMap(){ pubMap = {}; if (!pubManifest) return; const byPid = new Map((pubManifest.songs||[]).map(e => [e.id, e])); for (const m of memos){ const e = byPid.get(pubId(m)); if (e) pubMap[m.id] = e; } }
 async function loadPublic(){ // what's live, from the public site (no key needed)
-  try { const r = await fetch('songs.json?t=' + Date.now(), {cache:'no-store'}); if (r.ok){ pubManifest = await r.json(); syncPubMap(); render(); } } catch(e){}
+  try { let r = await fetch('gallery/gallery.json?t=' + Date.now(), {cache:'no-store'}); if (!r.ok) r = await fetch('songs.json?t=' + Date.now(), {cache:'no-store'});
+    if (r.ok){ pubManifest = normIndex(await r.json()); syncPubMap(); render(); } } catch(e){}
+  drawSpace();
 }
-let lameP = null;
-const loadLame = () => lameP || (lameP = new Promise((res, rej) => { if (window.lamejs) return res(window.lamejs); const sc = document.createElement('script'); sc.src = 'vendor/lame.min.js';
-  sc.onload = () => window.lamejs ? res(window.lamejs) : rej(new Error('lame')); sc.onerror = () => { lameP = null; rej(new PubErr('Couldn’t load the song squeezer. Check your internet and try again.')); }; document.head.appendChild(sc); }));
-async function masterPcm(m){ // polished song -> mono 16-bit samples
-  const b = await getBlob(m.id+':master'); if (!b) throw new PubErr(`“${m.name}” isn’t polished on this device yet.`);
-  const u = new Uint8Array(await b.arrayBuffer()), w = wavInfo(u);
-  if (w && w.bits === 24 && w.ch >= 1){ const n = Math.floor(w.dataLen / (3*w.ch)), out = new Int16Array(n); let o = w.dataOff;
-    for (let i=0;i<n;i++){ let acc = 0; for (let c=0;c<w.ch;c++){ let v = u[o] | (u[o+1]<<8) | (u[o+2]<<16); if (v & 0x800000) v -= 0x1000000; acc += v; o += 3; } out[i] = Math.max(-32768, Math.min(32767, Math.round(acc / w.ch / 256))); }
-    return {pcm: out, rate: SR}; }
-  const AC = window.OfflineAudioContext || window.webkitOfflineAudioContext, ctx = new AC(1, 2, SR), buf = await ctx.decodeAudioData(u.buffer.slice(0));
-  const ch = buf.getChannelData(0), out = new Int16Array(ch.length); for (let i=0;i<ch.length;i++) out[i] = Math.max(-32768, Math.min(32767, Math.round(ch[i]*32767))); return {pcm: out, rate: buf.sampleRate};
-}
-async function encodeMp3(m, onPct){
-  const lame = await loadLame(), {pcm, rate} = await masterPcm(m), enc = new lame.Mp3Encoder(1, rate, MP3_KBPS), parts = []; const step = 1152 * 40; let t = performance.now();
-  for (let i=0;i<pcm.length;i+=step){ const d = enc.encodeBuffer(pcm.subarray(i, Math.min(pcm.length, i+step))); if (d.length) parts.push(new Uint8Array(d));
-    if (performance.now() - t > 40){ onPct && onPct(i / pcm.length); await tick(); t = performance.now(); } }
-  const f = enc.flush(); if (f.length) parts.push(new Uint8Array(f));
-  const out = new Uint8Array(parts.reduce((a,p) => a + p.length, 0)); let o = 0; for (const p of parts){ out.set(p, o); o += p.length; } return out;
-}
-const songSig = m => JSON.stringify([m.baked||null, m.start, m.end, m.lufs]);
-function peaks64(m){ const w = m.wave||[], n = w.length; if (!n || !m.total) return []; const a = Math.floor(m.start/m.total*n), b = Math.max(a+1, Math.min(n, Math.ceil(m.end/m.total*n))), out = [];
-  for (let i=0;i<64;i++){ const j0 = a + Math.floor(i*(b-a)/64), j1 = Math.max(j0+1, a + Math.floor((i+1)*(b-a)/64)); let mx = 0; for (let j=j0; j<j1 && j<n; j++) mx = Math.max(mx, w[j]||0); out.push(Math.round(Math.min(1, mx)*99)); }
-  return out; }
-const usedBytes = d => (d.songs||[]).reduce((a,e) => a + (e.bytes||0), 0) + (d.photos||[]).reduce((a,e) => a + (e.bytes||0), 0) + 3e6;   // + the app itself
-function drawSpace(d){ if (!d) return; const used = usedBytes(d), pct = Math.min(100, used/SITE_LIMIT*100), mins = Math.max(0, (SITE_LIMIT - used) / (MP3_KBPS*1000/8*60));
-  $('#pubMeter').classList.toggle('warn', used > SITE_WARN); $('#pubMeter').firstElementChild.style.width = pct.toFixed(1) + '%';
-  $('#pubSpace').textContent = `${(d.songs||[]).length} song${(d.songs||[]).length===1?'':'s'} and ${(d.photos||[]).length} photo${(d.photos||[]).length===1?'':'s'} use ${fmtBytes(used)} of about 1 GB. Room for roughly ${Math.floor(mins/3.5)} more songs of 3½ minutes.`; }
-const LIVE_LISTS = ['songs.json'];
+const LIVE_LISTS = ['gallery/gallery.json', 'songs.json'];
 /* saved vs actually live: Pages takes ~20-45 s to put each commit on the site, so watch the public list until the saved songs show up */
 let pubSaved = new Set(), pubSavedAt = 0, liveWatchT = null;
 function noteSaved(ids){ ids.forEach(i => pubSaved.add(i)); pubSavedAt = Date.now(); watchLive(); }
@@ -2729,82 +2755,158 @@ async function watchLive(){ clearTimeout(liveWatchT); const n = pubSaved.size, e
     el.textContent = live >= n ? `Saved ${n} · all ${n} live on the site` : `Saved ${n} · ${live ? `${live} live now · ` : ''}${live ? 'the rest' : 'live on the site'} in about ${left}s`; }
   if (live < n) liveWatchT = setTimeout(watchLive, 5000);
 }
-/* Git Data API: upload blobs, then one tree + one commit per batch, then move main (retry if the site moved meanwhile) */
-async function ghJson(path, opt, what){ const r = await gh(path, opt); if (!r.ok) throw await ghFail(r, what); return r.json(); }
-async function siteHead(){ const ref = await ghJson(`/repos/${GH_REPO}/git/ref/heads/main`, {}, 'Reading the site');
-  const c = await ghJson(`/repos/${GH_REPO}/git/commits/${ref.object.sha}`, {}, 'Reading the site'); return {head: ref.object.sha, tree: c.tree.sha}; }
-async function ghBlob(bytes, what){ return (await ghJson(`/repos/${GH_REPO}/git/blobs`, {method:'POST', body: JSON.stringify({content: b64(bytes), encoding:'base64'})}, what || 'Uploading')).sha; }
-async function commitFiles(files, change, message){ // files: [{path, sha}] (sha null = remove); change(manifest) edits songs.json
+/* Git Data API on any shelf repo: blobs, then one tree + one commit per batch, then move main (build again on top if the site moved meanwhile) */
+async function ghJson(path, opt, what, repo){ const r = await gh(path, opt); if (!r.ok) throw await ghFail(r, what, repo); return r.json(); }
+async function siteHead(repo){ const ref = await ghJson(`${repoApi(repo)}/git/ref/heads/main`, {}, 'Reading the site', repo);
+  const c = await ghJson(`${repoApi(repo)}/git/commits/${ref.object.sha}`, {}, 'Reading the site', repo); return {head: ref.object.sha, tree: c.tree.sha}; }
+async function ghBlob(repo, bytes, what){ return (await ghJson(`${repoApi(repo)}/git/blobs`, {method:'POST', body: JSON.stringify({content: b64(bytes), encoding:'base64'})}, what || 'Uploading', repo)).sha; }
+async function gitCommit(repo, build, message){ // build(head) -> [{path, sha}] (sha null = remove)
   for (let i=0; i<6; i++){
-    const {head, tree} = await siteHead(), {data} = await readManifest(head); change(data); data.updated = new Date().toISOString();
-    const mSha = await ghBlob(new TextEncoder().encode(JSON.stringify(data, null, 1)), 'Saving the song list');
-    let entries = files.map(f => ({path: f.path, mode:'100644', type:'blob', sha: f.sha})).concat([{path:'songs.json', mode:'100644', type:'blob', sha: mSha}]), t;
-    let r = await gh(`/repos/${GH_REPO}/git/trees`, {method:'POST', body: JSON.stringify({base_tree: tree, tree: entries})});
+    const {head, tree} = await siteHead(repo);
+    let entries = (await build(head)).map(f => ({path: f.path, mode:'100644', type:'blob', sha: f.sha}));
+    if (!entries.length) return;
+    let r = await gh(`${repoApi(repo)}/git/trees`, {method:'POST', body: JSON.stringify({base_tree: tree, tree: entries})});
     if (!r.ok && r.status === 422 && entries.some(e => e.sha === null)){   // a file to remove was already gone: carry on without it
-      entries = entries.filter(e => e.sha !== null); r = await gh(`/repos/${GH_REPO}/git/trees`, {method:'POST', body: JSON.stringify({base_tree: tree, tree: entries})}); }
-    if (!r.ok) throw await ghFail(r, 'Saving'); t = await r.json();
-    const c = await ghJson(`/repos/${GH_REPO}/git/commits`, {method:'POST', body: JSON.stringify({message, tree: t.sha, parents: [head]})}, 'Saving');
-    const u = await gh(`/repos/${GH_REPO}/git/refs/heads/main`, {method:'PATCH', body: JSON.stringify({sha: c.sha, force: false})});
-    if (u.ok){ pubManifest = data; syncPubMap(); return data; }
-    if (u.status === 422 || u.status === 409){ await sleep(700 * (i+1)); continue; }   // the site changed in the meantime: build on the new version
-    throw await ghFail(u, 'Saving');
+      entries = entries.filter(e => e.sha !== null); if (!entries.length) return;
+      r = await gh(`${repoApi(repo)}/git/trees`, {method:'POST', body: JSON.stringify({base_tree: tree, tree: entries})}); }
+    if (!r.ok) throw await ghFail(r, 'Saving', repo); const t = await r.json();
+    const c = await ghJson(`${repoApi(repo)}/git/commits`, {method:'POST', body: JSON.stringify({message, tree: t.sha, parents: [head]})}, 'Saving', repo);
+    const u = await gh(`${repoApi(repo)}/git/refs/heads/main`, {method:'PATCH', body: JSON.stringify({sha: c.sha, force: false})});
+    if (u.ok) return c.sha;
+    if (u.status === 422 || u.status === 409){ await sleep(700 * (i+1)); continue; }
+    throw await ghFail(u, 'Saving', repo);
   }
-  throw new PubErr('The site kept changing while saving. Try again in a minute.');
+  throw new PubErr('The site kept changing while saving. Try again in a minute. Everything already published stays live.');
 }
-const estBytes = m => Math.max(1, (m.end - m.start)) * MP3_KBPS * 1000 / 8 + 1500;
+async function commitIndex(files, change, message){ // one commit on voice-memo-master: files + the updated gallery/gallery.json
+  let saved = null;
+  await gitCommit(HOME_REPO, async head => { const {data} = await readIndex(head); change(data); recountShelves(data); data.updated = new Date().toISOString(); saved = data;
+    const mSha = await ghBlob(HOME_REPO, new TextEncoder().encode(JSON.stringify(data, null, 1)), 'Saving the song list');
+    return files.concat([{path: INDEX_PATH, sha: mSha}]); }, message);
+  pubManifest = saved; syncPubMap(); drawSpace(); return saved;
+}
+const shelfOk = new Set();
+async function ensureShelf(s){ if (shelfOk.has(s.repo)) return;
+  const r = await gh(repoApi(s.repo)); if (!r.ok) throw await ghFail(r, 'Checking ' + s.repo, s.repo);
+  const j = await r.json(); if (j.permissions && !j.permissions.push) throw new PubErr(`Your key can see ${s.repo} but can’t change it. ${needAll} Everything already published stays live.`);
+  shelfOk.add(s.repo); }
+let lameP = null;
+const loadLame = () => lameP || (lameP = new Promise((res, rej) => { if (window.lamejs) return res(window.lamejs); const sc = document.createElement('script'); sc.src = 'vendor/lame.min.js';
+  sc.onload = () => window.lamejs ? res(window.lamejs) : rej(new Error('lame')); sc.onerror = () => { lameP = null; rej(new PubErr('Couldn’t load the song squeezer. Check your internet and try again.')); }; document.head.appendChild(sc); }));
+async function masterPcm(m){ // polished song -> mono 16-bit samples
+  const b = await getBlob(m.id+':master'); if (!b) throw new PubErr(`“${m.name}” isn’t polished on this device yet.`);
+  const u = new Uint8Array(await b.arrayBuffer()), w = wavInfo(u);
+  if (w && w.bits === 24 && w.ch >= 1){ const n = Math.floor(w.dataLen / (3*w.ch)), out = new Int16Array(n); let o = w.dataOff;
+    for (let i=0;i<n;i++){ let acc = 0; for (let c=0;c<w.ch;c++){ let v = u[o] | (u[o+1]<<8) | (u[o+2]<<16); if (v & 0x800000) v -= 0x1000000; acc += v; o += 3; } out[i] = Math.max(-32768, Math.min(32767, Math.round(acc / w.ch / 256))); }
+    return {pcm: out, rate: SR}; }
+  const AC = window.OfflineAudioContext || window.webkitOfflineAudioContext, ctx = new AC(1, 2, SR), buf = await ctx.decodeAudioData(u.buffer.slice(0));
+  const ch = buf.getChannelData(0), out = new Int16Array(ch.length); for (let i=0;i<ch.length;i++) out[i] = Math.max(-32768, Math.min(32767, Math.round(ch[i]*32767))); return {pcm: out, rate: buf.sampleRate};
+}
+async function encodeMp3(m, kbps, onPct){
+  const lame = await loadLame(), {pcm, rate} = await masterPcm(m), enc = new lame.Mp3Encoder(1, rate, kbps), parts = []; const step = 1152 * 40; let t = performance.now();
+  for (let i=0;i<pcm.length;i+=step){ const d = enc.encodeBuffer(pcm.subarray(i, Math.min(pcm.length, i+step))); if (d.length) parts.push(new Uint8Array(d));
+    if (performance.now() - t > 40){ onPct && onPct(i / pcm.length); await tick(); t = performance.now(); } }
+  const f = enc.flush(); if (f.length) parts.push(new Uint8Array(f));
+  const out = new Uint8Array(parts.reduce((a,p) => a + p.length, 0)); let o = 0; for (const p of parts){ out.set(p, o); o += p.length; } return out;
+}
+const songSig = m => JSON.stringify([m.baked||null, m.start, m.end, m.lufs]);
+async function songHash(m){ // content hash of the polished master: the same sound is never uploaded twice
+  const b = await getBlob(m.id+':master'); if (!b) throw new PubErr(`“${m.name}” isn’t polished on this device yet.`);
+  const h = new Uint8Array(await crypto.subtle.digest('SHA-256', await b.arrayBuffer())); return [...h.subarray(0, 12)].map(x => x.toString(16).padStart(2,'0')).join(''); }
+function peaks64(m){ const w = m.wave||[], n = w.length; if (!n || !m.total) return []; const a = Math.floor(m.start/m.total*n), b = Math.max(a+1, Math.min(n, Math.ceil(m.end/m.total*n))), out = [];
+  for (let i=0;i<64;i++){ const j0 = a + Math.floor(i*(b-a)/64), j1 = Math.max(j0+1, a + Math.floor((i+1)*(b-a)/64)); let mx = 0; for (let j=j0; j<j1 && j<n; j++) mx = Math.max(mx, w[j]||0); out.push(Math.round(Math.min(1, mx)*99)); }
+  return out; }
+const estBytes = (m, kbps) => Math.max(1, (m.end - m.start)) * kbps * 1000 / 8 + 1500;
+const unpublished = () => memos.filter(m => m.state === 'done' && (!pubMap[m.id] || pubMap[m.id].sig !== songSig(m)));
+const avgSongSec = () => { const d = memos.filter(m => m.state === 'done' && m.end > m.start); return d.length ? d.reduce((a,m) => a + (m.end - m.start), 0) / d.length : 210; };
+const fmtMin = s => { if (s < 45) return Math.round(s) + ' s'; const mm = Math.round(s / 30) / 2; return (mm % 1 ? Math.floor(mm) + '½' : mm) + ' min'; };
+let pubLive = null;   // extra bytes per shelf while a publish is running (uploaded, not yet saved)
+function drawSpace(){
+  const box = $('#pubShelves'); if (!box) return;
+  const d = pubManifest || emptyIndex(), extra = pubLive || {}, used = SHELVES.map(s => shelfBytes(d, s.n) + (extra[s.n] || 0) + (s.n === 1 ? photoBytes(d) + APP_BYTES : 0));
+  const total = used.reduce((a,b) => a + b, 0), cap = SHELF_SITE * SHELVES.length;
+  const bar = (label, u, c, warn) => `<div class="shelf${warn ? ' warn' : ''}"><div class="shelf-top"><b>${label}</b><span>${fmtBytes(u)} of ${c >= 1e9 ? (c/1e9) + ' GB' : fmtBytes(c)}</span></div><div class="meter"><i style="width:${Math.min(100, u/c*100).toFixed(1)}%"></i></div></div>`;
+  box.innerHTML = SHELVES.map((s, i) => bar(`Shelf ${s.n} · ${s.repo}`, used[i], SHELF_SITE, shelfBytes(d, s.n) + (extra[s.n] || 0) > SHELF_FILL * 0.97)).join('') + `<div class="shelf-total">${bar('Total', total, cap, total > SHELF_FILL * SHELVES.length)}</div>`;
+  const q = QUALITY[getQuality()], free = SHELVES.reduce((a, s) => a + Math.max(0, SHELF_FILL - shelfBytes(d, s.n) - (extra[s.n] || 0)), 0);
+  const avg = avgSongSec(), fits = Math.max(0, Math.floor(free / (avg / 60 * perMin(q.kbps)))), un = unpublished(), est = un.reduce((a,m) => a + estBytes(m, q.kbps), 0);
+  $('#pubSpace').textContent = `${(d.songs||[]).length} song${(d.songs||[]).length===1?'':'s'} and ${(d.photos||[]).length} photo${(d.photos||[]).length===1?'':'s'} published. `
+    + `At ${q.label} (${q.kbps} kbps, ${(perMin(q.kbps)/1e6).toFixed(2)} MB a minute) there’s room for about ${fits.toLocaleString()} more songs of ${fmtMin(avg)}.`;
+  $('#pubEst').textContent = un.length ? `Your ${un.length} unpublished song${un.length===1?'':'s'}: about ${fmtBytes(est)} at ${q.label}.${est > free ? ' That’s more than the free space, so some won’t fit. Try a smaller quality.' : ''}` : 'Every polished song is already published.';
+  document.querySelectorAll('input[name="pubq"]').forEach(r => { r.checked = r.value === getQuality(); r.disabled = pubRunning; });
+}
+function pickShelf(d, extra, bytes){ for (const s of SHELVES){ if (shelfBytes(d, s.n) + (extra[s.n] || 0) + bytes <= SHELF_FILL) return s; } return null; }
 async function publishSongs(list){
   list = list.filter(m => m.state === 'done'); if (!list.length){ pubSay('No polished songs to publish yet.'); return; }
   if (!getKey()){ openPub(); pubSay('Paste your GitHub key first, then publish.', true); return; }
   if (pubRunning){ pubSay('Already publishing. Hang on until it finishes.'); return; }
-  pubRunning = true; list.forEach(m => pubBusy.add(m.id)); render(); pubSaved = new Set(); watchLive();
-  let done = 0, skipped = 0, updated = 0;
+  pubRunning = true; list.forEach(m => pubBusy.add(m.id)); pubLive = {}; render(); drawSpace(); pubSaved = new Set(); watchLive();
+  let done = 0, skipped = 0, updated = 0; const qk = getQuality(), kbps = QUALITY[qk].kbps;
+  let pending = [], metaOnly = [], pendShelf = null, pendBytes = 0, lastFlush = Date.now();
+  const flush = async () => {
+    if (!pending.length && !metaOnly.length) return;
+    const batch = pending.splice(0), metas = metaOnly.splice(0), s = pendShelf; pendBytes = 0; lastFlush = Date.now();
+    const entries = batch.map(b => b.entry).concat(metas), fresh = batch.filter(b => !b.old).length;
+    const stale = batch.filter(b => b.old && (b.old.path || b.old.file) && (b.old.path || b.old.file) !== b.entry.path).map(b => ({shelf: b.old.shelf || 1, path: b.old.path || b.old.file}));
+    const msg = fresh ? `${fresh} song${fresh>1?'s':''} on the public gallery: ${entries.map(e=>e.title).join(', ').slice(0,120)}` : batch.length ? `Fresh versions of ${batch.length} song${batch.length>1?'s':''} on the public gallery` : 'Public gallery song names updated';
+    if (batch.length && s && s.n !== 1) await gitCommit(s.repo, async () => batch.map(b => b.file), msg + ` (shelf ${s.n})`);   // the sound files first…
+    const home = (batch.length && s && s.n === 1 ? batch.map(b => b.file) : []).concat(stale.filter(x => x.shelf === 1).map(x => ({path: x.path, sha: null})));
+    await commitIndex(home, d => { const ids = new Set(entries.map(e => e.id)); d.removed = (d.removed || []).filter(id => !ids.has(id)); for (const e of entries){ const i = d.songs.findIndex(x => x.id === e.id); if (i >= 0) d.songs[i] = e; else d.songs.push(e); } }, msg);   // …then the list that points at them
+    if (s) pubLive[s.n] = 0;
+    for (const x of stale.filter(x => x.shelf !== 1)){ const sh = SHELVES.find(z => z.n === x.shelf); if (sh) try { await gitCommit(sh.repo, async () => [{path: x.path, sha: null}], 'Tidied up an old version of a song'); } catch(e){} }
+    noteSaved(batch.map(b => b.entry.id));
+    entries.forEach(e => { for (const m of list) if (pubId(m) === e.id) pubBusy.delete(m.id); }); render(); drawSpace();
+  };
   try {
     pubSay('Checking what’s already on the gallery…');
-    const {data} = await readManifest(); pubManifest = data; syncPubMap(); drawSpace(data);
+    const {data} = await readIndex(); pubManifest = data; syncPubMap(); drawSpace();
     const have = new Map(data.songs.map(e => [e.id, e]));
     const need = list.filter(m => { const e = have.get(pubId(m)); return !e || e.sig !== songSig(m); });
-    const est = need.reduce((a,m) => a + estBytes(m), 0), used = usedBytes(data), after = used + est;
-    const sizeLine = `${need.length} song${need.length===1?'':'s'} to upload, about ${fmtBytes(est)}${list.length > need.length ? ` (${list.length - need.length} already on the gallery)` : ''}. The gallery would use about ${fmtBytes(after)} of about 1 GB.`;
+    const est = need.reduce((a,m) => a + estBytes(m, kbps), 0), free = SHELVES.reduce((a,s) => a + Math.max(0, SHELF_FILL - shelfBytes(data, s.n)), 0);
+    const sizeLine = `${need.length} song${need.length===1?'':'s'} to publish at ${QUALITY[qk].label} (${kbps} kbps): about ${fmtBytes(est)}.${list.length > need.length ? ` ${list.length - need.length} already on the gallery.` : ''} Free space on your 3 shelves: about ${fmtBytes(free)}.`;
     pubSay(need.length ? sizeLine : 'Everything picked is already on the gallery. Checking names…');
-    if (after > SITE_WARN){ if (!confirm(`${sizeLine}\n\nThat’s close to GitHub’s 1 GB limit for sites, and it may stop updating past it. Publish anyway?`)){ pubSay('Nothing published.'); return; } }
+    if (est > free){ if (!confirm(`${sizeLine}\n\nNot all of them will fit. It will publish until the shelves are full, then stop. Carry on?`)){ pubSay('Nothing published.'); return; } }
     else if (need.length > 1 && !confirm(`Publish now?\n\n${sizeLine}`)){ pubSay('Nothing published.'); return; }
-    const files = [], metas = []; let pendBytes = 0;
-    const flush = async () => { if (!metas.length) return; const batch = metas.splice(0), fs = files.splice(0); pendBytes = 0; const fresh = batch.filter(e => e._new).length;
-      batch.forEach(e => delete e._new);
-      const msg = fresh ? `${fresh} song${fresh>1?'s':''} on the public gallery: ${batch.map(e=>e.title).join(', ').slice(0,120)}` : `Public gallery song names updated`;
-      await commitFiles(fs, d => { for (const e of batch){ const i = d.songs.findIndex(x => x.id === e.id); if (i >= 0) d.songs[i] = e; else d.songs.push(e); } }, msg);
-      noteSaved(batch.filter(e => e.file).map(e => e.id));
-      batch.forEach(e => { for (const m of list) if (pubId(m) === e.id) pubBusy.delete(m.id); }); render(); };
     const N = need.length; let n = 0;
     for (const m of list){
-      const id = pubId(m), old = have.get(id), path = `songs/${id}.mp3`;
+      const id = pubId(m), old = have.get(id), sig = songSig(m);
       const meta = { id, title: m.name, date: new Date(recDate(m)).toISOString(), duration: Math.round((m.end-m.start)*10)/10,
                      bucket: bk.names[bk.map[m.id]] || '', bucketNo: bk.map[m.id] === undefined ? null : bk.map[m.id]+1, peaks: peaks64(m) };
-      if (old && old.sig === songSig(m)){   // same sound already live: just refresh the name/bucket
-        if (old.title !== meta.title || old.bucket !== meta.bucket || old.date !== meta.date){ metas.push({...old, ...meta}); updated++; } else { skipped++; pubBusy.delete(m.id); }
-        continue; }
+      const changed = e => e.title !== meta.title || e.bucket !== meta.bucket || e.date !== meta.date;
+      if (old && old.sig === sig){ if (changed(old)){ metaOnly.push({...old, ...meta}); updated++; } else { skipped++; pubBusy.delete(m.id); } continue; }
       n++; const lead = `Publishing ${n} of ${N}`;
+      pubSay(`${lead}: checking “${m.name}”…`);
+      const hash = await songHash(m);
+      if (old && old.hash === hash){ metaOnly.push({...old, ...meta, sig}); updated++; continue; }   // same sound, just new settings saved
+      const twin = data.songs.find(e => e.hash === hash && e.id !== id);
+      if (twin){ skipped++; pubBusy.delete(m.id); pubSay(`${lead}: “${m.name}” sounds identical to “${twin.title}”, already on the gallery. Skipping.`); continue; }
       pubSay(`${lead}: making “${m.name}” small…`);
-      const mp3 = await encodeMp3(m, f => pubSay(`${lead}: making “${m.name}” small… ${Math.round(f*100)}%`));
+      const mp3 = await encodeMp3(m, kbps, f => pubSay(`${lead}: making “${m.name}” small… ${Math.round(f*100)}%`));
       if (mp3.length > 45e6) throw new PubErr(`“${m.name}” is too long to publish (${fmtBytes(mp3.length)}). GitHub’s limit per file is much smaller.`);
-      pubSay(`${lead}: uploading “${m.name}” (${fmtBytes(mp3.length)})…`);
-      const sha = await ghBlob(mp3, 'Uploading');
-      files.push({path, sha}); metas.push({...meta, file: path, bytes: mp3.length, sha, sig: songSig(m), added: old ? old.added : new Date().toISOString(), _new: !old});
-      done++; pendBytes += mp3.length;
-      if (metas.length >= 8 || pendBytes > 30e6){ pubSay(`${lead}: saving songs so far…`); await flush(); }
+      const s = pickShelf(pubManifest, pubLive, mp3.length);
+      if (!s) throw new PubErr(`All ${SHELVES.length} shelves are full (about ${fmtBytes(SHELF_FILL)} each). Take some songs off, or pick a smaller quality for the rest.`);
+      if (pendShelf && pendShelf !== s){ pubSay(`${lead}: shelf ${pendShelf.n} is full, saving it…`); await flush(); }
+      pendShelf = s; await ensureShelf(s);
+      pubSay(`${lead}: uploading “${m.name}” (${fmtBytes(mp3.length)}) to shelf ${s.n}…`);
+      const name = `${id}-${hash.slice(0, 8)}.mp3`, sha = await ghBlob(s.repo, mp3, 'Uploading');
+      pending.push({file: {path: s.dir + name, sha}, old, entry: {...meta, shelf: s.n, path: s.dir + name, url: s.base + name, bytes: mp3.length, kbps, hash, sig, added: old ? old.added : new Date().toISOString()}});
+      pubLive[s.n] = (pubLive[s.n] || 0) + mp3.length; pendBytes += mp3.length; done++; drawSpace();
+      if (pending.length >= 20 || pendBytes > 50e6 || Date.now() - lastFlush > 60000){ pubSay(`${lead}: saving songs so far…`); await flush(); }   // about one save a minute, so the site has time to update between saves
     }
-    if (metas.length){ pubSay('Saving…'); await flush(); } drawSpace(pubManifest);
-    pubSay(`Done. ${done ? `Published ${done} song${done>1?'s':''}. ` : ''}${updated ? `Updated ${updated} name${updated>1?'s':''}. ` : ''}${skipped ? `${skipped} already on the gallery. ` : ''}The gallery page updates in about a minute.`);
-  } catch(e){ pubSay((e instanceof PubErr ? e.message : 'Publishing stopped: ' + (e && e.message || e)) + (done ? ` Songs saved before this stay published. Tap Publish again to carry on.` : ''), true); }
-  finally { pubRunning = false; list.forEach(m => pubBusy.delete(m.id)); render(); }
+    if (pending.length || metaOnly.length){ pubSay('Saving…'); await flush(); }
+    pubSay(`Done. ${done ? `Published ${done} song${done>1?'s':''}. ` : ''}${updated ? `Updated ${updated}. ` : ''}${skipped ? `${skipped} already on the gallery. ` : ''}The gallery page updates in about a minute.`);
+  } catch(e){
+    let saved = false; if (pending.length && !(e instanceof PubErr && /needs access|can’t change/.test(e.message))) { try { await flush(); saved = true; } catch(e2){} }
+    pubSay((e instanceof PubErr ? e.message : 'Publishing stopped: ' + (e && e.message || e)) + ((done && (saved || !pending.length) && !(e instanceof PubErr && /stays live/.test(e.message))) ? ' Songs saved before this stay published. Tap Publish again to carry on.' : ''), true); }
+  finally { pubRunning = false; pubLive = null; list.forEach(m => pubBusy.delete(m.id)); render(); drawSpace(); }
 }
 async function unpublishSong(m){
   const e = pubMap[m.id]; if (!e) return;
   if (!getKey()){ openPub(); pubSay('Paste your GitHub key first.', true); return; }
   if (!confirm(`Take “${m.name}” off the public gallery? It stays in your app.`)) return;
   pubBusy.add(m.id); render();
-  try { pubSay(`Taking “${m.name}” off the gallery…`);
-    await commitFiles([{path: e.file, sha: null}], d => { d.songs = d.songs.filter(x => x.id !== e.id); }, `Took a song off the public gallery: ${m.name}`); drawSpace(pubManifest);
+  try { pubSay(`Taking “${m.name}” off the gallery…`); const path = e.path || e.file, sh = SHELVES.find(z => z.n === (e.shelf || 1)) || SHELVES[0];
+    await commitIndex(sh.n === 1 ? [{path, sha: null}] : [], d => { d.songs = d.songs.filter(x => x.id !== e.id); d.removed = [...new Set([...(d.removed || []), e.id])]; }, `Took a song off the public gallery: ${m.name}`);
+    if (sh.n !== 1) await gitCommit(sh.repo, async () => [{path, sha: null}], `Took a song off the public gallery: ${m.name}`);
     pubSay(`Took “${m.name}” off the gallery.`); }
   catch(err){ pubSay(err instanceof PubErr ? err.message : 'Couldn’t take it off: ' + (err && err.message || err), true); }
   finally { pubBusy.delete(m.id); render(); }
@@ -2813,39 +2915,37 @@ async function publishPhotos(){
   if (!getKey()){ pubSay('Paste your GitHub key first.', true); return; }
   if (pubRunning) return; pubRunning = true; $('#pubPhotos').disabled = true;
   try {
-    const {data} = await readManifest(); const have = new Set(data.photos.map(p => p.id)); const add = photos.filter(p => !have.has(p.id) && !p._volatile), added = [], files = [];
-    const est = add.reduce((a,p) => a + p.buf.byteLength, 0);
-    if (usedBytes(data) + est > SITE_WARN && !confirm(`That would bring the gallery to about ${fmtBytes(usedBytes(data)+est)} of about 1 GB. Publish anyway?`)){ pubSay('No photos published.'); return; }
+    const {data} = await readIndex(); const have = new Set(data.photos.map(p => p.id)); const add = photos.filter(p => !have.has(p.id) && !p._volatile), added = [], files = [];
     for (let i=0;i<add.length;i++){ const p = add[i], path = `photos/${String(p.id).replace(/[^A-Za-z0-9]/g,'').slice(0,20).toLowerCase()}.jpg`;
-      pubSay(`Uploading photo ${i+1} of ${add.length}…`); const sha = await ghBlob(new Uint8Array(p.buf), 'Uploading a photo'); files.push({path, sha});
+      pubSay(`Uploading photo ${i+1} of ${add.length}…`); const sha = await ghBlob(HOME_REPO, new Uint8Array(p.buf), 'Uploading a photo'); files.push({path, sha});
       added.push({id:p.id, file:path, w:p.w, h:p.h, bytes:p.buf.byteLength, sha, fx:p.fx ?? 50, fy:p.fy ?? 50, zoom:p.zoom || 1}); }
     const order = new Map(photos.map((p,i) => [p.id, i]));
     pubSay('Saving…');
-    await commitFiles(files, d => { const ids = new Set(d.photos.map(x => x.id)); for (const a of added) if (!ids.has(a.id)) d.photos.push(a);
-      for (const x of d.photos){ const q = photos.find(p => p.id === x.id); if (q){ x.fx = q.fx ?? 50; x.fy = q.fy ?? 50; x.zoom = q.zoom || 1; } }   // framing from the banner editor
+    await commitIndex(files, d => { const ids = new Set(d.photos.map(x => x.id)); for (const a of added) if (!ids.has(a.id)) d.photos.push(a);
       for (const x of d.photos){ const q = photos.find(p => p.id === x.id); if (q){ x.fx = q.fx ?? 50; x.fy = q.fy ?? 50; x.zoom = q.zoom || 1; } }   // framing from the banner editor
       d.photos.sort((x,y) => (order.has(x.id) ? order.get(x.id) : 1e9) - (order.has(y.id) ? order.get(y.id) : 1e9)); }, added.length ? `Public gallery photos updated (${added.length} new)` : 'Public gallery photo order and framing updated');
-    drawSpace(pubManifest); pubSay(added.length ? `Published ${added.length} photo${added.length>1?'s':''}. The gallery updates in about a minute.` : 'Your photos are already on the gallery (order and framing updated).');
+    pubSay(added.length ? `Published ${added.length} photo${added.length>1?'s':''}. The gallery updates in about a minute.` : 'Your photos are already on the gallery (order and framing updated).');
   } catch(e){ pubSay(e instanceof PubErr ? e.message : 'Photo publishing stopped: ' + (e && e.message || e), true); }
   finally { pubRunning = false; $('#pubPhotos').disabled = false; }
 }
 function drawKeyState(){ const k = getKey(), el = $('#keyState'); el.textContent = k ? '· saved on this device' : '· none yet'; el.className = 'keystate ' + (k ? 'ok' : 'bad'); $('#keyForget').disabled = !k; $('#keyCheck').disabled = !k; $('#keySteps').hidden = !!k; $('#keyStepsShow').hidden = !k; }
-function openPub(){ drawKeyState(); $('#pubSheet').hidden = false; document.body.style.overflow = 'hidden'; $('#pubClose').focus(); if (pubManifest) drawSpace(pubManifest); if (getKey()) readManifest().then(({data}) => { pubManifest = data; syncPubMap(); drawSpace(data); }).catch(() => {}); }
+function openPub(){ drawKeyState(); $('#pubSheet').hidden = false; document.body.style.overflow = 'hidden'; $('#pubClose').focus(); drawSpace();
+  if (getKey() && !pubRunning) readIndex().then(({data}) => { pubManifest = data; syncPubMap(); drawSpace(); }).catch(() => {}); }
 function closePub(){ $('#pubSheet').hidden = true; document.body.style.overflow = ''; $('#pubOpen').focus(); render(); }
-$('#hearShare').addEventListener('click', async () => { const url = 'https://lukeandrewkelly.github.io/voice-memo-master/gallery/', title = 'Songs by Luke Andrew motherfucking Kelly';
-  if (navigator.share){ try { await navigator.share({title, url}); return; } catch(e){ if (e && e.name === 'AbortError') return; } }
-  try { await navigator.clipboard.writeText(url); setStatus('Gallery link copied: ' + url); } catch(e){ prompt('Copy this link:', url); } });
 $('#pubOpen').addEventListener('click', openPub); $('#pubClose').addEventListener('click', closePub);
 $('#pubSheet').addEventListener('click', e => { if (e.target === $('#pubSheet')) closePub(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#pubSheet').hidden) closePub(); });
+document.querySelectorAll('input[name="pubq"]').forEach(r => r.addEventListener('change', () => { if (r.checked){ try { localStorage.setItem('vmm_pub_quality', r.value); } catch(e){} drawSpace(); } }));
 $('#keySave').addEventListener('click', async () => { const v = $('#keyIn').value.trim(); if (!v){ pubSay('Paste the key into the box first.', true); return; }
   if (!/^(github_pat_|ghp_|gho_|ghs_)[A-Za-z0-9_]{20,}$/.test(v)){ pubSay('That doesn’t look like a GitHub key. It should start with github_pat_.', true); return; }
-  try { localStorage.setItem(KEY_LS, v); } catch(e){ pubSay('This browser won’t save the key.', true); return; } $('#keyIn').value = ''; drawKeyState(); checkKey(); });
-$('#keyForget').addEventListener('click', () => { if (!confirm('Forget the GitHub key on this device? Published songs stay on the gallery.')) return; try { localStorage.removeItem(KEY_LS); } catch(e){} drawKeyState(); pubSay('Key forgotten on this device.'); });
+  try { localStorage.setItem(KEY_LS, v); } catch(e){ pubSay('This browser won’t save the key.', true); return; } $('#keyIn').value = ''; shelfOk.clear(); drawKeyState(); checkKey(); });
+$('#keyForget').addEventListener('click', () => { if (!confirm('Forget the GitHub key on this device? Published songs stay on the gallery.')) return; try { localStorage.removeItem(KEY_LS); } catch(e){} shelfOk.clear(); drawKeyState(); pubSay('Key forgotten on this device.'); });
 async function checkKey(){ pubSay('Checking the key with GitHub…');
-  try { const r = await gh(`/repos/${GH_REPO}`); if (!r.ok) throw await ghFail(r, 'Checking the key'); const j = await r.json();
-    if (j.permissions && !j.permissions.push) throw new PubErr('The key can see the repository but can’t change it. Set Contents to Read and write.');
-    const {data} = await readManifest(); pubManifest = data; syncPubMap(); drawSpace(data); pubSay('The key works. You’re ready to publish.'); }
+  try { const missing = [];
+    for (const s of SHELVES){ try { await ensureShelf(s); } catch(e){ if (s.n === 1 || !(e instanceof PubErr)) throw e; missing.push(s.repo); } }
+    const {data} = await readIndex(); pubManifest = data; syncPubMap(); drawSpace();
+    if (missing.length) pubSay(`The key works for voice-memo-master, but it needs access to ${missing.join(' and ')} too before the first shelf fills up. ${needAll}`, true);
+    else pubSay('The key works on all three shelves. You’re ready to publish.'); }
   catch(e){ pubSay(e instanceof PubErr ? e.message : String(e), true); } }
 $('#keyCheck').addEventListener('click', checkKey);
 $('#pubPhotos').addEventListener('click', publishPhotos);

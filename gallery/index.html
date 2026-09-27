@@ -247,7 +247,7 @@ function render(){
       <canvas aria-label="Waveform of ${esc(s.title)}. Tap to jump."></canvas>
       <span class="dur">${fmt(s.duration)}</span>
       <button class="ic share" aria-label="Share ${esc(s.title)}" title="Share a link to this song">${SHARE}</button>
-      <a class="ic dl" href="../${esc(s.file)}" download="${esc(s.title)}.mp3" aria-label="Download ${esc(s.title)}" title="Download">${DL}</a>`;
+      <a class="ic dl" href="${esc(srcOf(s))}" download="${esc(s.title)}.mp3" aria-label="Download ${esc(s.title)}" title="Download">${DL}</a>`;
     li.querySelector('.play').addEventListener('click', () => toggle(s));
     li.querySelector('.share').addEventListener('click', () => share(s));
     const cv = li.querySelector('canvas'); s._cv = cv;
@@ -417,10 +417,16 @@ $('#lbClose').addEventListener('click', () => { $('#lb').hidden = true; $('#lbIm
 $('#lb').addEventListener('click', e => { if (e.target === $('#lb')){ $('#lb').hidden = true; $('#lbImg').src = ''; } });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#lb').hidden) $('#lbClose').click(); });
 /* load, then keep the list fresh: re-check every 20 s while the page is visible, merge new songs in without touching playback, scroll or sort */
-async function fetchList(){ // -> {songs, photos} or null when nothing is published yet; throws when offline
-  const r = await fetch('../songs.json?t=' + Date.now(), {cache:'no-store'});
-  if (r.status === 404) return null; if (!r.ok) throw new Error(r.status);
-  const d = await r.json(); return {songs: (d.songs || []).filter(s => s && s.id && s.file && s.title), photos: (d.photos || []).filter(p => p && p.file)};
+async function fetchList(){ // gallery.json (with shelves) plus the older root songs.json, if an older copy of the app still writes it -> {songs, photos} | null; throws when offline
+  const get = async u => { try { const r = await fetch(u + '?t=' + Date.now(), {cache:'no-store'}); return r.ok ? await r.json() : (r.status === 404 ? null : undefined); } catch(e){ return undefined; } };
+  const [d1, d0] = await Promise.all([get('gallery.json'), get('../songs.json')]);
+  if (d1 === undefined && d0 === undefined) throw new Error('offline');
+  if (!d1 && !d0) return null;
+  const seen = new Set(), ps = new Set(), S = [], P = [];
+  const gone = new Set((d1 && d1.removed) || []);   // taken off in the new list, even if the old list still names them
+  for (const x of [d1, d0]) if (x){ for (const s of x.songs || []) if (s && s.id && (s.url || s.file) && s.title && !seen.has(s.id) && !(x === d0 && gone.has(s.id))){ seen.add(s.id); S.push(s); }
+                                     for (const p of x.photos || []) if (p && p.file && !ps.has(p.id)){ ps.add(p.id); P.push(p); } }
+  return {songs: S, photos: P};
 }
 const LIVE_MS = 20000; let liveT = null, liveBusy = false, listSig = '', photosShown = false, hashDone = false;
 const hashId = (() => { const m = /[#&]s=([^&]+)/.exec(location.hash); try { return m ? decodeURIComponent(m[1]) : null; } catch(e){ return null; } })();
