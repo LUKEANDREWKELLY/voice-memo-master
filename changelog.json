@@ -1,5 +1,15 @@
 [
 {
+"sha": "5f175cb",
+"date": "2026-09-26T22:18:42-04:00",
+"msg": "New photo banner up top: swipe it, it slides on its own, tap for full screen. Plus a cleaner, sharper Human Tradition logo"
+},
+{
+"sha": "7d0b222",
+"date": "2026-09-26T22:17:49-04:00",
+"msg": "Build log data"
+},
+{
 "sha": "f0ab531",
 "date": "2026-09-26T22:17:48-04:00",
 "msg": "Subtext under the name + send-me-money buttons, and a public build log of tonight's changes"
