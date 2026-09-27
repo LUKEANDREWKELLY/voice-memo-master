@@ -1,5 +1,45 @@
 [
 {
+"sha": "8b2643b",
+"date": "2026-09-26T23:13:33-04:00",
+"msg": "Visitors land on the songs now: a 'Hear the public gallery' bar at the top of the app, a big 'Listen to Luke's songs' button when the app is empty, and a Share link button that always shares the gallery"
+},
+{
+"sha": "3956ff1",
+"date": "2026-09-26T23:13:19-04:00",
+"msg": "8 songs on the public gallery: mic on chair in front of me 2, Kicked Out Of A Dive Bar (Demo 1), Mind reader chorus 3 2, Runaway (Aurora) vocal, Fuck p"
+},
+{
+"sha": "6349709",
+"date": "2026-09-26T23:12:41-04:00",
+"msg": "8 songs on the public gallery: american dream lyrics 2, 2022-02-09 00.25.26, Audio Message 4, f weird tuning riff again! 2, I dont wanna explain 2, c m"
+},
+{
+"sha": "7025470",
+"date": "2026-09-26T23:12:04-04:00",
+"msg": "8 songs on the public gallery: Helplessness - Luke Andrew Kelly 2, 2022-08-17 21.38.02, 2022-02-13 17.16.13, Jackie lana del ray 2, human tradition new"
+},
+{
+"sha": "880df74",
+"date": "2026-09-26T23:11:39-04:00",
+"msg": "8 songs on the public gallery: maybe a little bit of wine could solve it 2, luke audio journal 6.12.24 2, girl i met 4 open dmaj 2, Lead Vocal#02, Coal"
+},
+{
+"sha": "99d5046",
+"date": "2026-09-26T23:11:03-04:00",
+"msg": "8 songs on the public gallery: shark in the creek rewrite hold your breath, come for a good time 2, my favorite dream 04 Pad - dry, our kid more, docto"
+},
+{
+"sha": "9ef161a",
+"date": "2026-09-26T23:10:15-04:00",
+"msg": "8 songs on the public gallery: i need a win best section master, dishwashers piano explained master, Old Human Music (REAL), New Hot Glue Gun bip merge"
+},
+{
+"sha": "ade1892",
+"date": "2026-09-26T23:09:36-04:00",
+"msg": "Build log data"
+},
+{
 "sha": "2777904",
 "date": "2026-09-26T23:09:36-04:00",
 "msg": "The gallery now refreshes itself: new songs pop in every 20 seconds with a 'just landed' note, and your music keeps playing. Publishing also shows how many songs are saved versus actually live"
