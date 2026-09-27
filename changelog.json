@@ -1,8 +1,73 @@
 [
 {
-"sha": "81f3c00",
+"sha": "b0fcbaa",
+"date": "2026-09-26T23:53:56-04:00",
+"msg": "Tidied up after a behind-the-scenes test of the new song shelves (nothing of yours was touched)"
+},
+{
+"sha": "48c53c5",
+"date": "2026-09-26T23:53:14-04:00",
+"msg": "8 songs on the public gallery: Barrel of gin time traveling 2, 2022-10-11 21.34.01, human music 2, 2022-10-25 01.44.41, be dead with me 2, i think i li"
+},
+{
+"sha": "86e0e09",
+"date": "2026-09-26T23:52:43-04:00",
+"msg": "8 songs on the public gallery: oh tina (darker), girl i met the other night 2, Meet me at lucindas (1) 2, fantasy 2, i dont even know you 2, Edge Vocal"
+},
+{
+"sha": "db6d009",
+"date": "2026-09-26T23:52:39-04:00",
+"msg": "Took a song off the public gallery: TEST gallery tone B"
+},
+{
+"sha": "7311fd5",
+"date": "2026-09-26T23:52:34-04:00",
+"msg": "Took a song off the public gallery: TEST gallery tone A"
+},
+{
+"sha": "7a6a4d5",
+"date": "2026-09-26T23:52:00-04:00",
+"msg": "8 songs on the public gallery: clean floors v2 2, best friend chorus, Bristoltooth ortliebs 2, my favorite dream 03 Grand Piano - dry, Lead Vocal#09, f"
+},
+{
+"sha": "2d85652",
+"date": "2026-09-26T23:51:40-04:00",
+"msg": "1 song on the public gallery: TEST gallery tone B"
+},
+{
+"sha": "c408802",
+"date": "2026-09-26T23:51:34-04:00",
+"msg": "1 song on the public gallery: TEST gallery tone A"
+},
+{
+"sha": "779317e",
+"date": "2026-09-26T23:51:29-04:00",
+"msg": "8 songs on the public gallery: I cant explain standard tune 2, Keep getting nearer 2, shapes in the sky revisited, Men Men Men - Luke Andrew Kelly feat"
+},
+{
+"sha": "a408d25",
+"date": "2026-09-26T23:51:00-04:00",
+"msg": "8 songs on the public gallery: dear dad v6.1 2, baby song, girl i met the other 2 2, how to relax v2 2, Keys 2 1, i need a win 2, LANDR-Kicked Out Of A"
+},
+{
+"sha": "8531676",
+"date": "2026-09-26T23:50:22-04:00",
+"msg": "8 songs on the public gallery: Uplifting piano song, European wife 2, barrel of gin 05 Left Vox 2 - wet, Mirrored Room Good Version, And a School Bus,"
+},
+{
+"sha": "92d01e0",
+"date": "2026-09-26T23:49:49-04:00",
+"msg": "Build log data"
+},
+{
+"sha": "a6a071f",
 "date": "2026-09-26T23:49:49-04:00",
 "msg": "The app now spots every song you've published, whichever copy of the app you published it from"
+},
+{
+"sha": "e40bac9",
+"date": "2026-09-26T23:49:49-04:00",
+"msg": "8 songs on the public gallery: door closing sound loopable, DADDYS FOAMING, if im dead 2, LOOK WHO JUST ARRIVED band 1 2, so many questions rough, All"
 },
 {
 "sha": "de8a2e7",
