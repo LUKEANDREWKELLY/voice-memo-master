@@ -42,11 +42,11 @@
   --accent:#8a0303; --accent-hover:#a30808; --accent-ink:#f2c230; --danger:#8a0303;
   --red:#8a0303; --wave:rgba(17,17,17,.3); --wave-kept:#111;   /* read by drawWave */
   --sans:"Inter", Arial, Helvetica, sans-serif;
-  --cols:26px 32px minmax(110px,1.3fr) 166px minmax(90px,1.5fr) 58px 58px 58px 48px 90px 44px 50px 28px;
-  --areas:"n p t d w vol bass treb ap ab v lyr dl";
+  --cols:26px 32px minmax(110px,1.3fr) 180px minmax(90px,1.5fr) 58px 58px 58px 42px 48px 90px 44px 50px 28px;
+  --areas:"n p t d w vol bass treb tape ap ab v lyr dl";
   color-scheme:light;
 }
-body.editing{--cols:26px 32px minmax(110px,1.3fr) 166px minmax(90px,1.5fr) 58px 58px 58px 48px 90px 44px 50px 28px 30px; --areas:"n p t d w vol bass treb ap ab v lyr dl del"}
+body.editing{--cols:26px 32px minmax(110px,1.3fr) 180px minmax(90px,1.5fr) 58px 58px 58px 42px 48px 90px 44px 50px 28px 30px; --areas:"n p t d w vol bass treb tape ap ab v lyr dl del"}
 *,*::before,*::after{box-sizing:border-box;border-radius:0!important}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:11px;line-height:1.25;font-variant-numeric:tabular-nums;font-feature-settings:'tnum','cv11';-webkit-font-smoothing:antialiased;min-height:100vh}
@@ -126,6 +126,8 @@ li.memo>*,li.memo .title>*,li.memo .knobs>*{border:none;border-right:1px solid v
 .when.err{white-space:normal;color:var(--accent);font-weight:700}
 canvas.wave{grid-area:w;width:100%;height:22px;display:block;cursor:pointer;background:var(--cell2)}
 .knob:nth-child(1){grid-area:vol}.knob:nth-child(2){grid-area:bass}.knob:nth-child(3){grid-area:treb}
+.tape{grid-area:tape;padding:0 4px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;background:transparent}
+.tape[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 .apply{grid-area:ap;padding:0 4px;font-size:10px;text-transform:uppercase;letter-spacing:.05em}
 .apply[hidden]{display:block;background:transparent;color:transparent;pointer-events:none}
 li.memo .ab{grid-area:ab}
@@ -201,6 +203,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   .f-val{top:7px;font-size:11px}
   .apply{min-height:44px;padding:0 10px;font-size:11px}
   .apply[hidden]{display:none}
+  li.memo .knobs>.tape{min-height:44px;padding:0 10px;font-size:11px;border-right:1px solid var(--grid)}
   .vote{min-height:44px;justify-content:center;font-size:12px}
   li.memo .ab button{min-height:44px;padding:0 12px;font-size:11px}
   .icon{min-height:44px;padding:0 12px;font-size:11px}
@@ -247,7 +250,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
     <div class="ab sort" role="group" aria-label="Sort by"><button data-sort="top" aria-pressed="false">Top</button><button data-sort="new" aria-pressed="true">Newest</button></div>
     <span class="count" id="count"></span>
   </div>
-  <div class="thead" aria-hidden="true"><span>#</span><span>Play</span><span>Name</span><span>Date</span><span>Wave</span><span>Vol</span><span>Bass</span><span>Treble</span><span>Apply</span><span>Orig/Master</span><span>Votes</span><span>Lyrics</span><span>DL</span><span class="h-del">Del</span></div>
+  <div class="thead" aria-hidden="true"><span>#</span><span>Play</span><span>Name</span><span>Date</span><span>Wave</span><span>Vol</span><span>Bass</span><span>Treble</span><span>Tape</span><span>Apply</span><span>Orig/Master</span><span>Votes</span><span>Lyrics</span><span>DL</span><span class="h-del">Del</span></div>
   <ul id="list"></ul>
 
   <label for="file" class="add-btn fab" id="fab" role="button" tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>Add memo</label>
@@ -256,7 +259,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   <h2>About</h2>
   <p><strong>Voice Memo Master</strong> is the original creation of <strong>Luke Andrew Kelly, undiscovered musician</strong>. He built it in New York tonight and is revealing it to everybody, and he wants the X and Grok crowd, including the xAI team and Elon Musk, to see it.</p>
   <p><em>Dedicated to Elon Musk. Here's hoping he adopts me, or hires me to be his personal security guard — I'd charge him zero dollars a year. I know he's got a bunch of kids; I don't have a father.</em></p>
-  <p class="note" style="margin-top:0">Every memo gets the same chain: cut the talking and handling noise before and after the song, reduce room hiss, voice EQ for clarity, compression, then a loud master at −10 LUFS with a −1.5 dB ceiling. Move the sliders to hear changes live on the master, then hit Apply to bake them in; Volume moves the master’s loudness from −22 to −7 LUFS. Drag a slider sideways or up and down, scroll it, or use the arrow keys; double-click resets it. Memos are saved in this browser on this device. A single master downloads as a WAV (on iPhone it opens the share sheet, so you can Save to Files); Download all masters gives you a .zip of WAVs. Add it to your home screen to use it like an app; it works offline once loaded.<span class="hint-desktop"> On a computer you can also drag memos onto the drop box.</span></p>
+  <p class="note" style="margin-top:0">Every memo gets the same chain: cut the talking and handling noise before and after the song, reduce room hiss, voice EQ for clarity, compression, then a loud master at −10 LUFS with a −1.5 dB ceiling. Move the sliders to hear changes live on the master, then hit Apply to bake them in; Volume moves the master’s loudness from −22 to +2 LUFS. The Tape toggle adds a subtle cassette feel (warmth, gentle saturation, a little wow and flutter, faint hiss); Apply bakes it in. Drag a slider sideways or up and down, scroll it, or use the arrow keys; double-click resets it. Memos are saved in this browser on this device. A single master downloads as a WAV (on iPhone it opens the share sheet, so you can Save to Files); Download all masters gives you a .zip of WAVs. Add it to your home screen to use it like an app; it works offline once loaded.<span class="hint-desktop"> On a computer you can also drag memos onto the drop box.</span></p>
   <p class="fine">© Luke Andrew Kelly. Everything runs on your device; your audio never leaves your browser.</p>
   </footer>
 </div>
@@ -388,6 +391,45 @@ async function toneAndComp(x, k){
   return out.getChannelData(0).slice();
 }
 
+/* ---------- TAPE: cassette demo-tape colour (optional, per memo) ---------- */
+const TAPE = { drive:1.2, warmHz:180, warmDb:1.5, lpHz:11000, lpQ:0.5, wowHz:0.5, wowSec:0.0006, flutHz:6, flutSec:0.00004, baseDelay:0.005, hissRel:-50 };
+function tapeCurve(){ const n=2048, c=new Float32Array(n), k=TAPE.drive; for (let i=0;i<n;i++){ const x=i/(n-1)*2-1; c[i]=Math.tanh(k*x)/k; } return c; } // unity slope at 0, soft peaks
+function tapeNodes(ctx){ // input -> warmth -> soft saturation -> soft HF roll-off -> wow/flutter delay -> output
+  const warm = ctx.createBiquadFilter(); warm.type='peaking'; warm.frequency.value=TAPE.warmHz; warm.Q.value=0.7; warm.gain.value=TAPE.warmDb;
+  const pre = ctx.createGain(), sat = ctx.createWaveShaper(), post = ctx.createGain(); sat.curve = tapeCurve(); sat.oversample = '4x';
+  const lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=TAPE.lpHz; lp.Q.value=TAPE.lpQ;
+  const dl = ctx.createDelay(0.05); dl.delayTime.value = TAPE.baseDelay;
+  const wow = ctx.createOscillator(), wowG = ctx.createGain(); wow.frequency.value=TAPE.wowHz; wowG.gain.value=TAPE.wowSec;
+  const flut = ctx.createOscillator(), flutG = ctx.createGain(); flut.frequency.value=TAPE.flutHz; flutG.gain.value=TAPE.flutSec;
+  wow.connect(wowG).connect(dl.delayTime); flut.connect(flutG).connect(dl.delayTime); wow.start(); flut.start();
+  warm.connect(pre).connect(sat).connect(post).connect(lp).connect(dl);
+  return { input: warm, output: dl, pre, post };
+}
+function hissNode(ctx, seconds, gain){ // white noise shaped like tape hiss (1-12 kHz), looped
+  const len = Math.max(1, Math.round(seconds*ctx.sampleRate)), b = ctx.createBuffer(1, len, ctx.sampleRate), d = b.getChannelData(0);
+  for (let i=0;i<len;i++) d[i] = Math.random()*2-1;
+  const s = ctx.createBufferSource(); s.buffer = b; s.loop = true;
+  const hp = ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=1000; hp.Q.value=0.5;
+  const lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=12000; lp.Q.value=0.5;
+  const g = ctx.createGain(); g.gain.value = gain;
+  s.connect(hp).connect(lp).connect(g); s.start();
+  return { src: s, output: g };
+}
+async function tapeFx(x){ // offline: runs after EQ/compression and before loudness + the -1.5 dB ceiling limiter
+  let peak = 0, ss = 0; for (let i=0;i<x.length;i++){ const a=Math.abs(x[i]); if (a>peak) peak=a; ss += x[i]*x[i]; }
+  if (!peak) return x;
+  const rms = Math.sqrt(ss/x.length);
+  const ctx = new OfflineAudioContext(1, x.length, SR);
+  const buf = ctx.createBuffer(1, x.length, SR); buf.copyToChannel(x instanceof Float32Array ? x : Float32Array.from(x), 0);
+  const src = ctx.createBufferSource(); src.buffer = buf;
+  const t = tapeNodes(ctx); t.pre.gain.value = 0.84/peak; t.post.gain.value = peak/0.84;   // same drive whatever the memo's level
+  src.connect(t.input); t.output.connect(ctx.destination);
+  const h = hissNode(ctx, 2, rms*Math.pow(10, TAPE.hissRel/20)*2.4); h.output.connect(ctx.destination);   // ~50 dB under the music
+  src.start();
+  const out = await ctx.startRendering();
+  return out.getChannelData(0).slice();
+}
+
 function biquad(x, b, a){ const y=new Float64Array(x.length); let x1=0,x2=0,y1=0,y2=0;
   for (let i=0;i<x.length;i++){ const v=b[0]*x[i]+b[1]*x1+b[2]*x2-a[1]*y1-a[2]*y2; x2=x1;x1=x[i];y2=y1;y1=v;y[i]=v; } return y; }
 function lufsDualMono(x){ // integrated loudness of the dual-mono stereo file
@@ -465,6 +507,7 @@ async function master(file, onStep, k){
   let y = await denoise(full, a, b);
   onStep('EQ and compression');
   y = await toneAndComp(y, k);
+  if (k.tape){ onStep('Tape'); y = await tapeFx(y); }
   onStep('Mastering');
   const target = -10 + k.vol, ceil = -1.5;
   let g = Math.pow(10, (target - lufsDualMono(y))/20), out, L;
@@ -682,13 +725,13 @@ async function transcribe(m, ta, btn, st, fit){
 }
 
 /* ---------- knobs ---------- */
-const KNOB0 = {vol:0, bass:0, treble:0};
+const KNOB0 = {vol:0, bass:0, treble:0, tape:false};
 const KNOBS = [
-  {key:'vol', label:'Volume', min:-12, max:3, step:0.5},
+  {key:'vol', label:'Volume', min:-12, max:12, step:0.5},
   {key:'bass', label:'Bass', min:-9, max:9, step:0.5},
   {key:'treble', label:'Treble', min:-9, max:9, step:0.5},
 ];
-const same = (a,b) => KNOBS.every(d => (a||KNOB0)[d.key] === (b||KNOB0)[d.key]);
+const same = (a,b) => KNOBS.every(d => (a||KNOB0)[d.key] === (b||KNOB0)[d.key]) && !!(a||KNOB0).tape === !!(b||KNOB0).tape;
 const fmtDb = v => (v>0?'+':v<0?'−':'') + Math.abs(v).toFixed(Math.abs(v)%1?1:0) + ' dB';
 let saveT = null;
 function buildKnobs(host, m, done){
@@ -728,11 +771,17 @@ function buildKnobs(host, m, done){
     const f = await getBlob(m.id+':orig'); if (!f){ setStatus('The original for this memo is missing, so it can’t be re-mastered.'); return; }
     if (playing && playing.id===m.id){ player.pause(); playing=null; }
     m.state='queued'; m.step='Waiting'; queue.push([m, new File([f], m.name+'.audio', {type:f.type})]); render(); run(); });
+  const tape = document.createElement('button'); tape.className='tape'; tape.textContent='Tape';
+  tape.title='Cassette demo-tape feel: warmth, gentle saturation, a little wow and flutter, faint hiss. Apply bakes it in.';
+  tape.setAttribute('aria-pressed', String(!!m.knobs.tape)); tape.setAttribute('aria-label', 'Tape vibe for ' + m.name);
+  tape.addEventListener('click', () => { m.knobs.tape = !m.knobs.tape; tape.setAttribute('aria-pressed', String(m.knobs.tape)); refresh();
+    if (playing && playing.id===m.id) updatePreview(); clearTimeout(saveT); saveT = setTimeout(() => putMemo(strip(m)), 400); });
+  host.appendChild(tape);
   host.appendChild(apply);
   refresh();
 }
 // live preview while playing the master: knob changes you haven't applied yet
-let actx=null, bF, tF, vG;
+let actx=null, bF, tF, vG, pLim, pTrim, tDry, tWet, tHiss;
 function ensureGraph(){
   if (actx) { actx.resume && actx.resume(); return; }
   try {
@@ -741,7 +790,16 @@ function ensureGraph(){
     bF = actx.createBiquadFilter(); bF.type='lowshelf'; bF.frequency.value=120;
     tF = actx.createBiquadFilter(); tF.type='highshelf'; tF.frequency.value=6000;
     vG = actx.createGain();
-    src.connect(bF).connect(tF).connect(vG).connect(actx.destination);
+    // preview safety limiter: only engaged while a slider boosts past the baked master, so boosts can't clip the speakers
+    pLim = actx.createDynamicsCompressor(); pLim.threshold.value = 0; pLim.knee.value = 0; pLim.ratio.value = 1; pLim.attack.value = 0.001; pLim.release.value = 0.1;
+    pTrim = actx.createGain();   // cancels the compressor's automatic makeup gain so the preview level stays honest
+    // tape path (bypassed unless Tape is on and not yet baked into this master)
+    tDry = actx.createGain(); tWet = actx.createGain(); tWet.gain.value = 0;
+    const tp = tapeNodes(actx); tp.post.gain.value = Math.pow(10, 1/20);   // ~+1 dB makeup for the softened peaks
+    const hs = hissNode(actx, 2, 0.0024); tHiss = actx.createGain(); tHiss.gain.value = 0; hs.output.connect(tHiss);   // ~-60 dBFS under a -10 LUFS master
+    src.connect(bF).connect(tF);
+    tF.connect(tDry).connect(vG); tF.connect(tp.input); tp.output.connect(tWet).connect(vG); tHiss.connect(vG);
+    vG.connect(pLim).connect(pTrim).connect(actx.destination);
   } catch(e){ actx = null; }
 }
 function updatePreview(){
@@ -751,6 +809,12 @@ function updatePreview(){
   bF.gain.value = onMaster ? k.bass-b.bass : 0;
   tF.gain.value = onMaster ? k.treble-b.treble : 0;
   vG.gain.value = onMaster ? Math.pow(10,(k.vol-b.vol)/20) : 1;
+  const tapeOn = onMaster && !!k.tape && !b.tape, now = actx.currentTime;
+  if (tDry){ tDry.gain.setTargetAtTime(tapeOn?0:1, now, 0.02); tWet.gain.setTargetAtTime(tapeOn?1:0, now, 0.02); tHiss.gain.setTargetAtTime(tapeOn?1:0, now, 0.02); }
+  const boost = onMaster && (k.vol>b.vol || k.bass>b.bass || k.treble>b.treble || tapeOn);
+  if (pLim){ const T = -1, R = 20;   // brickwall-ish: -1 dBFS threshold, 20:1, 1 ms attack
+    pLim.threshold.value = boost ? T : 0; pLim.ratio.value = boost ? R : 1;
+    pTrim.gain.value = boost ? Math.pow(Math.pow(10, (T + (0 - T)/R)/20), 0.6) : 1; }
 }
 
 let urlCache = null;
