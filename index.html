@@ -38,15 +38,16 @@
 <style>
 /* ===== Voice Memo Master: SPREADSHEET. Mustard cells, black gridlines, blood-red accents. Inter, no radius. ===== */
 :root{
-  --bg:#e1ad01; --cell:#e1ad01; --cell2:#ebbd1e; --hi:#f4d04a; --head:#c29200; --ink:#111; --muted:#3b2e00; --grid:#111;
+  --bg:#e1ad01; --cell:#e1ad01; --cell2:#ebbd1e; --hi:#f4d04a; --head:#c29200;
+  --paper:#f3ead3; --paper2:#e7dcbf; --paper-hi:#fbf4e0;   /* khaki data cells + alternate stripe */ --ink:#111; --muted:#3b2e00; --grid:#111;
   --accent:#8a0303; --accent-hover:#a30808; --accent-ink:#f2c230; --danger:#8a0303;
-  --red:#8a0303; --wave:rgba(17,17,17,.3); --wave-kept:#111;   /* read by drawWave */
+  --red:#8a0303; --wave:rgba(17,17,17,.38); --wave-kept:#111;   /* read by drawWave */
   --sans:"Inter", Arial, Helvetica, sans-serif;
-  --cols:26px 32px minmax(110px,1.3fr) 180px minmax(90px,1.5fr) 58px 58px 58px 42px 48px 90px 44px 50px 28px;
-  --areas:"n p t d w vol bass treb tape ap ab v lyr dl";
+  --cols:26px 32px minmax(110px,1.3fr) 180px minmax(90px,1.5fr) 58px 58px 58px 42px 48px 54px 108px 44px 50px 28px;
+  --areas:"n p t d w vol bass treb tape phone ap ab v lyr dl";
   color-scheme:light;
 }
-body.editing{--cols:26px 32px minmax(110px,1.3fr) 180px minmax(90px,1.5fr) 58px 58px 58px 42px 48px 90px 44px 50px 28px 30px; --areas:"n p t d w vol bass treb tape ap ab v lyr dl del"}
+body.editing{--cols:26px 32px minmax(110px,1.3fr) 180px minmax(90px,1.5fr) 58px 58px 58px 42px 48px 54px 108px 44px 50px 28px 30px; --areas:"n p t d w vol bass treb tape phone ap ab v lyr dl del"}
 *,*::before,*::after{box-sizing:border-box;border-radius:0!important}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:11px;line-height:1.25;font-variant-numeric:tabular-nums;font-feature-settings:'tnum','cv11';-webkit-font-smoothing:antialiased;min-height:100vh}
@@ -55,6 +56,9 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:11p
 
 .topbanner{display:block;width:100%;padding:3px 6px;padding-top:calc(3px + env(safe-area-inset-top,0px));background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:1.3;font-weight:700;border-bottom:1px solid var(--grid)}
 
+.htstrip{display:flex;align-items:center;gap:8px;padding:4px 6px;background:var(--bg);border-bottom:1px solid var(--grid)}
+.htmark{width:30px;height:22px;display:block;flex:none}
+.htstamp{display:inline-block;padding:2px 7px 1px;border:1.5px solid var(--grid);font-size:11px;line-height:1.2;font-weight:900;letter-spacing:.24em;text-transform:uppercase;color:var(--ink);background:transparent}
 header{display:grid;grid-template-columns:1fr auto;border:1px solid var(--grid);margin:0 0 4px;background:var(--cell)}
 header>div:first-child>*{margin:0;padding:2px 5px;border-bottom:1px solid var(--grid)}
 header>div:first-child>*:last-child{border-bottom:none}
@@ -76,7 +80,7 @@ button.primary:hover{background:var(--accent-hover)}
 button:disabled{opacity:.45;cursor:default}
 button:disabled:hover{background:var(--cell2)}
 
-.dedication{margin:0 0 4px;padding:3px 5px;border:1px solid var(--grid);border-left:4px solid var(--accent);background:var(--cell2);font-size:11px;line-height:1.35}
+.dedication{margin:0 0 4px;padding:3px 5px;border:1px solid var(--grid);border-left:4px solid var(--accent);background:var(--paper);font-size:11px;line-height:1.35}
 .dedication .lbl{display:inline-block;margin-right:6px;padding:0 4px;background:var(--accent);color:var(--accent-ink);font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--grid)}
 
 .sr-file{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
@@ -90,11 +94,11 @@ button:disabled:hover{background:var(--cell2)}
 .drop:hover{border-style:solid}
 .drop.over{border:1px solid var(--accent);background:var(--hi)}
 .status{min-height:14px;margin:3px 0;font-size:10.5px;color:var(--muted)}
-.banner{border:1px solid var(--accent);background:var(--cell2);padding:3px 5px;margin:0 0 4px;font-size:11px}
+.banner{border:1px solid var(--accent);background:var(--paper);padding:3px 5px;margin:0 0 4px;font-size:11px}
 
 /* toolbar */
 .tools{display:flex;align-items:stretch;border:1px solid var(--grid);border-bottom:none;background:var(--head)}
-.tools input{flex:1;font:inherit;font-size:11px;padding:2px 5px;border:none;border-right:1px solid var(--grid);background:var(--cell2);color:var(--ink);min-height:22px;border-radius:0}
+.tools input{flex:1;font:inherit;font-size:11px;padding:2px 5px;border:none;border-right:1px solid var(--grid);background:var(--paper);color:var(--ink);min-height:22px;border-radius:0}
 .tools input::placeholder{color:var(--muted)}
 .tools .sort{border:none;border-right:1px solid var(--grid)}
 .sort button{border:none;min-height:22px;padding:0 8px;font-size:10px;text-transform:uppercase;letter-spacing:.05em;background:transparent}
@@ -111,8 +115,9 @@ ul{list-style:none;margin:0;padding:0}
 .thead .h-del{display:none}
 body.editing .thead .h-del{display:block}
 #list{border-top:1px solid var(--grid);border-left:1px solid var(--grid);counter-reset:r}
-li.memo{grid-template-areas:var(--areas);counter-increment:r;border-bottom:1px solid var(--grid);align-items:stretch;background:var(--cell)}
-li.memo:hover{background:var(--cell2)}
+li.memo{grid-template-areas:var(--areas);counter-increment:r;border-bottom:1px solid var(--grid);align-items:stretch;background:var(--paper)}
+li.memo:nth-child(even of .memo){background:var(--paper2)}
+li.memo:hover{background:var(--paper-hi)}
 li.memo::before{content:counter(r);grid-area:n;display:flex;align-items:center;justify-content:center;background:var(--head);font-size:10px;font-weight:800;border-right:1px solid var(--grid)}
 li.memo>*,li.memo .title>*,li.memo .knobs>*{border:none;border-right:1px solid var(--grid);min-width:0;min-height:22px}
 .title,.knobs{display:contents}
@@ -121,22 +126,25 @@ li.memo>*,li.memo .title>*,li.memo .knobs>*{border:none;border-right:1px solid v
 .play svg{width:9px;height:9px;fill:currentColor}
 .play:disabled{background:transparent;color:var(--muted)}
 .name{grid-area:t;display:block;width:100%;font:inherit;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;background:transparent;color:var(--ink);padding:2px 4px;text-overflow:ellipsis}
-.name:focus{background:#fff1a8;outline:2px solid var(--accent);outline-offset:-2px}
+.name:focus{background:#fffaf0;outline:2px solid var(--accent);outline-offset:-2px}
 .when{grid-area:d;display:flex;align-items:center;padding:2px 4px;font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .when.err{white-space:normal;color:var(--accent);font-weight:700}
-canvas.wave{grid-area:w;width:100%;height:22px;display:block;cursor:pointer;background:var(--cell2)}
+canvas.wave{grid-area:w;width:100%;height:22px;display:block;cursor:pointer;background:transparent}
 .knob:nth-child(1){grid-area:vol}.knob:nth-child(2){grid-area:bass}.knob:nth-child(3){grid-area:treb}
+.phone{grid-area:phone;padding:0 4px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;background:transparent}
+.phone[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 .tape{grid-area:tape;padding:0 4px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;background:transparent}
 .tape[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 .apply{grid-area:ap;padding:0 4px;font-size:10px;text-transform:uppercase;letter-spacing:.05em}
 .apply[hidden]{display:block;background:transparent;color:transparent;pointer-events:none}
 li.memo .ab{grid-area:ab}
 li.memo .ab button{flex:1;border:none;min-height:22px;padding:0 4px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;background:transparent}
+li.memo button:not(.play):not([aria-pressed="true"]):not(.primary):hover{background:var(--paper-hi)}
 li.memo .ab button+button{border-left:1px solid var(--grid)}
 li.memo .ab button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 .vote{grid-area:v;display:flex;align-items:center;justify-content:flex-end;gap:3px;padding:0 4px;background:transparent;font-size:10.5px;font-weight:800;line-height:1}
 .vote svg{width:7px;height:6px;fill:var(--accent)}
-.vote:hover{background:var(--hi)}
+.vote:hover{background:var(--paper-hi)}
 .vote.bump{background:var(--hi);animation:bump .35s ease-out}
 @keyframes bump{40%{background:#fff1a8}}
 .lyr{grid-area:lyr}
@@ -144,15 +152,15 @@ li.memo .ab button[aria-pressed="true"]{background:var(--accent);color:var(--acc
 .dl{grid-area:dl;display:grid;place-items:center;padding:0;line-height:0;background:transparent}
 .dl svg{width:10px;height:10px;fill:currentColor}
 .del{grid-area:del;color:var(--accent);font-weight:900;background:transparent}
-li.lyrics{padding:3px 4px 4px 58px;border-bottom:1px solid var(--grid);border-right:1px solid var(--grid);background:var(--cell2)}
+li.lyrics{padding:3px 4px 4px 58px;border-bottom:1px solid var(--grid);border-right:1px solid var(--grid);background:var(--paper2)}
 .lyr-bar{display:flex;align-items:center;gap:6px;margin-bottom:3px}
 .tr-status{font-size:10.5px;color:var(--muted)}
-li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;padding:3px 5px;border:1px solid var(--grid);background:#f3cc3c;color:var(--ink);resize:vertical}
-.empty{padding:8px;text-align:center;color:var(--muted);border-right:1px solid var(--grid);border-bottom:1px solid var(--grid)}
+li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;padding:3px 5px;border:1px solid var(--grid);background:var(--paper);color:var(--ink);resize:vertical}
+.empty{padding:8px;text-align:center;color:var(--muted);background:var(--paper);border-right:1px solid var(--grid);border-bottom:1px solid var(--grid)}
 
 /* sliders (rectangular faders): value right-aligned like a number cell, track along the bottom */
 .fader{position:relative;width:100%;height:100%;min-height:22px;border:none;background:transparent;cursor:ew-resize;touch-action:none;user-select:none;-webkit-user-select:none;overflow:hidden}
-.fader:hover{background:var(--hi)}
+.fader:hover{background:var(--paper-hi)}
 .fader::before{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:rgba(17,17,17,.16);border-top:1px solid var(--grid)}
 .f-zero{position:absolute;bottom:0;height:8px;width:1px;background:var(--grid)}
 .f-fill{position:absolute;bottom:0;height:5px;background:var(--accent)}
@@ -162,7 +170,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 .f-val{right:3px}
 
 /* about */
-.about{margin-top:6px;border:1px solid var(--grid);background:var(--cell2);font-size:11px;line-height:1.35}
+.about{margin-top:6px;border:1px solid var(--grid);background:var(--paper);font-size:11px;line-height:1.35}
 .about h2{margin:0;padding:2px 5px;background:var(--head);border-bottom:1px solid var(--grid);font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
 .about p{margin:0!important;padding:3px 5px;border-bottom:1px solid var(--grid)}
 .about p:last-child{border-bottom:none}
@@ -203,7 +211,9 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   .f-val{top:7px;font-size:11px}
   .apply{min-height:44px;padding:0 10px;font-size:11px}
   .apply[hidden]{display:none}
-  li.memo .knobs>.tape{min-height:44px;padding:0 10px;font-size:11px;border-right:1px solid var(--grid)}
+  .knobs{flex-wrap:wrap}
+  .knob{flex:1 1 30%}
+  li.memo .knobs>.tape,li.memo .knobs>.phone,li.memo .knobs>.apply{flex:1 1 25%;min-height:44px;padding:0 10px;font-size:11px;border-right:1px solid var(--grid);border-top:1px solid var(--grid)}
   .vote{min-height:44px;justify-content:center;font-size:12px}
   li.memo .ab button{min-height:44px;padding:0 12px;font-size:11px}
   .icon{min-height:44px;padding:0 12px;font-size:11px}
@@ -219,17 +229,19 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 <!-- ===== TOP BANNER: edit the text below (id="topBanner") ===== -->
 <div class="topbanner" id="topBanner" role="note">Debuting: 'Song for Barbara Walters' — the much-awaited, anticipated single from Luke Andrew Kelly — releasing on Elon Musk's birthday. Dedicated to the possibility of Nathan Fielder being featured on the track.</div>
 <!-- ===== /TOP BANNER ===== -->
+<!-- ===== BRAND: Human Tradition (logo also at icons/human-tradition-logo.svg) ===== -->
+<div class="htstrip"><svg class="htmark" viewBox="0 0 58 42" aria-hidden="true"><g transform="translate(8.5 0) skewX(-12)"><rect x="1" y="3" width="17" height="4" fill="#111"/><rect x="5" y="3" width="9" height="36" fill="#111"/><rect x="1" y="35" width="17" height="4" fill="#111"/><rect x="25" y="19" width="8" height="20" fill="#111"/><rect x="25" y="11" width="8" height="5" fill="#8a0303"/><rect x="40" y="27" width="8" height="12" fill="#111"/><rect x="40" y="19" width="8" height="5" fill="#8a0303"/></g></svg><span class="htstamp">Human Tradition</span></div>
 <div class="wrap">
   <header>
     <div>
       <p class="brand"><span class="sq" aria-hidden="true"></span>Voice Memo Master</p>
       <h1>Luke Andrew Kelly</h1>
       <p class="credit">Luke Andrew Kelly, <em>undiscovered musician</em>. Built it in New York tonight.</p>
-      <p class="sub">Voice memos, trimmed to the song and mastered the same way every time.</p>
+      <p class="sub">Voice memos, trimmed to the song and polished the same way every time.</p>
     </div>
     <div class="head-actions">
       <button id="edit">Edit list</button>
-      <button id="dlAll" disabled>Download all masters</button>
+      <button id="dlAll" disabled>Download all songs</button>
     </div>
   </header>
 
@@ -250,7 +262,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
     <div class="ab sort" role="group" aria-label="Sort by"><button data-sort="top" aria-pressed="false">Top</button><button data-sort="new" aria-pressed="true">Newest</button></div>
     <span class="count" id="count"></span>
   </div>
-  <div class="thead" aria-hidden="true"><span>#</span><span>Play</span><span>Name</span><span>Date</span><span>Wave</span><span>Vol</span><span>Bass</span><span>Treble</span><span>Tape</span><span>Apply</span><span>Orig/Master</span><span>Votes</span><span>Lyrics</span><span>DL</span><span class="h-del">Del</span></div>
+  <div class="thead" aria-hidden="true"><span>#</span><span>Play</span><span>Name</span><span>Date</span><span>Wave</span><span>Loud</span><span>Warmth</span><span>Sparkle</span><span>Tape</span><span>Phone</span><span>Keep</span><span>Raw/Polished</span><span>Votes</span><span>Lyrics</span><span>DL</span><span class="h-del">Del</span></div>
   <ul id="list"></ul>
 
   <label for="file" class="add-btn fab" id="fab" role="button" tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>Add memo</label>
@@ -259,7 +271,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   <h2>About</h2>
   <p><strong>Voice Memo Master</strong> is the original creation of <strong>Luke Andrew Kelly, undiscovered musician</strong>. He built it in New York tonight and is revealing it to everybody, and he wants the X and Grok crowd, including the xAI team and Elon Musk, to see it.</p>
   <p><em>Dedicated to Elon Musk. Here's hoping he adopts me, or hires me to be his personal security guard — I'd charge him zero dollars a year. I know he's got a bunch of kids; I don't have a father.</em></p>
-  <p class="note" style="margin-top:0">Every memo gets the same chain: cut the talking and handling noise before and after the song, reduce room hiss, voice EQ for clarity, compression, then a loud master at −10 LUFS with a −1.5 dB ceiling. Move the sliders to hear changes live on the master, then hit Apply to bake them in; Volume moves the master’s loudness from −22 to +2 LUFS. The Tape toggle adds a subtle cassette feel (warmth, gentle saturation, a little wow and flutter, faint hiss); Apply bakes it in. Drag a slider sideways or up and down, scroll it, or use the arrow keys; double-click resets it. Memos are saved in this browser on this device. A single master downloads as a WAV (on iPhone it opens the share sheet, so you can Save to Files); Download all masters gives you a .zip of WAVs. Add it to your home screen to use it like an app; it works offline once loaded.<span class="hint-desktop"> On a computer you can also drag memos onto the drop box.</span></p>
+  <p class="note" style="margin-top:0">Every song gets the same treatment: it tidies up the start and end (bye-bye chatter and fumbling before and after you play), cleans up hiss, gives your voice a little shine, and makes every song sit at the same loudness. Slide LOUD, WARMTH and SPARKLE to hear the change right away, then tap KEEP IT to save that sound. TAPE makes it sound like an old cassette. PHONE makes it clear and punchy on tiny phone speakers. Drag a slider sideways or up and down, scroll it, or use the arrow keys; double-click puts it back to 0. Tap RAW or POLISHED to compare. Your songs stay saved in this browser on this device. Download one song (on iPhone the share sheet pops up so you can Save to Files), or grab them all at once in a .zip. Add it to your home screen to use it like an app; it works offline once it has loaded.<span class="hint-desktop"> On a computer you can also drag memos onto the drop box.</span></p>
   <p class="fine">© Luke Andrew Kelly. Everything runs on your device; your audio never leaves your browser.</p>
   </footer>
 </div>
@@ -286,7 +298,7 @@ function idb(){
 }
 let memMode = false; const mem = {memos:new Map(), blobs:new Map()};
 function goMemory(){ if (memMode) return; memMode = true;
-  setBanner('This browser won’t let the page save files, so memos stay only until you close this tab. Download your masters before you leave.'); }
+  setBanner('This browser won’t let the page save files, so memos stay only until you close this tab. Download your songs before you leave.'); }
 async function tx(store, mode, fn){
   const d = await idb();
   return new Promise((res, rej) => {
@@ -294,19 +306,37 @@ async function tx(store, mode, fn){
     const out = fn(s); t.oncomplete = () => res(out && out.result !== undefined ? out.result : out); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error);
   });
 }
-async function safeTx(memFn, dbFn){
-  if (!memMode){ try { return await dbFn(); } catch(e){ goMemory(); } }
+/* Storage: IndexedDB first. If one save fails (e.g. the device is out of space), only THAT item falls back to memory
+   and the rest of the library keeps reading from IndexedDB (previously one failure flipped the whole app into memory mode,
+   so older songs couldn't play and new ones silently weren't saved). Whole-app memory mode only if IndexedDB can't open. */
+const idbOk = () => idb().then(() => true, () => false);
+function noteUnsaved(e){
+  const full = e && (e.name === 'QuotaExceededError' || /quota|space|storage/i.test(e.message || ''));
+  setBanner((full ? 'This device is out of room for saving songs, so ' : 'This browser couldn’t save everything, so ') +
+    'the newest ones will only stay until you close this tab. Download them before you leave, or free up space and add them again.'); }
+async function safeTx(memFn, dbFn){ // reads
+  if (!memMode){ try { return await dbFn(); } catch(e){ if (!(await idbOk())) goMemory(); } }
   return memFn();
 }
-const putMemo = m => safeTx(() => { mem.memos.set(m.id, m); }, () => tx('memos','readwrite', s => s.put(m)));
-const allMemos = () => safeTx(() => [...mem.memos.values()], () => tx('memos','readonly', s => s.getAll()));
-const putBlob = (k,b) => safeTx(() => { mem.blobs.set(k,b); }, async () => {
+async function saveTx(memFn, dbFn){ // writes; resolves true if it reached IndexedDB
+  if (!memMode){ try { await dbFn(); memFn(true); return true; } catch(e){ if (!(await idbOk())) goMemory(); else noteUnsaved(e); } }
+  memFn(false); return false;
+}
+const putMemo = m => m._volatile ? (mem.memos.set(m.id, m), Promise.resolve(false))
+  : saveTx(ok => ok ? mem.memos.delete(m.id) : mem.memos.set(m.id, m), () => tx('memos','readwrite', s => s.put(m)));
+const allMemos = () => safeTx(() => [...mem.memos.values()], async () => {
+  const rows = await tx('memos','readonly', s => s.getAll()), byId = new Map(rows.map(r => [r.id, r]));
+  for (const [id, m] of mem.memos) byId.set(id, m); return [...byId.values()]; });
+const putBlob = (k,b) => saveTx(ok => ok ? mem.blobs.delete(k) : mem.blobs.set(k,b), async () => {
   // store raw bytes: some browsers refuse to store File objects
   const buf = await b.arrayBuffer(); return tx('blobs','readwrite', s => s.put({type:b.type||'', buf}, k)); });
-const getBlob = k => safeTx(() => mem.blobs.get(k), async () => { const r = await tx('blobs','readonly', s => s.get(k));
+const getBlob = k => mem.blobs.has(k) ? Promise.resolve(mem.blobs.get(k)) : safeTx(() => mem.blobs.get(k), async () => { const r = await tx('blobs','readonly', s => s.get(k));
   return r ? (r instanceof Blob ? r : new Blob([r.buf], {type:r.type})) : r; });
-const delMemo = id => safeTx(() => { mem.memos.delete(id); mem.blobs.delete(id+':orig'); mem.blobs.delete(id+':master'); },
-  () => Promise.all([tx('memos','readwrite', s=>s.delete(id)), tx('blobs','readwrite', s=>{s.delete(id+':orig'); s.delete(id+':master');})]));
+const hasBlob = k => mem.blobs.has(k) ? Promise.resolve(true) : safeTx(() => false, async () => (await tx('blobs','readonly', s => s.count(k))) > 0);
+const delMemo = id => { mem.memos.delete(id); mem.blobs.delete(id+':orig'); mem.blobs.delete(id+':master');
+  return safeTx(() => {}, () => Promise.all([tx('memos','readwrite', s=>s.delete(id)), tx('blobs','readwrite', s=>{s.delete(id+':orig'); s.delete(id+':master');})])); };
+// ask the browser not to clear saved songs when space runs low (Chrome/Edge/Firefox/Safari 17+; silently ignored elsewhere)
+try { navigator.storage && navigator.storage.persisted && navigator.storage.persisted().then(p => p || navigator.storage.persist()).catch(() => {}); } catch(e){}
 
 /* ---------- DSP helpers ---------- */
 function fft(re, im){ // in-place radix-2
@@ -378,14 +408,15 @@ async function toneAndComp(x, k){
   const ctx = new OfflineAudioContext(1, x.length, SR);
   const buf = ctx.createBuffer(1, x.length, SR); buf.copyToChannel(x, 0);
   const src = ctx.createBufferSource(); src.buffer = buf;
-  const hp = ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=75; hp.Q.value=0.707;
+  const hp = ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=95; hp.Q.value=0.707;
+  const lowTrim = ctx.createBiquadFilter(); lowTrim.type='lowshelf'; lowTrim.frequency.value=150; lowTrim.gain.value=-2;   // less boom by default
   const mud = ctx.createBiquadFilter(); mud.type='peaking'; mud.frequency.value=250; mud.Q.value=1.41; mud.gain.value=-2.5;
   const pres = ctx.createBiquadFilter(); pres.type='peaking'; pres.frequency.value=3000; pres.Q.value=1.17; pres.gain.value=2.5;
   const air = ctx.createBiquadFilter(); air.type='highshelf'; air.frequency.value=10000; air.gain.value=2;
   const comp = ctx.createDynamicsCompressor(); comp.threshold.value=-22; comp.ratio.value=3; comp.knee.value=4; comp.attack.value=0.012; comp.release.value=0.18;
   const bass = ctx.createBiquadFilter(); bass.type='lowshelf'; bass.frequency.value=120; bass.gain.value=k.bass;
   const treb = ctx.createBiquadFilter(); treb.type='highshelf'; treb.frequency.value=6000; treb.gain.value=k.treble;
-  src.connect(hp).connect(mud).connect(pres).connect(air).connect(bass).connect(treb).connect(comp).connect(ctx.destination);
+  src.connect(hp).connect(lowTrim).connect(mud).connect(pres).connect(air).connect(bass).connect(treb).connect(comp).connect(ctx.destination);
   src.start();
   const out = await ctx.startRendering();
   return out.getChannelData(0).slice();
@@ -414,6 +445,20 @@ function hissNode(ctx, seconds, gain){ // white noise shaped like tape hiss (1-1
   const g = ctx.createGain(); g.gain.value = gain;
   s.connect(hp).connect(lp).connect(g); s.start();
   return { src: s, output: g };
+}
+/* ---------- PHONE: clear, mid-focused sound for tiny speakers (optional, per memo) ---------- */
+function phoneNodes(ctx){ // 4th-order high-pass 300 Hz, presence bump ~2 kHz, 4th-order low-pass 3.8 kHz
+  const mk = (type, f, q, g) => { const b = ctx.createBiquadFilter(); b.type=type; b.frequency.value=f; b.Q.value=q; if (g!==undefined) b.gain.value=g; return b; };
+  const h1 = mk('highpass',300,0.707), h2 = mk('highpass',300,0.707), pk = mk('peaking',1900,1.0,2.5), l1 = mk('lowpass',3800,0.707), l2 = mk('lowpass',3800,0.707);
+  h1.connect(h2).connect(pk).connect(l1).connect(l2);
+  return { input: h1, output: l2 };
+}
+async function phoneFx(x){ // offline: before loudness, so a PHONE song is just as loud as the others
+  const ctx = new OfflineAudioContext(1, x.length, SR);
+  const buf = ctx.createBuffer(1, x.length, SR); buf.copyToChannel(x instanceof Float32Array ? x : Float32Array.from(x), 0);
+  const src = ctx.createBufferSource(); src.buffer = buf; const ph = phoneNodes(ctx);
+  src.connect(ph.input); ph.output.connect(ctx.destination); src.start();
+  return (await ctx.startRendering()).getChannelData(0).slice();
 }
 async function tapeFx(x){ // offline: runs after EQ/compression and before loudness + the -1.5 dB ceiling limiter
   let peak = 0, ss = 0; for (let i=0;i<x.length;i++){ const a=Math.abs(x[i]); if (a>peak) peak=a; ss += x[i]*x[i]; }
@@ -496,19 +541,20 @@ function decodeAny(ab){
 }
 async function master(file, onStep, k){
   k = k || {vol:0,bass:0,treble:0};
-  onStep('Decoding');
+  onStep('Opening');
   const ab = await file.arrayBuffer();
   const dec = await decodeAny(ab);
   let full = new Float32Array(dec.length);
   for (let c=0;c<dec.numberOfChannels;c++){ const d=dec.getChannelData(c); for (let i=0;i<d.length;i++) full[i]+=d[i]/dec.numberOfChannels; }
   onStep('Finding the song');
   const [a,b] = findSong(full);
-  onStep('Cleaning room noise');
+  onStep('Cleaning up hiss');
   let y = await denoise(full, a, b);
-  onStep('EQ and compression');
+  onStep('Shaping the sound');
   y = await toneAndComp(y, k);
-  if (k.tape){ onStep('Tape'); y = await tapeFx(y); }
-  onStep('Mastering');
+  if (k.tape){ onStep('Adding tape'); y = await tapeFx(y); }
+  if (k.phone){ onStep('Making it phone-ready'); y = await phoneFx(y); }
+  onStep('Evening out the loudness');
   const target = -10 + k.vol, ceil = -1.5;
   let g = Math.pow(10, (target - lufsDualMono(y))/20), out, L;
   for (let it=0; it<4; it++){
@@ -566,7 +612,7 @@ const downloads = {
   }
 };
 async function saveFile(blob, name){
-  if (!blob){ setStatus('That master isn’t ready yet.'); return; }
+  if (!blob){ setStatus('That song isn’t polished yet.'); return; }
   try { await downloads.save({filename: name, data: blob}); setStatus('Saved ' + name + '.'); }
   catch(e){ setStatus(e && e.code==='declined' ? 'Download canceled.' : 'Download failed: ' + (e && e.message || e)); }
 }
@@ -621,26 +667,26 @@ function render(){
       <canvas class="wave"></canvas>
       <div class="knobs"></div>
       <div class="ab" role="group" aria-label="Listen to">
-        <button data-w="orig" aria-pressed="${which==='orig'}" ${done?'':'disabled'}>Orig</button><button data-w="master" aria-pressed="${which==='master'}" ${done?'':'disabled'}>Master</button>
+        <button data-w="orig" aria-pressed="${which==='orig'}" ${done?'':'disabled'}>Raw</button><button data-w="master" aria-pressed="${which==='master'}" ${done?'':'disabled'}>Polished</button>
       </div>
       <button class="icon lyr" aria-expanded="${!!openLyrics[m.id]}">Lyrics</button>
-      <button class="icon dl" aria-label="Download master of ${m.name}" title="Download master" ${done&&downloads?'':'disabled'}><svg viewBox="0 0 16 16"><path d="M7 1h2v8l3-3 1.4 1.4L8 12.8 2.6 7.4 4 6l3 3zM2 14h12v2H2z"/></svg></button>
+      <button class="icon dl" aria-label="Download polished ${m.name}" title="Download this song" ${done&&downloads?'':'disabled'}><svg viewBox="0 0 16 16"><path d="M7 1h2v8l3-3 1.4 1.4L8 12.8 2.6 7.4 4 6l3 3zM2 14h12v2H2z"/></svg></button>
       ${editMode?`<button class="icon del" aria-label="Delete ${m.name}" title="Delete">✕</button>`:''}`;
     li.querySelector('.name').value = m.name;
     const when = li.querySelector('.when');
     if (m.state==='error'){ when.textContent = m.error; when.classList.add('err'); }
     else if (!done) when.textContent = m.step || 'Waiting';
     else when.textContent = (m.createdSrc==='file' ? '' : m.createdSrc==='upload' ? 'Added ' : 'File date ') + fmtWhen(m.created||m.added);
-    li.querySelector('canvas').setAttribute('aria-label', done ? `Waveform. The master keeps ${fmt(m.start)} to ${fmt(m.end)} of ${fmt(m.total)}.` : 'Waveform');
-    li.querySelector('canvas').title = done ? `Keeps ${fmt(m.start)} to ${fmt(m.end)} of ${fmt(m.total)}, ${m.lufs.toFixed(1)} LUFS` : '';
+    li.querySelector('canvas').setAttribute('aria-label', done ? `Waveform. The polished song keeps ${fmt(m.start)} to ${fmt(m.end)} of ${fmt(m.total)}.` : 'Waveform');
+    li.querySelector('canvas').title = done ? `Keeps ${fmt(m.start)} to ${fmt(m.end)} of ${fmt(m.total)}` : '';
     li.querySelector('.name').addEventListener('change', async e => { m.name = e.target.value.trim()||m.name; await putMemo(strip(m)); });
     li.querySelector('.play').addEventListener('click', () => togglePlay(m));
     li.querySelector('.vote').addEventListener('click', async e => { m.votes = (m.votes||0)+1; const b=e.currentTarget; b.querySelector('span').textContent=m.votes; b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); await putMemo(strip(m)); if (sortMode==='top') setTimeout(render, 350); });
     li.querySelectorAll('.ab button').forEach(b => b.addEventListener('click', () => { abState[m.id]=b.dataset.w; const was = playing&&playing.id===m.id&&!player.paused; if (playing&&playing.id===m.id){ player.pause(); playing=null; } if (was) togglePlay(m); else render(); }));
-    li.querySelector('.dl').addEventListener('click', async () => saveFile(await getBlob(m.id+':master'), safe(m.name)+' (master).wav'));
+    li.querySelector('.dl').addEventListener('click', async () => saveFile(await getBlob(m.id+':master'), safe(m.name)+' (polished).wav'));
     li.querySelector('.lyr').addEventListener('click', () => { openLyrics[m.id] = !openLyrics[m.id]; render(); });
     const del = li.querySelector('.del');
-    if (del) del.addEventListener('click', async () => { if (!confirm(`Delete “${m.name}”? This removes the original and the master.`)) return; if (playing&&playing.id===m.id){player.pause();playing=null;} await delMemo(m.id); memos=memos.filter(x=>x.id!==m.id); render(); });
+    if (del) del.addEventListener('click', async () => { if (!confirm(`Delete “${m.name}”? This removes the raw and polished versions.`)) return; if (playing&&playing.id===m.id){player.pause();playing=null;} await delMemo(m.id); memos=memos.filter(x=>x.id!==m.id); render(); });
     buildKnobs(li.querySelector('.knobs'), m, done);
     const cv = li.querySelector('canvas');
     cv.addEventListener('click', e => { if (!(playing&&playing.id===m.id)||!player.duration) return; const f=e.offsetX/cv.clientWidth, w=abState[m.id]||'master';
@@ -648,7 +694,7 @@ function render(){
     listEl.appendChild(li);
     if (openLyrics[m.id]){
       const lp = document.createElement('li'); lp.className='lyrics';
-      lp.innerHTML = '<div class="lyr-bar"><button class="icon tr">Transcribe</button><span class="tr-status"></span></div><textarea aria-label="Lyrics" placeholder="Lyrics for this song"></textarea>';
+      lp.innerHTML = '<div class="lyr-bar"><button class="icon tr" title="Listens to the song and types the words for you">Type it out</button><span class="tr-status"></span></div><textarea aria-label="Lyrics" placeholder="Lyrics for this song"></textarea>';
       const ta = lp.querySelector('textarea'); ta.value = m.lyrics || '';
       const fit = () => { ta.style.height='auto'; ta.style.height = Math.max(90, ta.scrollHeight+2)+'px'; };
       ta.addEventListener('input', () => { m.lyrics = ta.value; fit(); clearTimeout(saveT); saveT = setTimeout(() => putMemo(strip(m)), 500); });
@@ -696,16 +742,16 @@ async function transcribe(m, ta, btn, st, fit){
   if (trBusy){ trBusy.stop(); return; }
   if (!SR){ st.textContent = 'This browser can’t transcribe. Use Chrome or Edge on a computer.'; return; }
   if ((m.lyrics||'').trim() && !confirm('Replace the lyrics already in this box?')) return;
-  const blob = await getBlob(m.id+':master'); if (!blob){ st.textContent='No master yet.'; return; }
+  const blob = await getBlob(m.id+':master'); if (!blob){ st.textContent='Not polished yet.'; return; }
   const AC = window.AudioContext || window.webkitAudioContext, ctx = new AC();
-  let buf; try { buf = await ctx.decodeAudioData(await blob.arrayBuffer()); } catch(e){ st.textContent='Couldn’t read the master.'; ctx.close(); return; }
+  let buf; try { buf = await ctx.decodeAudioData(await blob.arrayBuffer()); } catch(e){ st.textContent='Couldn’t read the polished song.'; ctx.close(); return; }
   const src = ctx.createBufferSource(); src.buffer = buf;
   const dest = ctx.createMediaStreamDestination(); src.connect(dest);           // silent: goes to the recognizer, not the speakers
   const track = dest.stream.getAudioTracks()[0];
   const lines = []; let interim = '', done = false, rec, t0;
   const show = () => { ta.value = lines.join('\n') + (interim ? (lines.length?'\n':'') + interim : ''); fit(); };
   const finish = msg => { if (done) return; done = true; clearInterval(tick); try{src.stop();}catch(e){} ctx.close();
-    trBusy = null; btn.textContent = 'Transcribe'; m.lyrics = lines.join('\n'); ta.value = m.lyrics; fit(); putMemo(strip(m)); st.textContent = msg; };
+    trBusy = null; btn.textContent = 'Type it out'; m.lyrics = lines.join('\n'); ta.value = m.lyrics; fit(); putMemo(strip(m)); st.textContent = msg; };
   const startRec = () => {
     rec = new SR(); rec.continuous = true; rec.interimResults = true; rec.lang = navigator.language || 'en-US';
     rec.onresult = e => { interim = ''; for (let i=e.resultIndex;i<e.results.length;i++){ const r=e.results[i], t=r[0].transcript.trim();
@@ -725,32 +771,32 @@ async function transcribe(m, ta, btn, st, fit){
 }
 
 /* ---------- knobs ---------- */
-const KNOB0 = {vol:0, bass:0, treble:0, tape:false};
+const KNOB0 = {vol:0, bass:0, treble:0, tape:false, phone:false};
 const KNOBS = [
-  {key:'vol', label:'Volume', min:-12, max:12, step:0.5},
-  {key:'bass', label:'Bass', min:-9, max:9, step:0.5},
-  {key:'treble', label:'Treble', min:-9, max:9, step:0.5},
+  {key:'vol', label:'Loud', min:-12, max:12, step:0.5},
+  {key:'bass', label:'Warmth', min:-9, max:9, step:0.5},
+  {key:'treble', label:'Sparkle', min:-9, max:9, step:0.5},
 ];
-const same = (a,b) => KNOBS.every(d => (a||KNOB0)[d.key] === (b||KNOB0)[d.key]) && !!(a||KNOB0).tape === !!(b||KNOB0).tape;
+const same = (a,b) => KNOBS.every(d => (a||KNOB0)[d.key] === (b||KNOB0)[d.key]) && !!(a||KNOB0).tape === !!(b||KNOB0).tape && !!(a||KNOB0).phone === !!(b||KNOB0).phone;
 const fmtDb = v => (v>0?'+':v<0?'−':'') + Math.abs(v).toFixed(Math.abs(v)%1?1:0) + ' dB';
 let saveT = null;
 function buildKnobs(host, m, done){
   m.knobs = {...KNOB0, ...(m.knobs||{})};
-  const apply = document.createElement('button'); apply.className='apply primary'; apply.textContent='Apply'; apply.title='Re-master with these slider settings';
+  const apply = document.createElement('button'); apply.className='apply primary'; apply.textContent='Keep it'; apply.title='Save this sound';
   const refresh = () => { apply.hidden = !done || same(m.knobs, m.baked); apply.tabIndex = apply.hidden ? -1 : 0; };
   for (const d of KNOBS){
     const wrap = document.createElement('div'); wrap.className='knob';
     wrap.innerHTML = `<div class="fader" role="slider" tabindex="0" aria-label="${d.label}" aria-valuemin="${d.min}" aria-valuemax="${d.max}">
       <div class="f-zero"></div><div class="f-fill"></div><div class="f-thumb"></div><span class="f-lbl"></span><span class="f-val"></span></div>`;
-    wrap.title = d.label + ' (drag, scroll, or arrow keys; double-click resets)';
+    wrap.title = d.label + ': slide it to tweak the sound (drag, scroll, or arrow keys; double-click puts it back to 0)';
     const fd = wrap.querySelector('.fader'), val = wrap.querySelector('.f-val'), fill = wrap.querySelector('.f-fill'), thumb = wrap.querySelector('.f-thumb');
     const pct = v => (v-d.min)/(d.max-d.min)*100, zero = pct(0);
     wrap.querySelector('.f-zero').style.left = zero + '%';
-    wrap.querySelector('.f-lbl').textContent = d.label==='Volume' ? 'Vol' : d.label;
+    wrap.querySelector('.f-lbl').textContent = d.label;
     const draw = () => { const v = m.knobs[d.key], p = pct(v);
       fill.style.left = Math.min(p, zero) + '%'; fill.style.width = Math.abs(p - zero) + '%'; thumb.style.left = p + '%';
       val.textContent = v ? (v>0?'+':'−') + Math.abs(v) : '0';
-      fd.setAttribute('aria-valuenow', v); fd.setAttribute('aria-valuetext', d.label+' '+fmtDb(v)); };
+      fd.setAttribute('aria-valuenow', v); fd.setAttribute('aria-valuetext', d.label+' '+(v>0?'+':v<0?'−':'')+Math.abs(v)); };
     const set = v => { v = Math.round(Math.min(d.max, Math.max(d.min, v))/d.step)*d.step; if (v === m.knobs[d.key]) return;
       m.knobs[d.key] = v; draw(); refresh(); if (playing && playing.id===m.id) updatePreview();
       clearTimeout(saveT); saveT = setTimeout(() => putMemo(strip(m)), 400); };
@@ -768,20 +814,26 @@ function buildKnobs(host, m, done){
     draw(); host.appendChild(wrap);
   }
   apply.addEventListener('click', async () => {
-    const f = await getBlob(m.id+':orig'); if (!f){ setStatus('The original for this memo is missing, so it can’t be re-mastered.'); return; }
+    const f = await getBlob(m.id+':orig'); if (!f){ setStatus('The raw recording for this memo is missing, so it can’t be polished again.'); return; }
     if (playing && playing.id===m.id){ player.pause(); playing=null; }
     m.state='queued'; m.step='Waiting'; queue.push([m, new File([f], m.name+'.audio', {type:f.type})]); render(); run(); });
   const tape = document.createElement('button'); tape.className='tape'; tape.textContent='Tape';
-  tape.title='Cassette demo-tape feel: warmth, gentle saturation, a little wow and flutter, faint hiss. Apply bakes it in.';
-  tape.setAttribute('aria-pressed', String(!!m.knobs.tape)); tape.setAttribute('aria-label', 'Tape vibe for ' + m.name);
+  tape.title='Makes it sound like an old cassette: warm, a little fuzzy, a tiny wobble and some hiss. Tap Keep it to save.';
+  tape.setAttribute('aria-pressed', String(!!m.knobs.tape)); tape.setAttribute('aria-label', 'Tape sound for ' + m.name);
   tape.addEventListener('click', () => { m.knobs.tape = !m.knobs.tape; tape.setAttribute('aria-pressed', String(m.knobs.tape)); refresh();
     if (playing && playing.id===m.id) updatePreview(); clearTimeout(saveT); saveT = setTimeout(() => putMemo(strip(m)), 400); });
   host.appendChild(tape);
+  const phone = document.createElement('button'); phone.className='phone'; phone.textContent='Phone';
+  phone.title='Makes it clear and punchy on phone speakers (less bass, more voice). Tap Keep it to save.';
+  phone.setAttribute('aria-pressed', String(!!m.knobs.phone)); phone.setAttribute('aria-label', 'Phone sound for ' + m.name);
+  phone.addEventListener('click', () => { m.knobs.phone = !m.knobs.phone; phone.setAttribute('aria-pressed', String(m.knobs.phone)); refresh();
+    if (playing && playing.id===m.id) updatePreview(); clearTimeout(saveT); saveT = setTimeout(() => putMemo(strip(m)), 400); });
+  host.appendChild(phone);
   host.appendChild(apply);
   refresh();
 }
 // live preview while playing the master: knob changes you haven't applied yet
-let actx=null, bF, tF, vG, pLim, pTrim, tDry, tWet, tHiss;
+let actx=null, bF, tF, vG, pLim, pTrim, tDry, tWet, tHiss, phDry, phWet;
 function ensureGraph(){
   if (actx) { actx.resume && actx.resume(); return; }
   try {
@@ -798,7 +850,11 @@ function ensureGraph(){
     const tp = tapeNodes(actx); tp.post.gain.value = Math.pow(10, 1/20);   // ~+1 dB makeup for the softened peaks
     const hs = hissNode(actx, 2, 0.0024); tHiss = actx.createGain(); tHiss.gain.value = 0; hs.output.connect(tHiss);   // ~-60 dBFS under a -10 LUFS master
     src.connect(bF).connect(tF);
-    tF.connect(tDry).connect(vG); tF.connect(tp.input); tp.output.connect(tWet).connect(vG); tHiss.connect(vG);
+    const tBus = actx.createGain();
+    tF.connect(tDry).connect(tBus); tF.connect(tp.input); tp.output.connect(tWet).connect(tBus); tHiss.connect(tBus);
+    // phone path (bypassed unless Phone is on and not yet baked in); ~+5 dB makeup since the band-limit removes energy
+    phDry = actx.createGain(); phWet = actx.createGain(); phWet.gain.value = 0; const ph = phoneNodes(actx), phMake = actx.createGain(); phMake.gain.value = Math.pow(10, 5/20);
+    tBus.connect(phDry).connect(vG); tBus.connect(ph.input); ph.output.connect(phMake).connect(phWet).connect(vG);
     vG.connect(pLim).connect(pTrim).connect(actx.destination);
   } catch(e){ actx = null; }
 }
@@ -811,7 +867,9 @@ function updatePreview(){
   vG.gain.value = onMaster ? Math.pow(10,(k.vol-b.vol)/20) : 1;
   const tapeOn = onMaster && !!k.tape && !b.tape, now = actx.currentTime;
   if (tDry){ tDry.gain.setTargetAtTime(tapeOn?0:1, now, 0.02); tWet.gain.setTargetAtTime(tapeOn?1:0, now, 0.02); tHiss.gain.setTargetAtTime(tapeOn?1:0, now, 0.02); }
-  const boost = onMaster && (k.vol>b.vol || k.bass>b.bass || k.treble>b.treble || tapeOn);
+  const phoneOn = onMaster && !!k.phone && !b.phone;
+  if (phDry){ phDry.gain.setTargetAtTime(phoneOn?0:1, now, 0.02); phWet.gain.setTargetAtTime(phoneOn?1:0, now, 0.02); }
+  const boost = onMaster && (k.vol>b.vol || k.bass>b.bass || k.treble>b.treble || tapeOn || phoneOn);
   if (pLim){ const T = -1, R = 20;   // brickwall-ish: -1 dBFS threshold, 20:1, 1 ms attack
     pLim.threshold.value = boost ? T : 0; pLim.ratio.value = boost ? R : 1;
     pTrim.gain.value = boost ? Math.pow(Math.pow(10, (T + (0 - T)/R)/20), 0.6) : 1; }
@@ -823,6 +881,7 @@ async function togglePlay(m){
   if (playing && playing.id===m.id){ if (player.paused) player.play(); else player.pause(); render(); return; }
   const which = abState[m.id]||'master';
   const blob = await getBlob(m.id + (which==='master'?':master':':orig'));
+  if (!blob){ setStatus('Couldn’t find that recording on this device. Try adding the memo again.'); return; }
   if (urlCache) URL.revokeObjectURL(urlCache);
   urlCache = URL.createObjectURL(blob); player.src = urlCache; playing = m; updatePreview();
   await player.play().catch(()=>{}); render();
@@ -855,7 +914,7 @@ async function addFiles(files){
     try { const r = recordedAt(ab); if (r){ m.created = r.ms; m.createdSrc = 'file'; } else { m.created = f.lastModified || m.added; m.createdSrc = 'timestamp'; } }
     catch(e){ m.created = f.lastModified || m.added; m.createdSrc = 'timestamp'; }
     memos.push(m); queue.push([m,f]); added++; render();
-    try { await putBlob(m.id+':orig', f); await putMemo(strip(m)); } catch(e){ setStatus('Couldn’t store ' + f.name + ': ' + (e && e.message || e)); }
+    try { if (!(await putBlob(m.id+':orig', f))) m._volatile = true; await putMemo(strip(m)); } catch(e){ setStatus('Couldn’t store ' + f.name + ': ' + (e && e.message || e)); }
   }
   render(); run();
   if (dupes.length){
@@ -868,7 +927,7 @@ async function run(){
   if (busy) return; busy = true;
   while (queue.length){
     const [m,f] = queue.shift();
-    setStatus(`Mastering “${m.name}”… ${queue.length} more in line.`);
+    setStatus(`Polishing “${m.name}”… ${queue.length} more in line.`);
     try{
       const k = {...(m.knobs||KNOB0)};
       const r = await master(f, s => { m.step = s; const el = [...listEl.querySelectorAll('li.memo')].find(li => li.querySelector('.name')?.value===m.name); if (el) el.querySelector('.when').textContent = s; }, k);
@@ -879,7 +938,7 @@ async function run(){
     } catch(e){ m.state='error'; m.error = /\.qta$/i.test(f.name) ? 'This browser can’t read .qta files. In Voice Memos, share the memo and choose Save to Files (it saves as .m4a), then add that.' : 'Couldn’t read this file as audio (' + (f.name.split('.').pop()) + '). Export it as m4a, wav, or mp3 and add it again.'; }
     await putMemo(strip(m)); render();
   }
-  busy = false; setStatus(memos.length ? 'All memos mastered.' : '');
+  busy = false; setStatus(memos.length ? 'All songs polished.' : '');
 }
 
 const drop = $('#drop'), fileIn = $('#file');
@@ -897,8 +956,8 @@ document.querySelectorAll('.sort button').forEach(b => b.addEventListener('click
 $('#edit').addEventListener('click', () => { editMode = !editMode; document.body.classList.toggle('editing', editMode); $('#edit').textContent = editMode ? 'Done' : 'Edit list'; render(); });
 $('#dlAll').addEventListener('click', async () => {
   const done = memos.filter(m=>m.state==='done'); const entries=[]; const used=new Set();
-  for (const m of done){ let nm=safe(m.name)+' (master).wav', k=2; while(used.has(nm)) nm=safe(m.name)+` (master ${k++}).wav`; used.add(nm); entries.push({name:nm, blob: await getBlob(m.id+':master')}); }
-  saveZip(entries, 'Luke Andrew Kelly masters.zip');
+  for (const m of done){ let nm=safe(m.name)+' (polished).wav', k=2; while(used.has(nm)) nm=safe(m.name)+` (polished ${k++}).wav`; used.add(nm); entries.push({name:nm, blob: await getBlob(m.id+':master')}); }
+  saveZip(entries, 'Luke Andrew Kelly songs.zip');
 });
 
 window.addEventListener('unhandledrejection', e => setStatus('Something failed: ' + (e.reason && e.reason.message || e.reason)));
@@ -910,7 +969,8 @@ window.addEventListener('unhandledrejection', e => setStatus('Something failed: 
       try { const b = await getBlob(m.id+':orig'); const r = b && recordedAt(await b.arrayBuffer());
         if (r){ m.created = r.ms; m.createdSrc = 'file'; } else if (!m.createdSrc){ m.created = m.created || m.added; m.createdSrc = 'upload'; } } catch(e){}
       putMemo(strip(m)); }
-    // anything interrupted mid-master gets re-run
+    // anything interrupted mid-polish, or a finished song whose polished file never got saved, gets re-run
+    for (const m of memos) if (m.state==='done'){ try { if (!(await hasBlob(m.id+':master'))) m.state = 'queued'; } catch(e){} }
     for (const m of memos) if (m.state!=='done' && m.state!=='error'){ const f = await getBlob(m.id+':orig'); if (f) queue.push([m,f]); }
     render(); run();
   } catch(e){ goMemory(); render(); }

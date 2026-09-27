@@ -1,6 +1,6 @@
 /* Voice Memo Master service worker: offline app shell + Android Web Share Target.
    All paths are relative to the SW scope, so the app works from any subpath (e.g. GitHub Pages). */
-const VERSION = 'vmm-v3';
+const VERSION = 'vmm-v4';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './og-image.png',
   './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png'];
 
