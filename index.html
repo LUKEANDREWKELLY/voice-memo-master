@@ -683,7 +683,12 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 .bnp-zoom{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
 .bnp-zoom input{width:120px;accent-color:var(--accent)}
 @media (max-width:640px){.bn-edbtn{min-height:36px;padding:0 10px}.bn-th{width:64px;height:40px}.bnp-ctl button{min-height:36px;flex:1 1 auto}.bnp-zoom{flex:1 1 100%}.bnp-zoom input{flex:1;width:auto}}
+#delBroken[hidden]{display:none!important}
 #delBroken{background:#c8102e;color:#fff;border-color:#c8102e;font-weight:700}
+.undo-toast{position:fixed;left:50%;transform:translateX(-50%);bottom:84px;z-index:80;display:flex;align-items:center;gap:6px;max-width:calc(100vw - 16px);background:var(--ink);color:var(--bg);padding:6px 8px;font-size:12px;font-weight:700;box-shadow:3px 3px 0 #8a0303;border:1.5px solid var(--ink)}
+.undo-toast[hidden]{display:none}.undo-toast span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.undo-toast button{flex:none;background:var(--bg);color:var(--ink);border:0;padding:3px 8px;font-weight:900;text-transform:uppercase;font-size:11px;letter-spacing:.04em;cursor:pointer}.undo-toast .ut-x{background:transparent;color:var(--bg);font-size:15px;padding:0 4px}
+body.dropping::after{content:'Drop your songs anywhere';position:fixed;inset:8px;z-index:90;display:flex;align-items:center;justify-content:center;border:4px dashed #8a0303;background:rgba(0,0,0,.55);color:#fff;font:900 22px/1.2 inherit;letter-spacing:.12em;text-transform:uppercase;pointer-events:none}
 </style>
 </head>
 <body>
@@ -1469,7 +1474,10 @@ function render(){
     if ((q || bk.active==='all') && bk.map[m.id] !== undefined){ const t = document.createElement('b'); t.className='bkb'; t.textContent = 'B'+(bk.map[m.id]+1); t.title = 'Bucket '+(bk.map[m.id]+1)+': '+bk.names[bk.map[m.id]]; when.prepend(t); }
     li.querySelector('canvas').setAttribute('aria-label', done ? `Waveform. The polished song keeps ${fmt(m.start)} to ${fmt(m.end)} of ${fmt(m.total)}.` : 'Waveform');
     li.querySelector('canvas').title = done ? `Keeps ${fmt(m.start)} to ${fmt(m.end)} of ${fmt(m.total)}` : '';
-    li.querySelector('.name').addEventListener('change', async e => { const v = e.target.value.trim(); if (v && v !== m.name){ m.name = v; m.autoName = false; } e.target.value = m.name; await putMemo(strip(m)); if (sortMode==='az') render(); });   // typed by hand: Fix names never touches it again
+    li.querySelector('.name').addEventListener('change', async e => { const v = e.target.value.trim(); if (v && v !== m.name){ const prev = m.name, prevAuto = m.autoName, orig = m.srcName ? baseName(m.srcName) : '';
+      m.name = v; m.autoName = false;
+      showUndo(`Renamed to “${v}”.`, async () => { m.name = prev; m.autoName = prevAuto; await putMemo(strip(m)); render(); },
+        orig && orig !== prev && orig !== v ? async () => { m.name = orig; m.autoName = false; await putMemo(strip(m)); render(); } : null); } e.target.value = m.name; await putMemo(strip(m)); if (sortMode==='az') render(); });   // typed by hand: Fix names never touches it again
     li.querySelector('.play').addEventListener('click', () => { if (playlist && !(playing && playing.id===m.id)) playlist = null; togglePlay(m); });
     li.querySelector('.vote').addEventListener('click', async e => { m.votes = (m.votes||0)+1; const b=e.currentTarget; b.querySelector('span').textContent=m.votes; b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); await putMemo(strip(m)); if (sortMode==='top') setTimeout(render, 350); });
     li.querySelectorAll('.ab button').forEach(b => b.addEventListener('click', () => { abState[m.id]=b.dataset.w; const was = playing&&playing.id===m.id&&!player.paused; if (playing&&playing.id===m.id){ player.pause(); playing=null; } if (was) togglePlay(m); else render(); }));
@@ -1999,14 +2007,17 @@ async function fingerprint(ab){
     const u = new Uint8Array(ab); let h = 2166136261; const step = Math.max(1, Math.floor(u.length/65536));
     for (let i=0;i<u.length;i+=step){ h ^= u[i]; h = Math.imul(h, 16777619) >>> 0; } return 'f'+u.length+'-'+h; }
 }
+const AUDIO_EXT = /\.(m4a|qta|wav|mp3|aif|aiff|aifc|caf|aac|mp4|mov|ogg|oga|opus|flac|webm|3gp|amr|wma)$/i;
+const isAudioFile = f => !!f && (/^(audio\/|video\/(mp4|quicktime))/.test(f.type || '') || AUDIO_EXT.test(f.name || '') || (!f.type && !/\./.test(f.name || '') && f.size > 0));
 async function addFiles(files){
-  if (!files.length){ setStatus('No files came through. Try choosing them with the button instead of dragging.'); return; }
+  if (!files.length){ setStatus('No files came through. Try choosing them with the button instead of dragging.'); setBanner('No files came through that time. If you dragged a folder, try again (folders work now), or tap Add memo and pick the files.'); return; }
+  const total = files.length, notAudio = files.filter(f => !isAudioFile(f)); files = files.filter(isAudioFile); let unreadable = 0;
   setStatus(`Checking ${files.length} file${files.length>1?'s':''}…`);
   if (!memMode) document.getElementById('banner').hidden = true;
   const known = new Map(memos.filter(m=>m.hash).map(m => [m.hash, m]));
   const dupes = []; let added = 0, refilled = 0;
   for (const f of files){
-    let ab; try { ab = await f.arrayBuffer(); } catch(e){ setStatus('Couldn’t open ' + f.name + '.'); continue; }
+    let ab; try { ab = await f.arrayBuffer(); } catch(e){ unreadable++; setStatus('Couldn’t open ' + f.name + '.'); continue; }
     const hash = await fingerprint(ab);
     if (known.has(hash)){ const old = known.get(hash);
       if (old.state === 'error' && !queue.some(([x]) => x === old)){   // audio was missing or it failed: fill it in, keep its name, bucket and votes
@@ -2026,13 +2037,16 @@ async function addFiles(files){
   }
   if (added){ syncBk(); const last = memos[memos.length-1]; bk.active = added === 1 && bk.map[last.id] !== undefined ? bk.map[last.id] : 'all'; saveBk();
     sortMode = 'added'; try { localStorage.setItem('lak-sort', sortMode); } catch(e){} if ($('#search').value) $('#search').value = '';   // new uploads land on top, never hidden by an old search
-    if (!dupes.length) setBanner(`Added ${added} song${added>1?'s':''}. ${added>1?'They’re':'It’s'} at the top of the list (sorted by Just added) and polishing one at a time.`); }
-  render(); run();
-  if (dupes.length){
-    const msg = `Skipped ${dupes.length} duplicate${dupes.length>1?'s':''} already in your library: ${dupes.slice(0,5).join(', ')}${dupes.length>5?`, and ${dupes.length-5} more`:''}.`;
-    setBanner(msg + (added ? ` Added ${added} new.` : '') + (refilled ? ` Filled in the missing audio for ${refilled}.` : ''));
-    if (!added && !refilled) setStatus('');
   }
+  render(); run();
+  const pl = (n, w) => `${n} ${w}${n===1?'':'s'}`;   // always say exactly what happened to every file
+  const parts = [`added ${pl(added, 'new song')}`];
+  if (refilled) parts.push(`filled in the missing audio for ${refilled}`);
+  if (dupes.length) parts.push(`skipped ${pl(dupes.length, 'duplicate')} (the exact same audio is already in your library${dupes.length<=3 ? ': '+dupes.join(', ') : ', e.g. '+dupes.slice(0,2).join(', ')})`);
+  if (notAudio.length) parts.push(`skipped ${notAudio.length} that ${notAudio.length===1?'isn’t':'aren’t'} audio`);
+  if (unreadable) parts.push(`couldn’t open ${unreadable}`);
+  setBanner(`${pl(total, 'file')} in: ` + parts.join(', ') + '.' + (added ? ` New ones are at the top (Just added) and polish one at a time.` : ''));
+  if (!added && !refilled) setStatus('');
 }
 const WATCHDOG_MS = +window.__vmmWatchdogMs || 180000;   // one song may take at most ~3 minutes of on-screen time to polish
 let polishingNow = null, pausedHidden = false;
@@ -2083,7 +2097,24 @@ drop.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' '){ e.pre
 fileIn.addEventListener('change', () => { addFiles([...fileIn.files]); fileIn.value=''; });
 ['dragenter','dragover'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add('over'); }));
 ['dragleave','drop'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove('over'); }));
-drop.addEventListener('drop', e => addFiles([...e.dataTransfer.files]));
+function filesFromDrop(dt){   // plain files, or whole folders (walked inside, subfolders too)
+  const entries = [...(dt.items || [])].filter(i => i.kind === 'file').map(i => i.webkitGetAsEntry && i.webkitGetAsEntry()).filter(Boolean);
+  const plain = [...(dt.files || [])];
+  if (!entries.some(en => en.isDirectory)) return Promise.resolve(plain);
+  const out = [], readAll = r => new Promise(res => { const all = []; const step = () => r.readEntries(b => { if (!b.length) res(all); else { all.push(...b); step(); } }, () => res(all)); step(); });
+  const walk = async en => { if (en.isFile){ try { out.push(await new Promise((res, rej) => en.file(res, rej))); } catch(e){} }
+    else if (en.isDirectory){ for (const c of await readAll(en.createReader())) await walk(c); } };
+  setStatus('Opening the folder…');
+  return (async () => { for (const en of entries) await walk(en); return out; })();
+}
+drop.addEventListener('drop', async e => { e.stopPropagation(); addFiles(await filesFromDrop(e.dataTransfer)); });
+const hasFiles = e => e.dataTransfer && [...(e.dataTransfer.types || [])].includes('Files');
+window.addEventListener('dragover', e => { if (hasFiles(e)){ e.preventDefault(); document.body.classList.add('dropping'); } });
+window.addEventListener('dragleave', e => { if (!e.relatedTarget) document.body.classList.remove('dropping'); });
+window.addEventListener('drop', async e => { if (!hasFiles(e)) return; e.preventDefault(); document.body.classList.remove('dropping');   // drop songs anywhere on the page
+  const fs = await filesFromDrop(e.dataTransfer);
+  if (!fs.some(isAudioFile) && fs.length && fs.every(f => /^image\//.test(f.type || ''))){ if (typeof addPhotos === 'function') addPhotos(fs); return; }
+  addFiles(fs); });
 $('#search').addEventListener('input', render);
 $('#bkShuffle').addEventListener('click', () => { deal(); bk.active = Math.floor(Math.random()*bk.names.length); saveBk(); render(); setStatus('Dealt your songs into ' + bk.names.length + ' new bucket' + (bk.names.length>1?'s':'') + '.'); });
 $('#bkNext').addEventListener('click', () => { if (!bk.names.length) return; goBucket(bk.active==='all' ? 0 : (bk.active+1) % bk.names.length); });
@@ -2093,7 +2124,20 @@ $('#selAll').addEventListener('click', () => { if (!editMode) $('#edit').click()
 $('#delSel').addEventListener('click', deletePicked);
 $('#delBroken').addEventListener('click', deleteBroken);
 $('#fixNames').addEventListener('click', async () => { const b = $('#fixNames'); b.disabled = true; setStatus('Reading song titles…');
-  const n = await fixNames(true); b.disabled = false; render(); setStatus(n ? `Renamed ${n} song${n>1?'s':''}. Names you typed yourself were left alone.` : 'All names already look good.'); });
+  const before = new Map(memos.map(m => [m.id, [m.name, m.autoName]]));
+  const n = await fixNames(true); b.disabled = false; render(); setStatus(n ? `Renamed ${n} song${n>1?'s':''}. Names you typed yourself were left alone.` : 'All names already look good.');
+  if (n) showUndo(`Renamed ${n} song${n>1?'s':''}.`, async () => { for (const m of memos){ const o = before.get(m.id); if (o && m.name !== o[0]){ m.name = o[0]; m.autoName = o[1]; await putMemo(strip(m)); } } render(); }); });
+let undoT = null;
+function showUndo(msg, undo, orig){   // small black bar at the bottom for 10 seconds: Undo (and Original file name for a single rename)
+  let t = document.getElementById('undoToast');
+  if (!t){ t = document.createElement('div'); t.id = 'undoToast'; t.className = 'undo-toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+  const hide = () => { t.hidden = true; clearTimeout(undoT); };
+  t.textContent = ''; const s = document.createElement('span'); s.textContent = msg; t.appendChild(s);
+  const mk = (label, fn, cls) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = label; if (cls) b.className = cls; b.addEventListener('click', async () => { hide(); if (fn){ await fn(); setStatus('Name put back.'); } }); t.appendChild(b); };
+  mk('Undo', undo); if (orig) mk('Original file name', orig); mk('×', null, 'ut-x');
+  t.lastChild.setAttribute('aria-label', 'Dismiss');
+  t.hidden = false; clearTimeout(undoT); undoT = setTimeout(hide, 10000);
+}
 $('#rollAll').addEventListener('click', e => { let n = 0; memos.forEach(m => { if (roll(m)) n++; }); if (playing) updatePreview(); render();
   const b = e.currentTarget; b.classList.remove('roll'); void b.offsetWidth; b.classList.add('roll');
   setStatus(n ? `Rolled the dice on ${n} song${n>1?'s':''}. It’s just a preview: tap Keep it on one you like, or Reset.` : ''); });
