@@ -81,7 +81,7 @@ header p.sub{margin:6px 0 0;font-size:12px;font-weight:600;color:#f7dc85}
 .sound button{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
 .sound .note{color:var(--muted);font-style:italic;border-right:none;margin-left:auto}
 /* list */
-.thead,.song{display:grid;grid-template-columns:30px 34px minmax(140px,1.4fr) minmax(120px,2fr) 60px 34px 34px}
+.thead,.song{display:grid;grid-template-columns:30px 34px minmax(140px,1.4fr) minmax(120px,2fr) 60px 50px 44px}
 .thead{background:var(--head);border-bottom:1px solid var(--grid);font-size:9.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
 .thead span{padding:3px 6px;border-right:1px solid var(--grid)}
 ul.list{list-style:none;margin:0;padding:0;counter-reset:r}
@@ -136,10 +136,6 @@ footer a{font-weight:800}
   .sound .note{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
-.bn-title{position:absolute;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;padding:0 48px;pointer-events:none;text-align:center;background:radial-gradient(ellipse at center,rgba(0,0,0,.42) 0%,rgba(0,0,0,.18) 55%,rgba(0,0,0,0) 80%)}
-.bt-name{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:900;text-transform:uppercase;color:#fff;font-size:clamp(22px,4.6vw,58px);line-height:.95;letter-spacing:.02em;text-shadow:0 2px 0 rgba(0,0,0,.55),0 4px 22px rgba(0,0,0,.65);max-width:15ch}
-.bt-name em{font-style:normal;color:#e8b400;display:block;font-size:.42em;letter-spacing:.42em;margin:.28em 0 .22em;padding-left:.42em}
-@media (min-width:1000px){.bt-name{font-size:clamp(28px,3.4vw,52px)}}
 </style>
 </head>
 <body>
@@ -158,7 +154,6 @@ footer a{font-weight:800}
 </header>
 <section class="bn" id="bn" hidden aria-label="Photos" aria-roledescription="carousel">
   <div class="bn-track" id="bnTrack"></div>
-  <div class="bn-title" aria-hidden="true"><span class="bt-name">Luke Andrew <em>motherfucking</em> Kelly</span></div>
   <button class="bn-btn bn-prev" id="bnPrev" aria-label="Previous photo">‹</button><button class="bn-btn bn-next" id="bnNext" aria-label="Next photo">›</button>
   <span class="bn-count" id="bnCount"></span>
 </section>
