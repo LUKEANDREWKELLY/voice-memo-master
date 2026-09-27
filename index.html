@@ -304,6 +304,32 @@ li.memo .ab button[aria-pressed="true"]{background:var(--accent);color:var(--acc
 .dl{grid-area:dl;display:grid;place-items:center;padding:0;line-height:0;background:transparent}
 .dl svg{width:10px;height:10px;fill:currentColor}
 .del{grid-area:del;color:var(--accent);font-weight:900;background:transparent}
+/* effects strip: REVERSE / SPEED / PITCH, preview only */
+li.fxrow{display:flex;flex-wrap:wrap;align-items:stretch;padding-left:58px;border-bottom:1px solid var(--grid);border-right:1px solid var(--grid);background:var(--paper2);font-size:10px}
+li.fxrow>*{display:flex;align-items:center;gap:6px;min-height:24px;padding:0 8px;border:none;border-right:1px solid var(--grid)}
+li.fxrow>:first-child{border-left:1px solid var(--grid)}
+li.fxrow .fx-h{background:var(--accent);color:var(--accent-ink);font-weight:900;letter-spacing:.16em}
+li.fxrow button{background:transparent;font:inherit;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;color:var(--ink)}
+li.fxrow button:hover{background:var(--paper-hi)}
+li.fxrow button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+li.fxrow button:disabled{opacity:.45;cursor:default}
+li.fxrow .fx-cell>span{font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+li.fxrow .fx-cell input{width:120px;margin:0;accent-color:var(--accent)}
+li.fxrow .fx-cell output{min-width:42px;font-weight:800;font-variant-numeric:tabular-nums}
+li.fxrow .fx-note{margin-left:auto;border-right:none;color:var(--muted);font-style:italic}
+li.fxrow .fx-note.busy{color:var(--accent);font-style:normal;font-weight:800}
+@media (max-width:640px){
+  li.fxrow{padding-left:0}
+  li.fxrow>*{min-height:30px}
+  li.fxrow>:first-child{border-left:none}
+  li.fxrow .fx-h,li.fxrow .fx-rev,li.fxrow .fx-reset{flex:1 1 auto;justify-content:center;border-bottom:1px solid var(--grid)}
+  li.fxrow .fx-cell{flex:1 1 100%;border-right:none;border-bottom:1px solid var(--grid)}
+  li.fxrow .fx-cell{order:1}
+  li.fxrow .fx-note{order:2}
+  li.fxrow .fx-cell>span{width:44px}
+  li.fxrow .fx-cell input{flex:1;width:auto;min-width:0;height:30px}
+  li.fxrow .fx-note{flex:1 1 100%;min-height:20px;margin:0}
+}
 li.lyrics{padding:3px 4px 4px 58px;border-bottom:1px solid var(--grid);border-right:1px solid var(--grid);background:var(--paper2)}
 .lyr-bar{display:flex;align-items:center;gap:6px;margin-bottom:3px}
 .tr-status{font-size:10.5px;color:var(--muted)}
@@ -1261,7 +1287,7 @@ function drawWave(cv, m){
     c.fillRect(i*bw, (Hh-h)/2, Math.max(1,bw-1), h); }
   if (playing && playing.id===m.id && player.duration){
     const which = abState[m.id]||'master';
-    const pos = which==='master' ? a + (player.currentTime/player.duration)*(b-a) : player.currentTime/player.duration;
+    const fr = fxFrac(), pos = which==='master' ? a + fr*(b-a) : fr;
     c.fillStyle = cssVar('--red'); c.fillRect(pos*W, 0, 2, Hh);
   }
 }
@@ -1319,8 +1345,10 @@ function render(){
     buildKnobs(li.querySelector('.knobs'), m, done);
     const cv = li.querySelector('canvas');
     cv.addEventListener('click', e => { if (!(playing&&playing.id===m.id)||!player.duration) return; const f=e.offsetX/cv.clientWidth, w=abState[m.id]||'master';
-      player.currentTime = w==='master' ? Math.min(1,Math.max(0,(f-m.start/m.total)/((m.end-m.start)/m.total)))*player.duration : f*player.duration; });
+      const T = w==='master' ? Math.min(1,Math.max(0,(f-m.start/m.total)/((m.end-m.start)/m.total)))*player.duration : f*player.duration;
+      player.currentTime = fxOf(m).rev ? Math.max(0, player.duration - T) : T; });
     li._m = m; listEl.appendChild(li);
+    if (done && ((playing && playing.id===m.id) || fxActive(m))) listEl.appendChild(fxStrip(m));
     if (openLyrics[m.id]){
       const lp = document.createElement('li'); lp.className='lyrics';
       lp.innerHTML = '<div class="lyr-bar"><button class="icon tr" title="Listens to the song and types the words for you">Type it out</button><span class="tr-status"></span></div><textarea aria-label="Lyrics" placeholder="Lyrics for this song"></textarea>';
@@ -1635,16 +1663,125 @@ function updatePreview(){
     pTrim.gain.value = boost ? Math.pow(Math.pow(10, (T + (0 - T)/R)/20), 0.6) : 1; }
 }
 
-let urlCache = null;
+let urlCache = null, playTok = 0;
 async function togglePlay(m){
   ensureGraph();
   if (playing && playing.id===m.id){ if (player.paused) player.play(); else player.pause(); render(); return; }
+  const tok = ++playTok;
   const which = abState[m.id]||'master';
   const blob = await getBlob(m.id + (which==='master'?':master':':orig'));
   if (!blob){ setStatus('Couldn’t find that recording on this device. Try adding the memo again.'); return; }
+  const src = await fxSource(m, which, blob); if (tok !== playTok || !src) return;
   if (urlCache) URL.revokeObjectURL(urlCache);
-  urlCache = URL.createObjectURL(blob); player.src = urlCache; playing = m; updatePreview();
+  urlCache = URL.createObjectURL(src); player.src = urlCache; fxRate(m); playing = m; updatePreview();
   await player.play().catch(()=>{}); render();
+}
+/* ---------- effects strip: REVERSE / SPEED / PITCH (preview only, never changes the saved song) ---------- */
+const FX_LS = 'vmm_fx', FX0 = {rev:false, speed:1, pitch:0};
+let fxAll = {}; try { fxAll = JSON.parse(localStorage.getItem(FX_LS) || '{}') || {}; } catch(e){ fxAll = {}; }
+const fxOf = m => Object.assign({}, FX0, fxAll[m.id] || {});
+const fxActive = m => { const f = fxOf(m); return f.rev || f.speed !== 1 || f.pitch !== 0; };
+function fxSet(m, patch){
+  const f = Object.assign(fxOf(m), patch);
+  f.speed = Math.round(Math.min(2, Math.max(0.5, +f.speed || 1)) * 100) / 100; f.pitch = Math.round(Math.min(12, Math.max(-12, +f.pitch || 0))); f.rev = !!f.rev;
+  if (!f.rev && f.speed === 1 && !f.pitch) delete fxAll[m.id]; else fxAll[m.id] = f;
+  try { localStorage.setItem(FX_LS, JSON.stringify(fxAll)); } catch(e){}
+  return f;
+}
+function fxFrac(){ const f = player.duration ? player.currentTime / player.duration : 0; return playing && fxOf(playing).rev ? 1 - f : f; }
+function fxRate(m){ const r = fxOf(m).speed;
+  try { player.preservesPitch = true; player.webkitPreservesPitch = true; player.mozPreservesPitch = true; } catch(e){}
+  player.defaultPlaybackRate = r; player.playbackRate = r; }
+function fxNote(id, txt, busy){ const n = listEl.querySelector(`.fxrow[data-id="${CSS.escape(id)}"] .fx-note`); if (n){ n.textContent = txt; n.classList.toggle('busy', !!busy); } }
+let fxCache = null, stMod = null;
+async function fxSource(m, which, blob){   // the audio to play: the saved file, or a reversed / pitch-shifted preview copy
+  const f = fxOf(m); if (!f.rev && !f.pitch) return blob;
+  const key = [m.id, which, f.rev, f.pitch, blob.size].join('|');
+  if (fxCache && fxCache.key === key) return fxCache.blob;
+  try {
+    fxNote(m.id, 'Rendering…', true); setStatus(`Cooking the effects for “${m.name}”…`);
+    const AC = window.AudioContext || window.webkitAudioContext;
+    const ctx = actx || new AC(), buf = await decodeFx(ctx, blob);
+    let L = buf.getChannelData(0), R = buf.numberOfChannels > 1 ? buf.getChannelData(1) : null;
+    if (R){ let same = true; for (let i = 0; i < L.length; i += 997) if (L[i] !== R[i]){ same = false; break; } if (same) R = null; }
+    if (f.rev){ L = L.slice().reverse(); if (R) R = R.slice().reverse(); }
+    if (f.pitch){ [L, R] = await stPitch(L, R, f.pitch, p => fxNote(m.id, `Rendering ${Math.round(p*100)}%`, true)); }
+    const out = wav16(L, R, buf.sampleRate); fxCache = {key, blob: out};
+    fxNote(m.id, 'Preview only', false); setStatus('');
+    return out;
+  } catch(e){
+    fxNote(m.id, 'Couldn’t render', false); setStatus('Couldn’t cook those effects on this device, so it plays without them.');
+    return blob;
+  }
+}
+function decodeFx(ctx, blob){ return blob.arrayBuffer().then(ab => new Promise((ok, no) => { const r = ctx.decodeAudioData(ab, ok, no); if (r && r.then) r.then(ok, no); })); }
+async function stPitch(L, R, semis, prog){
+  stMod = stMod || await import(new URL('vendor/soundtouch.js', document.baseURI).href);
+  const st = new stMod.SoundTouch(); st.pitchSemitones = semis; st.tempo = 1;
+  const N = L.length, PAD = 16384;
+  const source = { extract(t, n, pos){ let k = 0; for (; k < n; k++){ const i = pos + k; if (i >= N + PAD) break;
+      const l = i < N ? L[i] : 0; t[2*k] = l; t[2*k+1] = R ? (i < N ? R[i] : 0) : l; } return k; } };
+  const flt = new stMod.SimpleFilter(source, st), CH = 16384, tmp = new Float32Array(CH * 2);
+  const oL = new Float32Array(N), oR = R ? new Float32Array(N) : null;
+  let w = 0, t0 = performance.now();
+  while (w < N){
+    const n = flt.extract(tmp, Math.min(CH, N - w)); if (!n) break;
+    for (let k = 0; k < n; k++){ oL[w+k] = tmp[2*k]; if (oR) oR[w+k] = tmp[2*k+1]; }
+    w += n;
+    if (performance.now() - t0 > 40){ prog && prog(w / N); await new Promise(r => setTimeout(r, 0)); t0 = performance.now(); }
+  }
+  return [oL, oR];
+}
+function wav16(L, R, sr){
+  const ch = R ? 2 : 1, n = L.length, ab = new ArrayBuffer(44 + n * ch * 2), v = new DataView(ab);
+  const w4 = (o, s) => { for (let i = 0; i < 4; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  w4(0, 'RIFF'); v.setUint32(4, 36 + n * ch * 2, true); w4(8, 'WAVE'); w4(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, ch, true);
+  v.setUint32(24, sr, true); v.setUint32(28, sr * ch * 2, true); v.setUint16(32, ch * 2, true); v.setUint16(34, 16, true); w4(36, 'data'); v.setUint32(40, n * ch * 2, true);
+  const pcm = new Int16Array(ab, 44);
+  for (let i = 0; i < n; i++){ const a = Math.max(-1, Math.min(1, L[i] || 0)); if (R){ const b = Math.max(-1, Math.min(1, R[i] || 0)); pcm[2*i] = a * 32767; pcm[2*i+1] = b * 32767; } else pcm[i] = a * 32767; }
+  return new Blob([ab], {type:'audio/wav'});
+}
+async function fxReload(m, flipped){   // effects changed on the song that's playing: swap the audio, keep the spot
+  if (!(playing && playing.id === m.id)) return;
+  const was = !player.paused, t = player.currentTime, d = player.duration || 0, tok = ++playTok;
+  const which = abState[m.id] || 'master', blob = await getBlob(m.id + (which==='master'?':master':':orig'));
+  if (!blob) return;
+  const src = await fxSource(m, which, blob); if (tok !== playTok || !src || !(playing && playing.id === m.id)) return;
+  if (urlCache) URL.revokeObjectURL(urlCache);
+  urlCache = URL.createObjectURL(src); player.src = urlCache; fxRate(m);
+  await new Promise(r => { player.addEventListener('loadedmetadata', r, {once:true}); setTimeout(r, 4000); });
+  if (tok !== playTok) return;
+  const at = flipped && d ? Math.max(0, d - t) : t;
+  try { player.currentTime = Math.min(at, Math.max(0, (player.duration || at) - 0.05)); } catch(e){}
+  if (was) await player.play().catch(()=>{});
+  render();
+}
+function fxStrip(m){
+  const f = fxOf(m), li = document.createElement('li'); li.className = 'fxrow'; li.dataset.id = m.id;
+  li.setAttribute('aria-label', 'Effects for ' + m.name);
+  li.innerHTML = `<span class="fx-h" title="Effects: just for listening. Your saved song never changes.">FX</span>
+    <button class="fx-rev" aria-pressed="${f.rev}" title="Play it backwards">Reverse</button>
+    <label class="fx-cell fx-speed"><span>Speed</span><input type="range" min="0.5" max="2" step="0.05"><output></output></label>
+    <label class="fx-cell fx-pitch"><span>Pitch</span><input type="range" min="-12" max="12" step="1"><output></output></label>
+    <button class="fx-reset" title="Back to normal: forward, 1×, original pitch">Reset</button>
+    <span class="fx-note" aria-live="polite">Preview only</span>`;
+  const sp = li.querySelector('.fx-speed input'), so = li.querySelector('.fx-speed output'), pi = li.querySelector('.fx-pitch input'), po = li.querySelector('.fx-pitch output');
+  const rev = li.querySelector('.fx-rev'), rst = li.querySelector('.fx-reset');
+  const showSp = v => so.textContent = (+v).toFixed(2) + '×', showPi = v => po.textContent = (v > 0 ? '+' : '') + v + ' st';
+  sp.value = f.speed; pi.value = f.pitch; showSp(f.speed); showPi(f.pitch);
+  sp.setAttribute('aria-label', 'Speed for ' + m.name); pi.setAttribute('aria-label', 'Pitch in semitones for ' + m.name);
+  rst.disabled = !fxActive(m);
+  const mine = () => playing && playing.id === m.id;
+  sp.addEventListener('input', () => { showSp(sp.value); fxSet(m, {speed: +sp.value}); if (mine()) fxRate(m); rst.disabled = !fxActive(m); });
+  sp.addEventListener('dblclick', () => { sp.value = 1; sp.dispatchEvent(new Event('input')); });
+  let pT = null;
+  pi.addEventListener('input', () => { showPi(+pi.value); fxSet(m, {pitch: +pi.value}); rst.disabled = !fxActive(m);
+    clearTimeout(pT); pT = setTimeout(() => fxReload(m, false), 350); });
+  pi.addEventListener('dblclick', () => { pi.value = 0; pi.dispatchEvent(new Event('input')); });
+  rev.addEventListener('click', () => { const r = !fxOf(m).rev; fxSet(m, {rev: r}); rev.setAttribute('aria-pressed', String(r)); rst.disabled = !fxActive(m);
+    if (mine()) fxReload(m, true); else render(); });
+  rst.addEventListener('click', () => { const was = fxOf(m); fxSet(m, FX0); if (mine()){ fxRate(m); if (was.rev || was.pitch) fxReload(m, was.rev); else render(); } else render(); });
+  return li;
 }
 player.addEventListener('ended', () => { playing=null; if (playlist && nextInList()) return; render(); });
 player.addEventListener('pause', () => render());
