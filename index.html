@@ -43,11 +43,11 @@
   --accent:#8a0303; --accent-hover:#a30808; --accent-ink:#f2c230; --danger:#8a0303;
   --red:#8a0303; --wave:rgba(17,17,17,.38); --wave-kept:#111;   /* read by drawWave */
   --sans:"Inter", Arial, Helvetica, sans-serif;
-  --cols:26px 32px minmax(110px,1.3fr) 180px minmax(90px,1.5fr) 58px 58px 58px 42px 48px 34px 54px 108px 44px 50px 28px;
-  --areas:"n p t d w vol bass treb tape phone dice ap ab v lyr dl";
+  --cols:26px 32px minmax(110px,1.3fr) 180px minmax(90px,1.5fr) 58px 58px 58px 42px 48px 34px 54px 108px 44px 50px 28px 30px;
+  --areas:"n p t d w vol bass treb tape phone dice ap ab v lyr dl pub";
   color-scheme:light;
 }
-body.editing{--cols:26px 32px minmax(110px,1.3fr) 180px minmax(90px,1.5fr) 58px 58px 58px 42px 48px 34px 54px 108px 44px 50px 28px 30px; --areas:"n p t d w vol bass treb tape phone dice ap ab v lyr dl del"}
+body.editing{--cols:26px 32px minmax(110px,1.3fr) 180px minmax(90px,1.5fr) 58px 58px 58px 42px 48px 34px 54px 108px 44px 50px 28px 30px 30px; --areas:"n p t d w vol bass treb tape phone dice ap ab v lyr dl pub del"}
 *,*::before,*::after{box-sizing:border-box;border-radius:0!important}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:11px;line-height:1.25;font-variant-numeric:tabular-nums;font-feature-settings:'tnum','cv11';-webkit-font-smoothing:antialiased;min-height:100vh}
@@ -340,6 +340,44 @@ li.memo .ab button[aria-pressed="true"]{background:var(--accent);color:var(--acc
   .plbar>*{min-height:30px;flex:1 1 auto;justify-content:center;border-bottom:1px solid var(--grid)}
   .plbar .plt,.plbar .plhint{flex:1 1 100%}
 }
+.gal-link{display:block;margin:0 0 6px;padding:5px 8px;border:1px solid var(--grid);background:var(--accent);color:var(--accent-ink);font-size:10.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;text-decoration:none}
+.gal-link:hover{background:var(--accent-hover)}
+.pub{grid-area:pub;display:grid;place-items:center;padding:0;line-height:0;background:transparent}
+.pub svg{width:11px;height:11px;fill:currentColor}
+.pub[aria-pressed="true"]{background:var(--ink);color:var(--accent-ink)}
+.pub.busy{background:var(--hi)}
+/* publish sheet */
+.sheet{position:fixed;inset:0;z-index:70;overflow:auto;background:rgba(17,17,17,.55);padding:calc(env(safe-area-inset-top,0px) + 8px) 8px calc(env(safe-area-inset-bottom,0px) + 8px)}
+.sheet[hidden]{display:none}
+.sheet-box{max-width:620px;margin:0 auto;border:1px solid var(--grid);background:var(--paper)}
+.sheet-head{display:flex;align-items:stretch;background:var(--accent);color:var(--accent-ink);border-bottom:1px solid var(--grid)}
+.sheet-head h2{flex:1;margin:0;padding:4px 8px;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;align-self:center}
+.sheet-head button{border:none;border-left:1px solid var(--grid);background:transparent;color:var(--accent-ink);min-height:30px;padding:0 12px;text-transform:uppercase;letter-spacing:.06em}
+.sheet-sec{border-bottom:1px solid var(--grid);padding:6px 8px;font-size:11.5px;line-height:1.4}
+.sheet-sec:last-child{border-bottom:none}
+.sheet-sec h3{margin:0 0 4px;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+.sheet-sec ol{margin:0;padding-left:18px}
+.sheet-sec li{margin:2px 0}
+.sheet-sec a{color:var(--accent);font-weight:800}
+.keyrow{display:flex;border:1px solid var(--grid)}
+.keyrow input{flex:1;min-width:0;font:inherit;font-size:12px;padding:4px 6px;border:none;background:#fffaf0;color:var(--ink);min-height:30px}
+.keyrow button{border:none;border-left:1px solid var(--grid);min-height:30px;padding:0 10px;text-transform:uppercase;letter-spacing:.05em}
+.btnrow{display:flex;flex-wrap:wrap;border:1px solid var(--grid);margin-top:6px}
+.btnrow>*{flex:1 1 auto;border:none;border-right:1px solid var(--grid);min-height:30px;padding:0 10px;text-transform:uppercase;letter-spacing:.05em;font-size:10.5px;display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--ink);background:var(--cell2);font-weight:700}
+.btnrow>*:last-child{border-right:none}
+.btnrow a{color:var(--ink)}
+.keystate{font-weight:800}
+.keystate.ok{color:#1d5e20}.keystate.bad{color:var(--accent)}
+.meter{height:10px;border:1px solid var(--grid);background:var(--paper2);margin:4px 0 2px;position:relative}
+.meter i{position:absolute;left:0;top:0;bottom:0;background:var(--ink)}
+.meter.warn i{background:var(--accent)}
+.pubmsg{min-height:16px;font-weight:700}
+.pubmsg.err{color:var(--accent)}
+.pub-big{display:block;width:100%;margin:8px 0 2px;min-height:44px;border:1px solid var(--grid);background:var(--accent);color:var(--accent-ink);font:inherit;font-size:13px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.pub-big:hover{background:var(--accent-hover)}
+.pub-big:disabled{opacity:.5;cursor:default}
+.linkish{background:none;border:0;padding:0;color:inherit;text-decoration:underline;font:inherit;cursor:pointer}
+@media (max-width:640px){ .pub svg{width:14px;height:14px} .sheet-sec{font-size:11px} }
 /* effects strip: REVERSE / SPEED / PITCH, preview only */
 li.fxrow{display:flex;flex-wrap:wrap;align-items:stretch;padding-left:58px;border-bottom:1px solid var(--grid);border-right:1px solid var(--grid);background:var(--paper2);font-size:10px}
 li.fxrow>*{display:flex;align-items:center;gap:6px;min-height:24px;padding:0 8px;border:none;border-right:1px solid var(--grid)}
@@ -428,8 +466,8 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   body.editing li.memo{grid-template-columns:44px 44px minmax(0,1fr) auto 44px}
   .sel input{width:22px;height:22px}
   .thead{display:none}
-  li.memo{grid-template-columns:24px 44px minmax(0,1fr) auto 44px;grid-template-areas:"n p t t dl" "n p d d dl" "w w w w w" "k k k k k" "v v ab lyr lyr";border-bottom:2px solid var(--grid)}
-  li.memo:has(.del){grid-template-areas:"n p t t dl" "n p d d dl" "w w w w w" "k k k k k" "v v ab lyr del"}
+  li.memo{grid-template-columns:24px 44px minmax(0,1fr) auto 44px;grid-template-areas:"n p t t dl" "n p d d pub" "w w w w w" "k k k k k" "v v ab lyr lyr";border-bottom:2px solid var(--grid)}
+  li.memo:has(.del){grid-template-areas:"n p t t dl" "n p d d pub" "w w w w w" "k k k k k" "v v ab lyr del"}
   li.memo::before,li.memo>*,li.memo .title>*{border-bottom:1px solid var(--grid)}
   li.memo>.vote,li.memo>.ab,li.memo>.lyr,li.memo>.del{border-bottom:none}
   .play{min-height:44px}
@@ -690,8 +728,8 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   .side-body{display:block}
   .mainc{min-width:0}
   .mainc .wrap{max-width:none}
-  :root{--cols:24px 30px minmax(90px,1.3fr) 118px minmax(80px,1.5fr) 54px 54px 54px 40px 44px 32px 50px 100px 40px 44px 26px}
-  body.editing{--cols:24px 30px minmax(90px,1.3fr) 118px minmax(80px,1.5fr) 54px 54px 54px 40px 44px 32px 50px 100px 40px 44px 26px 28px}
+  :root{--cols:24px 30px minmax(90px,1.3fr) 118px minmax(80px,1.5fr) 54px 54px 54px 40px 44px 32px 50px 100px 40px 44px 26px 28px}
+  body.editing{--cols:24px 30px minmax(90px,1.3fr) 118px minmax(80px,1.5fr) 54px 54px 54px 40px 44px 32px 50px 100px 40px 44px 26px 28px 28px}
 }
 /* banner editor */
 .bn-edbtn{border:none;border-left:1px solid #444;background:transparent;color:var(--accent-ink);min-height:22px;padding:0 8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
@@ -862,6 +900,7 @@ body.dropping::after{content:'Drop your songs anywhere';position:fixed;inset:8px
   <!-- ===== DEDICATION ===== -->
   <blockquote class="dedication" id="dedication"><span class="lbl">Dedication</span>Dedicated to Elon Musk. Here's hoping he adopts me, or hires me to be his personal security guard — I'd charge him zero dollars a year. I know he's got a bunch of kids; I don't have a father.</blockquote>
   <footer class="about" id="about">
+  <a class="gal-link" href="gallery/">Listen on the public gallery &rarr;</a>
   <details class="buildlog" id="buildLog"><summary>Tonight’s build log</summary><ol id="buildLogList"><li><time>…</time><span>Loading every change made tonight…</span></li></ol><p class="bl-note">Every update to this site, newest first, straight from its public history on <a href="https://github.com/LUKEANDREWKELLY/voice-memo-master/commits/main" target="_blank" rel="noopener">GitHub</a>. Times are New York time.</p></details>
 <script>(function(){ var ol=document.getElementById('buildLogList'), box=document.getElementById('buildLog'); if (matchMedia('(min-width:641px)').matches) box.open=true;
   function esc(s){return s.replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
@@ -912,6 +951,7 @@ body.dropping::after{content:'Drop your songs anywhere';position:fixed;inset:8px
     <div class="head-actions">
       <button id="edit">Select / delete</button>
       <button id="dlAll" disabled>Download all songs</button>
+      <button id="pubOpen" title="Put songs and photos on your public gallery page">Publish</button>
     </div>
   </header>
 
@@ -947,19 +987,56 @@ body.dropping::after{content:'Drop your songs anywhere';position:fixed;inset:8px
     <div class="grp">
       <button id="selAll" title="Tick every song shown below">Select all</button>
       <button id="delSel" class="primary" disabled title="Delete the ticked songs (asks first)">Delete selected</button>
+      <button id="pubSel" disabled title="Put the ticked songs on your public gallery page">Publish selected</button>
       <button id="delBroken" class="danger" hidden title="Delete every song that couldn’t be read as audio, all at once">Delete broken songs</button>
       <button id="fixNames" title="Give songs with a Voice Memos code name their real title from the file, or a friendly date. Names you typed yourself are left alone.">Fix names</button>
     </div>
   </div>
   <div class="tabs" id="tabs" role="tablist" aria-label="Buckets"></div>
   <div class="plbar" id="plbar" role="toolbar" aria-label="Favorites and playlist tools"></div>
-  <div class="thead" aria-hidden="true"><span>#</span><span>Play</span><span>Name</span><span>Date</span><span>Wave</span><span>Loud</span><span>Warmth</span><span>Sparkle</span><span>Tape</span><span>Phone</span><span>Dice</span><span>Keep</span><span>Raw/Polished</span><span>Votes</span><span>Lyrics</span><span>DL</span><span class="h-del">Del</span></div>
+  <div class="thead" aria-hidden="true"><span>#</span><span>Play</span><span>Name</span><span>Date</span><span>Wave</span><span>Loud</span><span>Warmth</span><span>Sparkle</span><span>Tape</span><span>Phone</span><span>Dice</span><span>Keep</span><span>Raw/Polished</span><span>Votes</span><span>Lyrics</span><span>DL</span><span title="Public gallery">Pub</span><span class="h-del">Del</span></div>
   <ul id="list"></ul>
 
   <label for="file" class="add-btn fab" id="fab" role="button" tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>Add memo</label>
 
 </div>
 </main>
+</div>
+<div class="sheet" id="pubSheet" hidden role="dialog" aria-modal="true" aria-labelledby="pubTitle">
+  <div class="sheet-box">
+    <div class="sheet-head"><h2 id="pubTitle">Publish</h2><button id="pubClose">Close</button></div>
+    <div class="sheet-sec">
+      Publishing puts your polished songs (made small, about 0.7 MB a minute) and your photos on your public gallery page, so anyone with the link can listen. No key is needed to listen.
+      <button id="pubAllTop" class="pub-big">Publish all songs</button>
+      <div class="btnrow"><a id="galLink" href="gallery/" target="_blank" rel="noopener">Open the public gallery</a></div>
+    </div>
+    <div class="sheet-sec">
+      <h3>Your GitHub key <span class="keystate" id="keyState"></span></h3>
+      <button id="keyStepsShow" class="linkish" hidden onclick="this.hidden=true;document.getElementById('keySteps').hidden=false">How to make a key</button>
+      <ol id="keySteps">
+        <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub’s new key page</a> (sign in if it asks).</li>
+        <li>Name it “Voice Memo Master publish” and pick when it expires.</li>
+        <li>Under <b>Repository access</b> choose <b>Only select repositories</b> and pick <b>voice-memo-master</b>.</li>
+        <li>Under <b>Permissions → Repository permissions</b>, set <b>Contents</b> to <b>Read and write</b>. Leave everything else alone.</li>
+        <li>Tap <b>Generate token</b>, copy it, paste it here and tap Save key.</li>
+      </ol>
+      <div class="keyrow" style="margin-top:6px"><input id="keyIn" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste your key (starts with github_pat_)" aria-label="GitHub key"><button id="keySave" class="primary">Save key</button></div>
+      <div class="btnrow"><button id="keyCheck">Check key</button><button id="keyForget">Forget key</button></div>
+      <p style="margin:6px 0 0" class="fine">The key stays only in this browser on this device. It’s never put on the site or sent anywhere except GitHub.</p>
+    </div>
+    <div class="sheet-sec">
+      <h3>Space on the gallery</h3>
+      <div class="meter" id="pubMeter"><i style="width:0"></i></div>
+      <div id="pubSpace">Not checked yet.</div>
+    </div>
+    <div class="sheet-sec">
+      <h3>Publish</h3>
+      <div>To publish songs, tap the <b>Pub</b> arrow on a song, or tick songs (<b>Select / delete</b>) and tap <b>Publish selected</b>. Tap Pub again on a published song to take it off.</div>
+      <button id="pubAll" class="pub-big">Publish all songs</button>
+      <div class="btnrow"><button id="pubPhotos">Publish photos</button></div>
+      <div class="pubmsg" id="pubMsg" aria-live="polite"></div>
+    </div>
+  </div>
 </div>
 <audio id="player" preload="none"></audio>
 <script>(function(){var s=document.getElementById('side'),b=document.getElementById('sideTog');b.addEventListener('click',function(){var o=s.classList.toggle('open');b.setAttribute('aria-expanded',String(o));});})();</script>
@@ -1490,6 +1567,9 @@ function visible(){
 }
 /* play the bucket top to bottom, moving on to the next song when one ends */
 let playlist = null;
+const PUB_OFF = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M7 15h2V6l3 3 1.4-1.4L8 2.2 2.6 7.6 4 9l3-3zM2 0h12v2H2z"/></svg>';
+const PUB_ON = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 11.6 2.4 7.8l1.4-1.4 2.4 2.4 6-6 1.4 1.4zM2 14h12v2H2z"/></svg>';
+let pubMap = {}, pubManifest = null, pubRunning = false; const pubBusy = new Set();
 function playBucket(){
   if (playlist){ playlist = null; player.pause(); render(); return; }
   const ids = visible().filter(m=>m.state==='done').map(m=>m.id); if (!ids.length) return;
@@ -1569,6 +1649,7 @@ function render(){
       </div>
       <button class="icon lyr" aria-expanded="${!!openLyrics[m.id]}">Lyrics</button>
       <button class="icon dl" aria-label="Download ${m.name}${fxActive(m) ? ' with effects (' + fxLabel(fxOf(m)) + ')' : ''}" title="${fxActive(m) ? 'Download with effects: ' + fxLabel(fxOf(m)) : 'Download this song'}" ${done&&downloads?'':'disabled'}><svg viewBox="0 0 16 16"><path d="M7 1h2v8l3-3 1.4 1.4L8 12.8 2.6 7.4 4 6l3 3zM2 14h12v2H2z"/></svg></button>
+      <button class="icon pub" aria-pressed="${!!pubMap[m.id]}" ${done?'':'disabled'}></button>
       ${editMode?`<button class="icon del" aria-label="Delete ${m.name}" title="Delete">✕</button><label class="sel" title="Tick to delete several at once"><input type="checkbox"></label>`:''}`;
     li.querySelector('.name').value = m.name;
     const when = li.querySelector('.when');
@@ -1588,6 +1669,10 @@ function render(){
     li.querySelectorAll('.ab button').forEach(b => b.addEventListener('click', () => { abState[m.id]=b.dataset.w; const was = playing&&playing.id===m.id&&!player.paused; if (playing&&playing.id===m.id){ player.pause(); playing=null; } if (was) togglePlay(m); else render(); }));
     li.querySelector('.dl').addEventListener('click', e => downloadSong(m, e.currentTarget));
     li.querySelector('.lyr').addEventListener('click', () => { openLyrics[m.id] = !openLyrics[m.id]; render(); });
+    { const pb = li.querySelector('.pub'), on = !!pubMap[m.id]; pb.innerHTML = on ? PUB_ON : PUB_OFF; pb.classList.toggle('busy', pubBusy.has(m.id));
+      pb.setAttribute('aria-label', on ? `${m.name} is on the public gallery. Tap to take it off.` : `Publish ${m.name} to the public gallery`);
+      pb.title = on ? 'On the public gallery (tap to take it off)' : 'Publish to the public gallery';
+      pb.addEventListener('click', () => on ? unpublishSong(m) : publishSongs([m])); }
     const sel = li.querySelector('.sel input');
     if (sel){ sel.setAttribute('aria-label', 'Select ' + m.name); sel.checked = picked.has(m.id); li.classList.toggle('picked', sel.checked);
       sel.addEventListener('change', () => { if (sel.checked) picked.add(m.id); else picked.delete(m.id); li.classList.toggle('picked', sel.checked); drawEditBar(); }); }
@@ -1620,6 +1705,8 @@ function drawEditBar(){
   const shown = visible(), all = shown.length && shown.every(m => picked.has(m.id));
   $('#selAll').textContent = all ? 'Select none' : 'Select all';
   $('#delSel').textContent = 'Delete selected' + (picked.size ? ` (${picked.size})` : ''); $('#delSel').disabled = !picked.size;
+  $('#pubSel').disabled = !picked.size || pubRunning; $('#pubSel').textContent = 'Publish selected' + (picked.size ? ` (${picked.size})` : '');
+  { const nd = memos.filter(m => m.state === 'done').length; for (const b of [$('#pubAll'), $('#pubAllTop')]){ if (!b) continue; b.disabled = pubRunning || !nd; b.textContent = pubRunning ? 'Publishing…' : `Publish all songs (${nd})`; } }
   const nb = memos.filter(m => m.state==='error').length, db = $('#delBroken'); if (db){ db.hidden = !nb; db.textContent = `Delete broken songs (${nb})`; }
 }
 async function deleteBroken(){   // one tap, no per-song questions: every song that failed to load goes
@@ -2539,6 +2626,202 @@ $('#bnLeftN').addEventListener('click', () => bnNudge(-5, 0)); $('#bnRightN').ad
 $('#bnCenter').addEventListener('click', () => { const p = bnCur(); if (!p) return; p.fx = 50; p.fy = 50; p.zoom = 1; bnRefreshCur(); bnSave([p]); });
 $('#bnDel2').addEventListener('click', bnDelete);
 (async () => { try { photos = (await phTx('readonly', st => st.getAll())) || []; } catch(e){ photos = []; } drawPhotos(); showStorage(); })();
+/* ---------- publish: songs (small MP3s) + photos to the public gallery via the GitHub Git Data API (one commit per batch) ---------- */
+// The key lives only in this device's localStorage and is only ever sent to api.github.com.
+const GH_REPO = 'LUKEANDREWKELLY/voice-memo-master', GH_API = 'https://api.github.com', KEY_LS = 'vmm_github_token';   // shared with the portfolio's owner mode
+try { const old = localStorage.getItem('lak-gh-key'); if (old && !localStorage.getItem(KEY_LS)) localStorage.setItem(KEY_LS, old); localStorage.removeItem('lak-gh-key'); } catch(e){}
+const SITE_LIMIT = 1e9, SITE_WARN = 0.9e9, MP3_KBPS = 96;   // GitHub Pages sites should stay under ~1 GB; 96 kbps mono ≈ 0.72 MB a minute
+const getKey = () => { try { return localStorage.getItem(KEY_LS) || ''; } catch(e){ return ''; } };
+const pubId = m => String(m.id).replace(/[^A-Za-z0-9]/g,'').slice(0, 20).toLowerCase();
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const pubSay = (t, err) => { const el = $('#pubMsg'); if (el){ el.textContent = t; el.classList.toggle('err', !!err); } setStatus(t); };
+class PubErr extends Error {}
+async function gh(path, opt = {}, tries = 0){
+  const key = getKey(); if (!key) throw new PubErr('No key saved yet. Tap Publish at the top and paste your GitHub key.');
+  let r;
+  try { r = await fetch(GH_API + path, { ...opt, cache:'no-store', headers: { 'Accept':'application/vnd.github+json', 'Authorization':'Bearer ' + key, 'X-GitHub-Api-Version':'2022-11-28', ...(opt.body ? {'Content-Type':'application/json'} : {}), ...(opt.headers||{}) } }); }
+  catch(e){ if (tries < 3){ await sleep(1500 * (tries+1)); return gh(path, opt, tries+1); } throw new PubErr('Couldn’t reach GitHub. Check your internet and try again.'); }
+  if ((r.status === 403 || r.status === 429) && tries < 6){
+    const ra = +r.headers.get('retry-after'), left = r.headers.get('x-ratelimit-remaining'), reset = +r.headers.get('x-ratelimit-reset');
+    if (ra || left === '0' || r.status === 429){ const wait = Math.min(15*60, ra || (reset ? Math.max(5, reset - Date.now()/1000) : 60 * (tries+1)));
+      pubSay(`GitHub asked us to slow down. Waiting ${Math.ceil(wait)} seconds, then carrying on…`); await sleep(wait*1000); return gh(path, opt, tries+1); }
+  }
+  if ((r.status >= 500) && tries < 3){ await sleep(2000 * (tries+1)); return gh(path, opt, tries+1); }
+  return r;
+}
+async function ghFail(r, what){
+  let msg = ''; try { msg = (await r.json()).message || ''; } catch(e){}
+  if (r.status === 401) return new PubErr('That key didn’t work (it may be mistyped, expired or deleted). Make a new one and paste it in Publish.');
+  if (r.status === 403 && /not accessible|permission|forbidden/i.test(msg)) return new PubErr('The key can’t write to voice-memo-master. Make a new key with only that repository and Contents: Read and write.');
+  if (r.status === 404) return new PubErr('The key can’t see the voice-memo-master repository. When you make the key, pick Only select repositories → voice-memo-master.');
+  if (r.status === 413 || /too large|too big|size/i.test(msg)) return new PubErr(`${what} is too big for GitHub. Try a shorter song.`);
+  if (/quota|storage|space|exceed/i.test(msg)) return new PubErr('GitHub says the gallery is out of space. Take some songs off first.');
+  return new PubErr(`GitHub said no while ${what.toLowerCase()} (${r.status}${msg ? ': ' + msg : ''}).`);
+}
+const b64 = u8 => { let s = ''; for (let i=0;i<u8.length;i+=0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i+0x8000)); return btoa(s); };
+const unb64 = t => Uint8Array.from(atob(t.replace(/\s/g,'')), c => c.charCodeAt(0));
+const emptyManifest = () => ({version:1, artist:'Luke Andrew motherfucking Kelly', updated:null, songs:[], photos:[]});
+async function readManifest(ref = 'main'){ // -> {sha, data}
+  const r = await gh(`/repos/${GH_REPO}/contents/songs.json?ref=${ref}`);
+  if (r.status === 404) return {sha:null, data:emptyManifest()};
+  if (!r.ok) throw await ghFail(r, 'Reading the song list');
+  const j = await r.json(); let text;
+  if (j.content && j.encoding === 'base64') text = new TextDecoder().decode(unb64(j.content));
+  else { const raw = await gh(`/repos/${GH_REPO}/contents/songs.json?ref=${ref}`, {headers:{Accept:'application/vnd.github.raw'}}); text = await raw.text(); }
+  let data; try { data = JSON.parse(text); } catch(e){ data = emptyManifest(); }
+  data.songs = data.songs || []; data.photos = data.photos || []; return {sha:j.sha, data};
+}
+function syncPubMap(){ pubMap = {}; if (!pubManifest) return; const byPid = new Map((pubManifest.songs||[]).map(e => [e.id, e])); for (const m of memos){ const e = byPid.get(pubId(m)); if (e) pubMap[m.id] = e; } }
+async function loadPublic(){ // what's live, from the public site (no key needed)
+  try { const r = await fetch('songs.json?t=' + Date.now(), {cache:'no-store'}); if (r.ok){ pubManifest = await r.json(); syncPubMap(); render(); } } catch(e){}
+}
+let lameP = null;
+const loadLame = () => lameP || (lameP = new Promise((res, rej) => { if (window.lamejs) return res(window.lamejs); const sc = document.createElement('script'); sc.src = 'vendor/lame.min.js';
+  sc.onload = () => window.lamejs ? res(window.lamejs) : rej(new Error('lame')); sc.onerror = () => { lameP = null; rej(new PubErr('Couldn’t load the song squeezer. Check your internet and try again.')); }; document.head.appendChild(sc); }));
+async function masterPcm(m){ // polished song -> mono 16-bit samples
+  const b = await getBlob(m.id+':master'); if (!b) throw new PubErr(`“${m.name}” isn’t polished on this device yet.`);
+  const u = new Uint8Array(await b.arrayBuffer()), w = wavInfo(u);
+  if (w && w.bits === 24 && w.ch >= 1){ const n = Math.floor(w.dataLen / (3*w.ch)), out = new Int16Array(n); let o = w.dataOff;
+    for (let i=0;i<n;i++){ let acc = 0; for (let c=0;c<w.ch;c++){ let v = u[o] | (u[o+1]<<8) | (u[o+2]<<16); if (v & 0x800000) v -= 0x1000000; acc += v; o += 3; } out[i] = Math.max(-32768, Math.min(32767, Math.round(acc / w.ch / 256))); }
+    return {pcm: out, rate: SR}; }
+  const AC = window.OfflineAudioContext || window.webkitOfflineAudioContext, ctx = new AC(1, 2, SR), buf = await ctx.decodeAudioData(u.buffer.slice(0));
+  const ch = buf.getChannelData(0), out = new Int16Array(ch.length); for (let i=0;i<ch.length;i++) out[i] = Math.max(-32768, Math.min(32767, Math.round(ch[i]*32767))); return {pcm: out, rate: buf.sampleRate};
+}
+async function encodeMp3(m, onPct){
+  const lame = await loadLame(), {pcm, rate} = await masterPcm(m), enc = new lame.Mp3Encoder(1, rate, MP3_KBPS), parts = []; const step = 1152 * 40; let t = performance.now();
+  for (let i=0;i<pcm.length;i+=step){ const d = enc.encodeBuffer(pcm.subarray(i, Math.min(pcm.length, i+step))); if (d.length) parts.push(new Uint8Array(d));
+    if (performance.now() - t > 40){ onPct && onPct(i / pcm.length); await tick(); t = performance.now(); } }
+  const f = enc.flush(); if (f.length) parts.push(new Uint8Array(f));
+  const out = new Uint8Array(parts.reduce((a,p) => a + p.length, 0)); let o = 0; for (const p of parts){ out.set(p, o); o += p.length; } return out;
+}
+const songSig = m => JSON.stringify([m.baked||null, m.start, m.end, m.lufs]);
+function peaks64(m){ const w = m.wave||[], n = w.length; if (!n || !m.total) return []; const a = Math.floor(m.start/m.total*n), b = Math.max(a+1, Math.min(n, Math.ceil(m.end/m.total*n))), out = [];
+  for (let i=0;i<64;i++){ const j0 = a + Math.floor(i*(b-a)/64), j1 = Math.max(j0+1, a + Math.floor((i+1)*(b-a)/64)); let mx = 0; for (let j=j0; j<j1 && j<n; j++) mx = Math.max(mx, w[j]||0); out.push(Math.round(Math.min(1, mx)*99)); }
+  return out; }
+const usedBytes = d => (d.songs||[]).reduce((a,e) => a + (e.bytes||0), 0) + (d.photos||[]).reduce((a,e) => a + (e.bytes||0), 0) + 3e6;   // + the app itself
+function drawSpace(d){ if (!d) return; const used = usedBytes(d), pct = Math.min(100, used/SITE_LIMIT*100), mins = Math.max(0, (SITE_LIMIT - used) / (MP3_KBPS*1000/8*60));
+  $('#pubMeter').classList.toggle('warn', used > SITE_WARN); $('#pubMeter').firstElementChild.style.width = pct.toFixed(1) + '%';
+  $('#pubSpace').textContent = `${(d.songs||[]).length} song${(d.songs||[]).length===1?'':'s'} and ${(d.photos||[]).length} photo${(d.photos||[]).length===1?'':'s'} use ${fmtBytes(used)} of about 1 GB. Room for roughly ${Math.floor(mins/3.5)} more songs of 3½ minutes.`; }
+/* Git Data API: upload blobs, then one tree + one commit per batch, then move main (retry if the site moved meanwhile) */
+async function ghJson(path, opt, what){ const r = await gh(path, opt); if (!r.ok) throw await ghFail(r, what); return r.json(); }
+async function siteHead(){ const ref = await ghJson(`/repos/${GH_REPO}/git/ref/heads/main`, {}, 'Reading the site');
+  const c = await ghJson(`/repos/${GH_REPO}/git/commits/${ref.object.sha}`, {}, 'Reading the site'); return {head: ref.object.sha, tree: c.tree.sha}; }
+async function ghBlob(bytes, what){ return (await ghJson(`/repos/${GH_REPO}/git/blobs`, {method:'POST', body: JSON.stringify({content: b64(bytes), encoding:'base64'})}, what || 'Uploading')).sha; }
+async function commitFiles(files, change, message){ // files: [{path, sha}] (sha null = remove); change(manifest) edits songs.json
+  for (let i=0; i<6; i++){
+    const {head, tree} = await siteHead(), {data} = await readManifest(head); change(data); data.updated = new Date().toISOString();
+    const mSha = await ghBlob(new TextEncoder().encode(JSON.stringify(data, null, 1)), 'Saving the song list');
+    let entries = files.map(f => ({path: f.path, mode:'100644', type:'blob', sha: f.sha})).concat([{path:'songs.json', mode:'100644', type:'blob', sha: mSha}]), t;
+    let r = await gh(`/repos/${GH_REPO}/git/trees`, {method:'POST', body: JSON.stringify({base_tree: tree, tree: entries})});
+    if (!r.ok && r.status === 422 && entries.some(e => e.sha === null)){   // a file to remove was already gone: carry on without it
+      entries = entries.filter(e => e.sha !== null); r = await gh(`/repos/${GH_REPO}/git/trees`, {method:'POST', body: JSON.stringify({base_tree: tree, tree: entries})}); }
+    if (!r.ok) throw await ghFail(r, 'Saving'); t = await r.json();
+    const c = await ghJson(`/repos/${GH_REPO}/git/commits`, {method:'POST', body: JSON.stringify({message, tree: t.sha, parents: [head]})}, 'Saving');
+    const u = await gh(`/repos/${GH_REPO}/git/refs/heads/main`, {method:'PATCH', body: JSON.stringify({sha: c.sha, force: false})});
+    if (u.ok){ pubManifest = data; syncPubMap(); return data; }
+    if (u.status === 422 || u.status === 409){ await sleep(700 * (i+1)); continue; }   // the site changed in the meantime: build on the new version
+    throw await ghFail(u, 'Saving');
+  }
+  throw new PubErr('The site kept changing while saving. Try again in a minute.');
+}
+const estBytes = m => Math.max(1, (m.end - m.start)) * MP3_KBPS * 1000 / 8 + 1500;
+async function publishSongs(list){
+  list = list.filter(m => m.state === 'done'); if (!list.length){ pubSay('No polished songs to publish yet.'); return; }
+  if (!getKey()){ openPub(); pubSay('Paste your GitHub key first, then publish.', true); return; }
+  if (pubRunning){ pubSay('Already publishing. Hang on until it finishes.'); return; }
+  pubRunning = true; list.forEach(m => pubBusy.add(m.id)); render();
+  let done = 0, skipped = 0, updated = 0;
+  try {
+    pubSay('Checking what’s already on the gallery…');
+    const {data} = await readManifest(); pubManifest = data; syncPubMap(); drawSpace(data);
+    const have = new Map(data.songs.map(e => [e.id, e]));
+    const need = list.filter(m => { const e = have.get(pubId(m)); return !e || e.sig !== songSig(m); });
+    const est = need.reduce((a,m) => a + estBytes(m), 0), used = usedBytes(data), after = used + est;
+    const sizeLine = `${need.length} song${need.length===1?'':'s'} to upload, about ${fmtBytes(est)}${list.length > need.length ? ` (${list.length - need.length} already on the gallery)` : ''}. The gallery would use about ${fmtBytes(after)} of about 1 GB.`;
+    pubSay(need.length ? sizeLine : 'Everything picked is already on the gallery. Checking names…');
+    if (after > SITE_WARN){ if (!confirm(`${sizeLine}\n\nThat’s close to GitHub’s 1 GB limit for sites, and it may stop updating past it. Publish anyway?`)){ pubSay('Nothing published.'); return; } }
+    else if (need.length > 1 && !confirm(`Publish now?\n\n${sizeLine}`)){ pubSay('Nothing published.'); return; }
+    const files = [], metas = []; let pendBytes = 0;
+    const flush = async () => { if (!metas.length) return; const batch = metas.splice(0), fs = files.splice(0); pendBytes = 0; const fresh = batch.filter(e => e._new).length;
+      batch.forEach(e => delete e._new);
+      const msg = fresh ? `${fresh} song${fresh>1?'s':''} on the public gallery: ${batch.map(e=>e.title).join(', ').slice(0,120)}` : `Public gallery song names updated`;
+      await commitFiles(fs, d => { for (const e of batch){ const i = d.songs.findIndex(x => x.id === e.id); if (i >= 0) d.songs[i] = e; else d.songs.push(e); } }, msg);
+      batch.forEach(e => { for (const m of list) if (pubId(m) === e.id) pubBusy.delete(m.id); }); render(); };
+    const N = need.length; let n = 0;
+    for (const m of list){
+      const id = pubId(m), old = have.get(id), path = `songs/${id}.mp3`;
+      const meta = { id, title: m.name, date: new Date(recDate(m)).toISOString(), duration: Math.round((m.end-m.start)*10)/10,
+                     bucket: bk.names[bk.map[m.id]] || '', bucketNo: bk.map[m.id] === undefined ? null : bk.map[m.id]+1, peaks: peaks64(m) };
+      if (old && old.sig === songSig(m)){   // same sound already live: just refresh the name/bucket
+        if (old.title !== meta.title || old.bucket !== meta.bucket || old.date !== meta.date){ metas.push({...old, ...meta}); updated++; } else { skipped++; pubBusy.delete(m.id); }
+        continue; }
+      n++; const lead = `Publishing ${n} of ${N}`;
+      pubSay(`${lead}: making “${m.name}” small…`);
+      const mp3 = await encodeMp3(m, f => pubSay(`${lead}: making “${m.name}” small… ${Math.round(f*100)}%`));
+      if (mp3.length > 45e6) throw new PubErr(`“${m.name}” is too long to publish (${fmtBytes(mp3.length)}). GitHub’s limit per file is much smaller.`);
+      pubSay(`${lead}: uploading “${m.name}” (${fmtBytes(mp3.length)})…`);
+      const sha = await ghBlob(mp3, 'Uploading');
+      files.push({path, sha}); metas.push({...meta, file: path, bytes: mp3.length, sha, sig: songSig(m), added: old ? old.added : new Date().toISOString(), _new: !old});
+      done++; pendBytes += mp3.length;
+      if (metas.length >= 8 || pendBytes > 30e6){ pubSay(`${lead}: saving songs so far…`); await flush(); }
+    }
+    if (metas.length){ pubSay('Saving…'); await flush(); } drawSpace(pubManifest);
+    pubSay(`Done. ${done ? `Published ${done} song${done>1?'s':''}. ` : ''}${updated ? `Updated ${updated} name${updated>1?'s':''}. ` : ''}${skipped ? `${skipped} already on the gallery. ` : ''}The gallery page updates in about a minute.`);
+  } catch(e){ pubSay((e instanceof PubErr ? e.message : 'Publishing stopped: ' + (e && e.message || e)) + (done ? ` Songs saved before this stay published. Tap Publish again to carry on.` : ''), true); }
+  finally { pubRunning = false; list.forEach(m => pubBusy.delete(m.id)); render(); }
+}
+async function unpublishSong(m){
+  const e = pubMap[m.id]; if (!e) return;
+  if (!getKey()){ openPub(); pubSay('Paste your GitHub key first.', true); return; }
+  if (!confirm(`Take “${m.name}” off the public gallery? It stays in your app.`)) return;
+  pubBusy.add(m.id); render();
+  try { pubSay(`Taking “${m.name}” off the gallery…`);
+    await commitFiles([{path: e.file, sha: null}], d => { d.songs = d.songs.filter(x => x.id !== e.id); }, `Took a song off the public gallery: ${m.name}`); drawSpace(pubManifest);
+    pubSay(`Took “${m.name}” off the gallery.`); }
+  catch(err){ pubSay(err instanceof PubErr ? err.message : 'Couldn’t take it off: ' + (err && err.message || err), true); }
+  finally { pubBusy.delete(m.id); render(); }
+}
+async function publishPhotos(){
+  if (!getKey()){ pubSay('Paste your GitHub key first.', true); return; }
+  if (pubRunning) return; pubRunning = true; $('#pubPhotos').disabled = true;
+  try {
+    const {data} = await readManifest(); const have = new Set(data.photos.map(p => p.id)); const add = photos.filter(p => !have.has(p.id) && !p._volatile), added = [], files = [];
+    const est = add.reduce((a,p) => a + p.buf.byteLength, 0);
+    if (usedBytes(data) + est > SITE_WARN && !confirm(`That would bring the gallery to about ${fmtBytes(usedBytes(data)+est)} of about 1 GB. Publish anyway?`)){ pubSay('No photos published.'); return; }
+    for (let i=0;i<add.length;i++){ const p = add[i], path = `photos/${String(p.id).replace(/[^A-Za-z0-9]/g,'').slice(0,20).toLowerCase()}.jpg`;
+      pubSay(`Uploading photo ${i+1} of ${add.length}…`); const sha = await ghBlob(new Uint8Array(p.buf), 'Uploading a photo'); files.push({path, sha});
+      added.push({id:p.id, file:path, w:p.w, h:p.h, bytes:p.buf.byteLength, sha, fx:p.fx ?? 50, fy:p.fy ?? 50, zoom:p.zoom || 1}); }
+    const order = new Map(photos.map((p,i) => [p.id, i]));
+    pubSay('Saving…');
+    await commitFiles(files, d => { const ids = new Set(d.photos.map(x => x.id)); for (const a of added) if (!ids.has(a.id)) d.photos.push(a);
+      for (const x of d.photos){ const q = photos.find(p => p.id === x.id); if (q){ x.fx = q.fx ?? 50; x.fy = q.fy ?? 50; x.zoom = q.zoom || 1; } }   // framing from the banner editor
+      for (const x of d.photos){ const q = photos.find(p => p.id === x.id); if (q){ x.fx = q.fx ?? 50; x.fy = q.fy ?? 50; x.zoom = q.zoom || 1; } }   // framing from the banner editor
+      d.photos.sort((x,y) => (order.has(x.id) ? order.get(x.id) : 1e9) - (order.has(y.id) ? order.get(y.id) : 1e9)); }, added.length ? `Public gallery photos updated (${added.length} new)` : 'Public gallery photo order and framing updated');
+    drawSpace(pubManifest); pubSay(added.length ? `Published ${added.length} photo${added.length>1?'s':''}. The gallery updates in about a minute.` : 'Your photos are already on the gallery (order and framing updated).');
+  } catch(e){ pubSay(e instanceof PubErr ? e.message : 'Photo publishing stopped: ' + (e && e.message || e), true); }
+  finally { pubRunning = false; $('#pubPhotos').disabled = false; }
+}
+function drawKeyState(){ const k = getKey(), el = $('#keyState'); el.textContent = k ? '· saved on this device' : '· none yet'; el.className = 'keystate ' + (k ? 'ok' : 'bad'); $('#keyForget').disabled = !k; $('#keyCheck').disabled = !k; $('#keySteps').hidden = !!k; $('#keyStepsShow').hidden = !k; }
+function openPub(){ drawKeyState(); $('#pubSheet').hidden = false; document.body.style.overflow = 'hidden'; $('#pubClose').focus(); if (pubManifest) drawSpace(pubManifest); if (getKey()) readManifest().then(({data}) => { pubManifest = data; syncPubMap(); drawSpace(data); }).catch(() => {}); }
+function closePub(){ $('#pubSheet').hidden = true; document.body.style.overflow = ''; $('#pubOpen').focus(); render(); }
+$('#pubOpen').addEventListener('click', openPub); $('#pubClose').addEventListener('click', closePub);
+$('#pubSheet').addEventListener('click', e => { if (e.target === $('#pubSheet')) closePub(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#pubSheet').hidden) closePub(); });
+$('#keySave').addEventListener('click', async () => { const v = $('#keyIn').value.trim(); if (!v){ pubSay('Paste the key into the box first.', true); return; }
+  if (!/^(github_pat_|ghp_|gho_|ghs_)[A-Za-z0-9_]{20,}$/.test(v)){ pubSay('That doesn’t look like a GitHub key. It should start with github_pat_.', true); return; }
+  try { localStorage.setItem(KEY_LS, v); } catch(e){ pubSay('This browser won’t save the key.', true); return; } $('#keyIn').value = ''; drawKeyState(); checkKey(); });
+$('#keyForget').addEventListener('click', () => { if (!confirm('Forget the GitHub key on this device? Published songs stay on the gallery.')) return; try { localStorage.removeItem(KEY_LS); } catch(e){} drawKeyState(); pubSay('Key forgotten on this device.'); });
+async function checkKey(){ pubSay('Checking the key with GitHub…');
+  try { const r = await gh(`/repos/${GH_REPO}`); if (!r.ok) throw await ghFail(r, 'Checking the key'); const j = await r.json();
+    if (j.permissions && !j.permissions.push) throw new PubErr('The key can see the repository but can’t change it. Set Contents to Read and write.');
+    const {data} = await readManifest(); pubManifest = data; syncPubMap(); drawSpace(data); pubSay('The key works. You’re ready to publish.'); }
+  catch(e){ pubSay(e instanceof PubErr ? e.message : String(e), true); } }
+$('#keyCheck').addEventListener('click', checkKey);
+$('#pubPhotos').addEventListener('click', publishPhotos);
+$('#pubAll').addEventListener('click', () => publishSongs(memos));
+$('#pubAllTop').addEventListener('click', () => publishSongs(memos));
+$('#pubSel').addEventListener('click', () => publishSongs(memos.filter(m => picked.has(m.id))));
+loadPublic();
 
 async function importShared(){
   if (!/[?&]shared=1/.test(location.search)) return;
