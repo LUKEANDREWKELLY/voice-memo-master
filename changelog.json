@@ -1,5 +1,30 @@
 [
 {
+"sha": "12336b0",
+"date": "2026-09-26T22:57:36-04:00",
+"msg": "Title card is gone, the photos get the banner all to themselves again"
+},
+{
+"sha": "4e34ca9",
+"date": "2026-09-26T22:56:25-04:00",
+"msg": "Took a song off the public gallery: TEST gallery tone A"
+},
+{
+"sha": "d42c31b",
+"date": "2026-09-26T22:56:22-04:00",
+"msg": "Took a song off the public gallery: TEST gallery tone B"
+},
+{
+"sha": "9024054",
+"date": "2026-09-26T22:55:33-04:00",
+"msg": "2 songs on the public gallery: TEST gallery tone A, TEST gallery tone B"
+},
+{
+"sha": "e588b2f",
+"date": "2026-09-26T22:54:54-04:00",
+"msg": "Build log data"
+},
+{
 "sha": "1e32e2a",
 "date": "2026-09-26T22:54:54-04:00",
 "msg": "Gallery photos now wear the same movie title card with your name across the middle"
