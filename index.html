@@ -58,7 +58,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:11p
 body{padding-top:calc(var(--npH) + env(safe-area-inset-top,0px))}
 li.memo{scroll-margin-top:calc(var(--npH) + env(safe-area-inset-top,0px) + 8px)}
 /* now playing: pinned to the top of the screen */
-.np{position:fixed;top:0;left:0;right:0;z-index:40;display:grid;grid-template-columns:28px minmax(0,1fr) auto 30px auto;grid-template-rows:24px 7px;grid-template-areas:"pp tt tm dl nx" "bar bar bar bar bar";
+.np{position:fixed;top:0;left:0;right:0;z-index:40;display:grid;grid-template-columns:28px minmax(0,1fr) auto 30px 30px auto;grid-template-rows:24px 7px;grid-template-areas:"pp tt tm fv dl nx" "bar bar bar bar bar bar";
   padding-top:env(safe-area-inset-top,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);background:#111;color:var(--accent-ink);border-bottom:1px solid var(--grid)}
 .np button{border:none;border-right:1px solid #3a3a3a;background:transparent;color:var(--accent-ink);min-height:0}
 .np button:hover{background:#2a2a2a}
@@ -310,6 +310,36 @@ li.memo .ab button[aria-pressed="true"]{background:var(--accent);color:var(--acc
 .dl{grid-area:dl;display:grid;place-items:center;padding:0;line-height:0;background:transparent}
 .dl svg{width:10px;height:10px;fill:currentColor}
 .del{grid-area:del;color:var(--accent);font-weight:900;background:transparent}
+/* favorites + playlists */
+.rowx{display:inline-flex;gap:2px;margin-right:5px;flex:none}
+.favb,.pladd,.plmv{flex:none;width:18px;height:16px;padding:0;border:1px solid var(--grid)!important;background:var(--paper);color:var(--ink);font:inherit;font-size:10px;font-weight:900;line-height:14px;display:inline-grid;place-items:center;cursor:pointer;min-height:0!important}
+.favb{color:var(--muted)}
+.favb[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.pladd{appearance:none;-webkit-appearance:none;width:24px;text-align:center;text-align-last:center;font-size:9px}
+.plmv:disabled{opacity:.35;cursor:default}
+.favb:hover,.pladd:hover,.plmv:not(:disabled):hover{background:var(--paper-hi)}
+.favb[aria-pressed="true"]:hover{background:var(--accent-hover)}
+.plbar{display:flex;flex-wrap:wrap;border:1px solid var(--grid);border-bottom:none;background:var(--paper2)}
+.plbar:empty{display:none}
+.plbar>*{border:none;border-right:1px solid var(--grid);min-height:24px;padding:0 9px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;background:transparent;display:flex;align-items:center;color:var(--ink)}
+.plbar button:hover:not(:disabled){background:var(--paper-hi)}
+.plbar button:disabled{opacity:.45}
+.plbar .plt{background:var(--head);font-weight:900;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plbar .plplay{background:var(--accent);color:var(--accent-ink)}
+.plbar .danger{color:var(--accent)}
+.plbar .plhint{font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted);border-right:none;font-style:italic}
+.tabs .tfav b{color:var(--accent)}
+.tabs button[aria-selected="true"].tfav b{color:var(--accent-ink)}
+.tabs .tnew{font-weight:900;color:var(--accent)}
+.np-fav{grid-area:fv;display:grid;place-items:center;padding:0;font-size:12px;line-height:1}
+.np-fav[aria-pressed="true"]{color:#ff5a4f!important}
+.np-fav:disabled{opacity:.35}
+@media (max-width:640px){
+  .favb,.plmv{width:26px;height:22px;font-size:12px;line-height:20px}
+  .pladd{width:30px;height:22px;font-size:10px}
+  .plbar>*{min-height:30px;flex:1 1 auto;justify-content:center;border-bottom:1px solid var(--grid)}
+  .plbar .plt,.plbar .plhint{flex:1 1 100%}
+}
 /* effects strip: REVERSE / SPEED / PITCH, preview only */
 li.fxrow{display:flex;flex-wrap:wrap;align-items:stretch;padding-left:58px;border-bottom:1px solid var(--grid);border-right:1px solid var(--grid);background:var(--paper2);font-size:10px}
 li.fxrow>*{display:flex;align-items:center;gap:6px;min-height:24px;padding:0 8px;border:none;border-right:1px solid var(--grid)}
@@ -367,7 +397,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   .wrap{padding:3px 3px calc(56px + env(safe-area-inset-bottom,0px))}
   .topbanner{font-size:10.5px;padding-left:4px;padding-right:4px}
   :root{--npH:57px}
-  .np{grid-template-columns:44px minmax(0,1fr) auto 40px auto;grid-template-rows:44px 12px}
+  .np{grid-template-columns:44px minmax(0,1fr) auto 40px 40px auto;grid-template-rows:44px 12px}
   .np-play svg{width:14px;height:14px}
   .np-title{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px}
   .np-name{max-width:100%;font-size:12px}
@@ -432,7 +462,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 /* phones only (≤640px): denser toolbars and rows so more songs fit; tap targets stay ≥30px. Laptop layout untouched. */
 @media (max-width:640px){
   :root{--npH:43px}
-  .np{grid-template-columns:36px minmax(0,1fr) auto 34px auto;grid-template-rows:34px 8px}
+  .np{grid-template-columns:36px minmax(0,1fr) auto 34px 34px auto;grid-template-rows:34px 8px}
   .np-play svg{width:12px;height:12px}
   .np-title{flex-direction:row;align-items:center;gap:5px}
   .np-name{font-size:11px}
@@ -702,6 +732,7 @@ body.dropping::after{content:'Drop your songs anywhere';position:fixed;inset:8px
   <button class="np-play" id="npPlay" aria-label="Play"><svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg></button>
   <button class="np-title" id="npTitle" title="Show this song in the list"><span class="np-name" id="npName">Nothing playing</span><span class="np-bk" id="npBk"></span></button>
   <span class="np-time" id="npTime"></span>
+  <button class="np-fav" id="npFav" aria-label="Add to favorites" aria-pressed="false" title="Favorite" disabled>♥</button>
   <button class="np-dl" id="npDl" title="Download this song (with its effects)" aria-label="Download this song" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M7 1h2v8l3-3 1.4 1.4L8 12.8 2.6 7.4 4 6l3 3zM2 14h12v2H2z"/></svg></button>
   <button class="np-next" id="npNext" title="Next song in this bucket">Next</button>
   <div class="np-bar" id="npBar" role="slider" aria-label="Song position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="-1"><div class="np-fill" id="npFill"></div></div>
@@ -914,6 +945,7 @@ body.dropping::after{content:'Drop your songs anywhere';position:fixed;inset:8px
     </div>
   </div>
   <div class="tabs" id="tabs" role="tablist" aria-label="Buckets"></div>
+  <div class="plbar" id="plbar" role="toolbar" aria-label="Favorites and playlist tools"></div>
   <div class="thead" aria-hidden="true"><span>#</span><span>Play</span><span>Name</span><span>Date</span><span>Wave</span><span>Loud</span><span>Warmth</span><span>Sparkle</span><span>Tape</span><span>Phone</span><span>Dice</span><span>Keep</span><span>Raw/Polished</span><span>Votes</span><span>Lyrics</span><span>DL</span><span class="h-del">Del</span></div>
   <ul id="list"></ul>
 
@@ -981,7 +1013,7 @@ const putBlob = (k,b) => saveTx(ok => ok ? mem.blobs.delete(k) : mem.blobs.set(k
 const getBlob = k => mem.blobs.has(k) ? Promise.resolve(mem.blobs.get(k)) : safeTx(() => mem.blobs.get(k), async () => { const r = await tx('blobs','readonly', s => s.get(k));
   return r instanceof Blob ? r : (r && r.buf) ? new Blob([r.buf], {type:r.type||''}) : undefined; });
 const hasBlob = k => mem.blobs.has(k) ? Promise.resolve(true) : safeTx(() => false, async () => (await tx('blobs','readonly', s => s.count(k))) > 0);
-const delMemo = id => { mem.memos.delete(id); mem.blobs.delete(id+':orig'); mem.blobs.delete(id+':master');
+const delMemo = id => { dropFromPlaylists(id); mem.memos.delete(id); mem.blobs.delete(id+':orig'); mem.blobs.delete(id+':master');
   return safeTx(() => {}, () => Promise.all([tx('memos','readwrite', s=>s.delete(id)), tx('blobs','readwrite', s=>{s.delete(id+':orig'); s.delete(id+':master');})])); };
 // ask the browser not to clear saved songs when space runs low (Chrome/Edge/Firefox/Safari 17+; silently ignored elsewhere)
 try { navigator.storage && navigator.storage.persisted && navigator.storage.persisted().then(p => p || navigator.storage.persist()).catch(() => {}); } catch(e){}
@@ -1340,20 +1372,73 @@ const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(
 /* ---------- buckets: songs dealt at random into up to 6 small grids ---------- */
 const BNAMES = ['Deep cuts','Bangers','Night owls','B-sides','Wildcards','Gems','Oddballs','Heaters','Slow burns','Maybes','Keepers','Rainy day','Road trip','Hot takes','Lullabies','Late show'];
 const BMAX = 6;
+/* ---------- favorites + named playlists ---------- */
+const PL_LS = 'lak-playlists';
+let pls = []; try { const v = JSON.parse(localStorage.getItem(PL_LS) || '[]'); if (Array.isArray(v)) pls = v.filter(x => x && x.id && Array.isArray(x.ids)).map(x => ({id:String(x.id), name:String(x.name || 'Playlist').slice(0,40), ids:x.ids.map(String)})); } catch(e){ pls = []; }
+const savePl = () => { try { localStorage.setItem(PL_LS, JSON.stringify(pls)); } catch(e){} };
+const plOf = key => typeof key === 'string' && key.startsWith('pl:') ? pls.find(x => 'pl:' + x.id === key) || null : null;
+const isView = a => a === 'all' || a === 'fav' || !!plOf(a);
+const escH = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function dropFromPlaylists(id){ let ch = false; for (const x of pls){ const n = x.ids.length; x.ids = x.ids.filter(i => i !== id); if (x.ids.length !== n) ch = true; } if (ch) savePl(); }
+async function toggleFav(m){ m.fav = !m.fav; render(); try { await putMemo(strip(m)); } catch(e){} }
+function newPlaylist(ids = []){
+  const name = (prompt('Name your new playlist:', 'Playlist ' + (pls.length + 1)) || '').trim(); if (!name) return null;
+  const x = {id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: name.slice(0, 40), ids: [...new Set(ids)]}; pls.push(x); savePl(); return x;
+}
+function addToPl(x, ids){ let n = 0; for (const id of ids) if (!x.ids.includes(id)){ x.ids.push(id); n++; } savePl(); return n; }
+function rowCtl(m, q){
+  const box = document.createElement('span'); box.className = 'rowx';
+  const h = document.createElement('button'); h.className = 'favb'; h.textContent = '♥'; h.setAttribute('aria-pressed', String(!!m.fav));
+  h.setAttribute('aria-label', (m.fav ? 'Take out of favorites: ' : 'Add to favorites: ') + m.name); h.title = m.fav ? 'In your favorites (tap to take it out)' : 'Add to favorites';
+  h.addEventListener('click', e => { e.stopPropagation(); toggleFav(m); });
+  const sel = document.createElement('select'); sel.className = 'pladd'; sel.setAttribute('aria-label', 'Add ' + m.name + ' to a playlist'); sel.title = 'Add to a playlist';
+  sel.innerHTML = '<option value="">+♫</option>' + pls.map(x => `<option value="${escH(x.id)}">${x.ids.includes(m.id) ? '✓ In ' : 'Add to '}${escH(x.name)}</option>`).join('') + '<option value="new">New playlist…</option>';
+  sel.addEventListener('change', () => { const v = sel.value; sel.value = ''; const x = v === 'new' ? newPlaylist() : pls.find(y => y.id === v); if (!x) return;
+    const n = addToPl(x, [m.id]); setStatus(n ? `Added “${m.name}” to ${x.name}.` : `“${m.name}” is already in ${x.name}.`); render(); });
+  box.append(h, sel);
+  const pl = !q && plOf(bk.active);
+  if (pl){ const i = pl.ids.indexOf(m.id);
+    const mv = (t, lbl, fn, dis) => { const b = document.createElement('button'); b.className = 'plmv'; b.textContent = t; b.setAttribute('aria-label', lbl + ': ' + m.name); b.title = lbl; b.disabled = dis;
+      b.addEventListener('click', e => { e.stopPropagation(); fn(); savePl(); render(); }); box.appendChild(b); };
+    mv('▲', 'Move up', () => { [pl.ids[i-1], pl.ids[i]] = [pl.ids[i], pl.ids[i-1]]; }, i <= 0);
+    mv('▼', 'Move down', () => { [pl.ids[i+1], pl.ids[i]] = [pl.ids[i], pl.ids[i+1]]; }, i < 0 || i >= pl.ids.length - 1);
+    mv('✕', 'Take out of this playlist', () => { if (i >= 0) pl.ids.splice(i, 1); }, i < 0); }
+  return box;
+}
+function drawPlBar(q){
+  const bar = $('#plbar'); if (!bar) return; bar.innerHTML = ''; if (q) return;
+  const add = (tag, t, cls) => { const e = document.createElement(tag); e.textContent = t; if (cls) e.className = cls; bar.appendChild(e); return e; };
+  const btn = (t, fn, cls, dis) => { const b = add('button', t, cls); b.disabled = !!dis; b.addEventListener('click', fn); return b; };
+  const favs = memos.filter(m => m.fav).map(m => m.id), canPlay = visible().some(m => m.state === 'done');
+  if (bk.active === 'fav'){
+    add('span', '♥ Favorites', 'plt');
+    btn(playlist ? 'Stop' : 'Play favorites', () => playBucket(), 'plplay', !canPlay && !playlist);
+    btn('Save as playlist', () => { const x = newPlaylist(favs); if (x){ setStatus(`Made “${x.name}” from your favorites.`); goBucket('pl:' + x.id); } }, '', !favs.length);
+    if (!favs.length) add('span', 'Tap ♥ on any song to put it here.', 'plhint');
+    return; }
+  const pl = plOf(bk.active); if (!pl) return;
+  add('span', '♫ ' + pl.name, 'plt');
+  btn(playlist ? 'Stop' : 'Play playlist', () => playBucket(), 'plplay', !canPlay && !playlist);
+  btn('Add all favorites', () => { const n = addToPl(pl, favs); setStatus(n ? `Added ${n} favorite${n > 1 ? 's' : ''} to ${pl.name}.` : `All your favorites are already in ${pl.name}.`); render(); }, '', !favs.length);
+  btn('Rename', () => { const v = (prompt('Rename this playlist:', pl.name) || '').trim(); if (v){ pl.name = v.slice(0, 40); savePl(); render(); } });
+  btn('Delete playlist', () => { if (!confirm(`Delete the playlist “${pl.name}”? The songs themselves stay.`)) return; pls = pls.filter(x => x !== pl); savePl(); if (playlist) playlist = null; goBucket('all'); }, 'danger');
+  if (!pl.ids.some(id => memos.some(m => m.id === id))) add('span', 'Add songs with the +♫ menu on any song.', 'plhint');
+}
 let bk = {names:[], map:{}, active:0};
-try { const s = JSON.parse(localStorage.getItem('lak-buckets')||'null'); if (s && s.map && Array.isArray(s.names)) bk = {names:s.names, map:s.map, active:(s.active==='all'||Number.isInteger(s.active))?s.active:0}; } catch(e){}
+try { const s = JSON.parse(localStorage.getItem('lak-buckets')||'null'); if (s && s.map && Array.isArray(s.names)) bk = {names:s.names, map:s.map, active:(isView(s.active)||Number.isInteger(s.active))?s.active:0}; } catch(e){}
 const saveBk = () => { try { localStorage.setItem('lak-buckets', JSON.stringify(bk)); } catch(e){} };
 const shuffled = a => { a = [...a]; for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
 const freshName = () => shuffled(BNAMES.filter(n => !bk.names.includes(n)))[0] || 'Bucket';
 function deal(){ // random, even deal; fewer buckets when there are fewer songs
   const n = Math.min(BMAX, memos.length); bk.names = shuffled(BNAMES).slice(0, n); bk.map = {};
   shuffled(memos).forEach((m,i) => bk.map[m.id] = i % n);
-  bk.active = n ? (bk.active==='all' ? 'all' : Math.floor(Math.random()*n)) : 0; saveBk();
+  bk.active = n ? (isView(bk.active) ? bk.active : Math.floor(Math.random()*n)) : 0; saveBk();
 }
 function syncBk(){ // drop deleted songs, drop new songs into a new bucket (while under 6) or the smallest one, close empty buckets
-  if (!memos.length){ if (bk.names.length){ bk = {names:[], map:{}, active:bk.active==='all'?'all':0}; saveBk(); } return; }
+  if (!memos.length){ if (bk.names.length){ bk = {names:[], map:{}, active:isView(bk.active)?bk.active:0}; saveBk(); } return; }
   if (!Object.keys(bk.map).length){ deal(); return; }
   const ids = new Set(memos.map(m=>m.id)); let ch = false;
+  { let pc = false; for (const x of pls){ const n = x.ids.length; x.ids = x.ids.filter(i => ids.has(i)); if (x.ids.length !== n) pc = true; } if (pc) savePl(); }   // deleted songs leave their playlists
   for (const id in bk.map) if (!ids.has(id) || !(bk.map[id] < bk.names.length)){ delete bk.map[id]; ch = true; }
   const sizes = () => { const z = bk.names.map(()=>0); for (const id in bk.map) z[bk.map[id]]++; return z; };
   for (const m of memos) if (!(m.id in bk.map)){
@@ -1366,9 +1451,9 @@ function syncBk(){ // drop deleted songs, drop new songs into a new bucket (whil
   if (z.some(x=>!x)){ const remap = {}, names = [];
     z.forEach((x,i) => { if (x){ remap[i] = names.length; names.push(bk.names[i]); } });
     for (const id in bk.map) bk.map[id] = remap[bk.map[id]];
-    if (bk.active !== 'all') bk.active = remap[bk.active] ?? Math.max(0, Math.min(bk.active, names.length-1));
+    if (typeof bk.active === 'number') bk.active = remap[bk.active] ?? Math.max(0, Math.min(bk.active, names.length-1));
     bk.names = names; ch = true; }
-  if (bk.active !== 'all' && !(bk.active < bk.names.length)){ bk.active = 0; ch = true; }
+  if (!isView(bk.active) && !(bk.active < bk.names.length)){ bk.active = 0; ch = true; }
   if (ch) saveBk();
 }
 const goBucket = i => { bk.active = i; saveBk(); render(); const t = document.querySelector('#tabs [aria-selected="true"]'); if (t && t.scrollIntoView) t.scrollIntoView({block:'nearest', inline:'nearest'}); };
@@ -1379,14 +1464,20 @@ function drawTabs(q){
   mk('all', `<b>All</b><small>${memos.length}</small>`, `All songs, ${memos.length}`);
   const z = bk.names.map(()=>0); for (const id in bk.map) z[bk.map[id]]++;
   bk.names.forEach((nm,i) => mk(i, `<b>${i+1}</b>${nm}<small>${z[i]}</small>`, `Bucket ${i+1}, ${nm}, ${z[i]} song${z[i]===1?'':'s'}`));
+  { const nf = memos.filter(m => m.fav).length; mk('fav', `<b>Favorites</b>♥<small>${nf}</small>`, `Favorites, ${nf} song${nf===1?'':'s'}`); tabs.lastElementChild.classList.add('tfav'); }
+  for (const x of pls){ const n = x.ids.filter(id => memos.some(m => m.id === id)).length; mk('pl:' + x.id, `<b>♫</b>${escH(x.name)}<small>${n}</small>`, `Playlist ${x.name}, ${n} song${n===1?'':'s'}`); }
+  { const b = document.createElement('button'); b.className = 'tnew'; b.textContent = '+ New playlist'; b.title = 'Make a named playlist'; b.addEventListener('click', () => { const x = newPlaylist(); if (x){ $('#search').value = ''; goBucket('pl:' + x.id); } }); tabs.appendChild(b); }
   if (q){ const h = document.createElement('span'); h.className='hint'; h.textContent='Searching every bucket'; tabs.appendChild(h); }
   const one = bk.names.length < 2;
   $('#bkNext').disabled = one && bk.active!=='all'; $('#bkJump').disabled = one; $('#bkShuffle').disabled = memos.length < 2;
-  $('#bkPlay').textContent = playlist ? 'Stop' : (bk.active==='all' || q) ? 'Play all' : 'Play bucket';
+  $('#bkPlay').textContent = playlist ? 'Stop' : (bk.active==='all' || q) ? 'Play all' : bk.active==='fav' ? 'Play favorites' : plOf(bk.active) ? 'Play playlist' : 'Play bucket';
   $('#bkPlay').disabled = !playlist && !visible().some(m=>m.state==='done');
+  drawPlBar(q);
 }
 function visible(){
   const q = $('#search').value.trim().toLowerCase();
+  if (!q && bk.active === 'fav') return memos.filter(m => m.fav).sort(SORTS[sortMode] || SORTS.new);
+  const pl = !q && plOf(bk.active); if (pl) return pl.ids.map(id => memos.find(m => m.id === id)).filter(Boolean);   // playlist order, not the sort
   return memos.filter(m => q ? (m.name+' '+fmtWhen(m.created||m.added)+' '+(m.lyrics||'')).toLowerCase().includes(q) : (bk.active==='all' || bk.map[m.id]===bk.active))
     .sort(SORTS[sortMode] || SORTS.new);   // Play bucket and Next follow this order
 }
@@ -1477,7 +1568,8 @@ function render(){
     if (m.state==='error'){ when.textContent = m.error; when.classList.add('err'); }
     else if (!done){ const qi = queue.findIndex(([x]) => x === m); when.textContent = m === polishingNow ? (m.step || 'Polishing…') : qi >= 0 ? `In line (#${qi+1})` : (m.step && m.step !== 'Waiting' ? m.step : 'In line'); }
     else when.textContent = (m.createdSrc==='file' ? '' : m.createdSrc==='upload' ? 'Added ' : 'File date ') + fmtWhen(m.created||m.added);
-    if ((q || bk.active==='all') && bk.map[m.id] !== undefined){ const t = document.createElement('b'); t.className='bkb'; t.textContent = 'B'+(bk.map[m.id]+1); t.title = 'Bucket '+(bk.map[m.id]+1)+': '+bk.names[bk.map[m.id]]; when.prepend(t); }
+    if ((q || typeof bk.active !== 'number') && bk.map[m.id] !== undefined){ const t = document.createElement('b'); t.className='bkb'; t.textContent = 'B'+(bk.map[m.id]+1); t.title = 'Bucket '+(bk.map[m.id]+1)+': '+bk.names[bk.map[m.id]]; when.prepend(t); }
+    when.prepend(rowCtl(m, q));
     li.querySelector('canvas').setAttribute('aria-label', done ? `Waveform. The polished song keeps ${fmt(m.start)} to ${fmt(m.end)} of ${fmt(m.total)}.` : 'Waveform');
     li.querySelector('canvas').title = done ? `Keeps ${fmt(m.start)} to ${fmt(m.end)} of ${fmt(m.total)}` : '';
     li.querySelector('.name').addEventListener('change', async e => { const v = e.target.value.trim(); if (v && v !== m.name){ const prev = m.name, prevAuto = m.autoName, orig = m.srcName ? baseName(m.srcName) : '';
@@ -2011,6 +2103,7 @@ function drawNP(){
   $('#npPlay').innerHTML = paused ? PLAY : PAUSE; $('#npPlay').setAttribute('aria-label', paused ? (on ? 'Play ' + playing.name : 'Play this bucket') : 'Pause ' + playing.name);
   $('#npPlay').disabled = !on && !visible().some(m => m.state==='done') && !memos.some(m => m.state==='done');
   $('#npNext').disabled = !memos.some(m => m.state==='done');
+  $('#npFav').disabled = !on; $('#npFav').setAttribute('aria-pressed', String(!!(on && playing.fav))); $('#npFav').setAttribute('aria-label', on ? (playing.fav ? 'Take out of favorites: ' : 'Add to favorites: ') + playing.name : 'Favorite');
   if (!$('#npDl').classList.contains('busy')){ $('#npDl').disabled = !on || !downloads; $('#npDl').title = on && fxActive(playing) ? 'Download with effects: ' + fxLabel(fxOf(playing)) : 'Download this song'; }
   npLast = null; npTick();
   if ('mediaSession' in navigator){
@@ -2038,6 +2131,7 @@ function npPlayPause(){
 }
 $('#npPlay').addEventListener('click', npPlayPause);
 $('#npNext').addEventListener('click', nextSong);
+$('#npFav').addEventListener('click', () => { if (playing) toggleFav(playing); });
 $('#npDl').addEventListener('click', e => { if (playing) downloadSong(playing, e.currentTarget); });
 $('#npTitle').addEventListener('click', () => {
   if (!playing) return; const id = playing.id;
@@ -2173,7 +2267,7 @@ window.addEventListener('drop', async e => { if (!hasFiles(e)) return; e.prevent
   addFiles(fs); });
 $('#search').addEventListener('input', render);
 $('#bkShuffle').addEventListener('click', () => { deal(); bk.active = Math.floor(Math.random()*bk.names.length); saveBk(); render(); setStatus('Dealt your songs into ' + bk.names.length + ' new bucket' + (bk.names.length>1?'s':'') + '.'); });
-$('#bkNext').addEventListener('click', () => { if (!bk.names.length) return; goBucket(bk.active==='all' ? 0 : (bk.active+1) % bk.names.length); });
+$('#bkNext').addEventListener('click', () => { if (!bk.names.length) return; goBucket(typeof bk.active !== 'number' ? 0 : (bk.active+1) % bk.names.length); });
 $('#bkJump').addEventListener('click', () => { const n = bk.names.length; if (n < 2) return; let i; do { i = Math.floor(Math.random()*n); } while (i === bk.active); goBucket(i); });
 $('#bkPlay').addEventListener('click', playBucket);
 $('#selAll').addEventListener('click', () => { if (!editMode) $('#edit').click(); const shown = visible(), all = shown.length && shown.every(m => picked.has(m.id)); shown.forEach(m => all ? picked.delete(m.id) : picked.add(m.id)); render(); });
