@@ -423,18 +423,27 @@ async function toneAndComp(x, k){
 }
 
 /* ---------- TAPE: cassette demo-tape colour (optional, per memo) ---------- */
-const TAPE = { drive:1.2, warmHz:180, warmDb:1.5, lpHz:11000, lpQ:0.5, wowHz:0.5, wowSec:0.0006, flutHz:6, flutSec:0.00004, baseDelay:0.005, hissRel:-50 };
-function tapeCurve(){ const n=2048, c=new Float32Array(n), k=TAPE.drive; for (let i=0;i<n;i++){ const x=i/(n-1)*2-1; c[i]=Math.tanh(k*x)/k; } return c; } // unity slope at 0, soft peaks
-function tapeNodes(ctx){ // input -> warmth -> soft saturation -> soft HF roll-off -> wow/flutter delay -> output
-  const warm = ctx.createBiquadFilter(); warm.type='peaking'; warm.frequency.value=TAPE.warmHz; warm.Q.value=0.7; warm.gain.value=TAPE.warmDb;
+const TAPE = {
+  hpHz:180, lpHz:4500,                 // hard band-limit, 24 dB/oct each side (two cascaded 12 dB/oct biquads, Q 0.707)
+  midHz:1200, midQ:0.8, midDb:4,       // mid bump
+  drive:3.0,                           // tanh(drive*x)/drive soft clipper, fed so peaks hit ~0.84: clear grit on peaks
+  wowHz:0.5, wowSec:0.0015,            // ±1.5 ms delay swing at 0.5 Hz (≈0.47% pitch wobble)
+  flutHz:6, flutSec:0.00012,           // ±0.12 ms at 6 Hz (≈0.45% flutter)
+  baseDelay:0.006,
+  hissRel:-29                          // hiss RMS 29 dB under the music ≈ -42 dBFS once the song sits at -10 LUFS
+};
+function tapeCurve(){ const n=4096, c=new Float32Array(n), k=TAPE.drive; for (let i=0;i<n;i++){ const x=i/(n-1)*2-1; c[i]=Math.tanh(k*x)/k; } return c; } // unity slope at 0, squashed peaks
+function tapeNodes(ctx){ // input -> HP 180 (24dB/oct) -> mid bump -> saturation -> LP 4.5k (24dB/oct) -> wow/flutter delay -> output
+  const mk = (type, f, q, g) => { const b = ctx.createBiquadFilter(); b.type=type; b.frequency.value=f; b.Q.value=q; if (g!==undefined) b.gain.value=g; return b; };
+  const h1 = mk('highpass',TAPE.hpHz,0.707), h2 = mk('highpass',TAPE.hpHz,0.707), mid = mk('peaking',TAPE.midHz,TAPE.midQ,TAPE.midDb);
   const pre = ctx.createGain(), sat = ctx.createWaveShaper(), post = ctx.createGain(); sat.curve = tapeCurve(); sat.oversample = '4x';
-  const lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=TAPE.lpHz; lp.Q.value=TAPE.lpQ;
+  const l1 = mk('lowpass',TAPE.lpHz,0.707), l2 = mk('lowpass',TAPE.lpHz,0.707);
   const dl = ctx.createDelay(0.05); dl.delayTime.value = TAPE.baseDelay;
   const wow = ctx.createOscillator(), wowG = ctx.createGain(); wow.frequency.value=TAPE.wowHz; wowG.gain.value=TAPE.wowSec;
   const flut = ctx.createOscillator(), flutG = ctx.createGain(); flut.frequency.value=TAPE.flutHz; flutG.gain.value=TAPE.flutSec;
   wow.connect(wowG).connect(dl.delayTime); flut.connect(flutG).connect(dl.delayTime); wow.start(); flut.start();
-  warm.connect(pre).connect(sat).connect(post).connect(lp).connect(dl);
-  return { input: warm, output: dl, pre, post };
+  h1.connect(h2).connect(mid).connect(pre).connect(sat).connect(post).connect(l1).connect(l2).connect(dl);
+  return { input: h1, output: dl, pre, post };
 }
 function hissNode(ctx, seconds, gain){ // white noise shaped like tape hiss (1-12 kHz), looped
   const len = Math.max(1, Math.round(seconds*ctx.sampleRate)), b = ctx.createBuffer(1, len, ctx.sampleRate), d = b.getChannelData(0);
@@ -461,18 +470,25 @@ async function phoneFx(x){ // offline: before loudness, so a PHONE song is just 
   return (await ctx.startRendering()).getChannelData(0).slice();
 }
 async function tapeFx(x){ // offline: runs after EQ/compression and before loudness + the -1.5 dB ceiling limiter
-  let peak = 0, ss = 0; for (let i=0;i<x.length;i++){ const a=Math.abs(x[i]); if (a>peak) peak=a; ss += x[i]*x[i]; }
+  let peak = 0; for (let i=0;i<x.length;i++){ const a=Math.abs(x[i]); if (a>peak) peak=a; }
   if (!peak) return x;
-  const rms = Math.sqrt(ss/x.length);
-  const ctx = new OfflineAudioContext(1, x.length, SR);
-  const buf = ctx.createBuffer(1, x.length, SR); buf.copyToChannel(x instanceof Float32Array ? x : Float32Array.from(x), 0);
-  const src = ctx.createBufferSource(); src.buffer = buf;
-  const t = tapeNodes(ctx); t.pre.gain.value = 0.84/peak; t.post.gain.value = peak/0.84;   // same drive whatever the memo's level
-  src.connect(t.input); t.output.connect(ctx.destination);
-  const h = hissNode(ctx, 2, rms*Math.pow(10, TAPE.hissRel/20)*2.4); h.output.connect(ctx.destination);   // ~50 dB under the music
-  src.start();
-  const out = await ctx.startRendering();
-  return out.getChannelData(0).slice();
+  const render = async (withMusic, hissGain) => {
+    const ctx = new OfflineAudioContext(1, x.length, SR);
+    if (withMusic){
+      const buf = ctx.createBuffer(1, x.length, SR); buf.copyToChannel(x instanceof Float32Array ? x : Float32Array.from(x), 0);
+      const src = ctx.createBufferSource(); src.buffer = buf;
+      const t = tapeNodes(ctx); t.pre.gain.value = 0.84/peak; t.post.gain.value = peak/0.84;   // same drive whatever the memo's level
+      src.connect(t.input); t.output.connect(ctx.destination); src.start();
+    }
+    if (hissGain) hissNode(ctx, 2, hissGain).output.connect(ctx.destination);
+    return (await ctx.startRendering()).getChannelData(0).slice();
+  };
+  const y = await render(true, 0);
+  let ss = 0; for (let i=0;i<y.length;i++) ss += y[i]*y[i];
+  const rms = Math.sqrt(ss/y.length) || 1e-9;
+  const hiss = await render(false, rms*Math.pow(10, TAPE.hissRel/20)*2.4);   // 2.4 ≈ 1 / RMS of the 1-12 kHz filtered white noise
+  for (let i=0;i<y.length;i++) y[i] += hiss[i];
+  return y;
 }
 
 function biquad(x, b, a){ const y=new Float64Array(x.length); let x1=0,x2=0,y1=0,y2=0;
@@ -818,7 +834,7 @@ function buildKnobs(host, m, done){
     if (playing && playing.id===m.id){ player.pause(); playing=null; }
     m.state='queued'; m.step='Waiting'; queue.push([m, new File([f], m.name+'.audio', {type:f.type})]); render(); run(); });
   const tape = document.createElement('button'); tape.className='tape'; tape.textContent='Tape';
-  tape.title='Makes it sound like an old cassette: warm, a little fuzzy, a tiny wobble and some hiss. Tap Keep it to save.';
+  tape.title='Makes it sound like a worn old cassette: boxy, fuzzy, wobbly and hissy. Tap Keep it to save.';
   tape.setAttribute('aria-pressed', String(!!m.knobs.tape)); tape.setAttribute('aria-label', 'Tape sound for ' + m.name);
   tape.addEventListener('click', () => { m.knobs.tape = !m.knobs.tape; tape.setAttribute('aria-pressed', String(m.knobs.tape)); refresh();
     if (playing && playing.id===m.id) updatePreview(); clearTimeout(saveT); saveT = setTimeout(() => putMemo(strip(m)), 400); });
@@ -847,8 +863,8 @@ function ensureGraph(){
     pTrim = actx.createGain();   // cancels the compressor's automatic makeup gain so the preview level stays honest
     // tape path (bypassed unless Tape is on and not yet baked into this master)
     tDry = actx.createGain(); tWet = actx.createGain(); tWet.gain.value = 0;
-    const tp = tapeNodes(actx); tp.post.gain.value = Math.pow(10, 1/20);   // ~+1 dB makeup for the softened peaks
-    const hs = hissNode(actx, 2, 0.0024); tHiss = actx.createGain(); tHiss.gain.value = 0; hs.output.connect(tHiss);   // ~-60 dBFS under a -10 LUFS master
+    const tp = tapeNodes(actx); tp.post.gain.value = Math.pow(10, 7/20);   // ~+7 dB makeup: band-limit + squashed peaks remove energy (safety limiter catches peaks)
+    const hs = hissNode(actx, 2, 0.020); tHiss = actx.createGain(); tHiss.gain.value = 0; hs.output.connect(tHiss);   // ≈ -42 dBFS hiss on a -10 LUFS song
     src.connect(bF).connect(tF);
     const tBus = actx.createGain();
     tF.connect(tDry).connect(tBus); tF.connect(tp.input); tp.output.connect(tWet).connect(tBus); tHiss.connect(tBus);
