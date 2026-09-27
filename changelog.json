@@ -1,5 +1,15 @@
 [
 {
+"sha": "c40843f",
+"date": "2026-09-26T22:34:55-04:00",
+"msg": "Edit banner button: drag thumbnails to reorder the photos, drag a photo to reposition it in the frame, and zoom it"
+},
+{
+"sha": "2a56a78",
+"date": "2026-09-26T22:32:33-04:00",
+"msg": "Build log data"
+},
+{
 "sha": "2623872",
 "date": "2026-09-26T22:32:32-04:00",
 "msg": "Songs come first now: all the words moved into a slim sidebar on the left (a tap-open drawer on phones), and the logo says Built by Human Tradition"
