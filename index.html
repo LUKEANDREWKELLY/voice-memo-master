@@ -180,7 +180,9 @@ body.editing .bn-ed{display:flex}
 .htstrip{display:flex;align-items:center;gap:7px;padding:4px 6px;background:var(--bg);border-bottom:1px solid var(--grid)}
 .store{margin-left:auto;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;text-align:right;line-height:1.25;font-variant-numeric:tabular-nums}
 .htmark{width:20px;height:24px;display:block;flex:none;margin:0 1px 0 2px}
-.htstamp{flex:none;white-space:nowrap;display:inline-block;padding:2px 7px 1px;border:1.5px solid var(--grid);font-size:11px;line-height:1.2;font-weight:900;letter-spacing:.24em;text-transform:uppercase;color:var(--ink);background:transparent}
+.htstamp{flex:none;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;font-size:11px;line-height:1.2;text-transform:uppercase;color:var(--ink)}
+.htby{font-weight:600;letter-spacing:.08em;font-size:10px}
+.htbox{display:inline-block;padding:2px 7px 1px;border:1.5px solid var(--ink);background:var(--ink);color:var(--bg);font-weight:900;letter-spacing:.24em;box-shadow:2px 2px 0 #8a0303}
 header{display:grid;grid-template-columns:1fr auto;border:1px solid var(--grid);margin:0 0 4px;background:var(--cell)}
 header>div:first-child>*{margin:0;padding:2px 5px;border-bottom:1px solid var(--grid)}
 header>div:first-child>*:last-child{border-bottom:none}
@@ -699,7 +701,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 <button class="side-tog" id="sideTog" aria-expanded="false" aria-controls="sideBody"><span class="st-name">Luke Andrew <em>motherfucking</em> Kelly</span><span class="st-more">Résumé · tips · memoir · more</span></button>
 <div class="side-body" id="sideBody">
 <!-- ===== BRAND: Human Tradition (logo also at icons/human-tradition-logo.svg) ===== -->
-<div class="htstrip"><svg class="htmark" viewBox="0 0 34 40" aria-hidden="true"><g transform="translate(7 0) skewX(-10)"><rect x="0" y="2" width="8" height="36" fill="#111"/><rect x="11" y="12" width="8" height="5" fill="#8a0303"/><rect x="11" y="20" width="8" height="18" fill="#111"/><rect x="22" y="22" width="8" height="5" fill="#8a0303"/><rect x="22" y="30" width="8" height="8" fill="#111"/></g></svg><span class="htstamp">Built by Human Tradition</span><span class="store" id="store"></span></div>
+<div class="htstrip"><svg class="htmark" viewBox="0 0 34 40" aria-hidden="true"><g transform="translate(7 0) skewX(-10)"><rect x="0" y="2" width="8" height="36" fill="#111"/><rect x="11" y="12" width="8" height="5" fill="#8a0303"/><rect x="11" y="20" width="8" height="18" fill="#111"/><rect x="22" y="22" width="8" height="5" fill="#8a0303"/><rect x="22" y="30" width="8" height="8" fill="#111"/></g></svg><span class="htstamp"><span class="htby">Built by</span><span class="htbox">Human Tradition</span></span><span class="store" id="store"></span></div>
 <header class="side-head">
     <div>
       <p class="brand"><span class="sq" aria-hidden="true"></span>Voice Memo Master</p>
