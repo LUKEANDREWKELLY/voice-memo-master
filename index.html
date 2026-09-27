@@ -681,6 +681,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 .bnp-zoom{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
 .bnp-zoom input{width:120px;accent-color:var(--accent)}
 @media (max-width:640px){.bn-edbtn{min-height:36px;padding:0 10px}.bn-th{width:64px;height:40px}.bnp-ctl button{min-height:36px;flex:1 1 auto}.bnp-zoom{flex:1 1 100%}.bnp-zoom input{flex:1;width:auto}}
+#delBroken{background:#c8102e;color:#fff;border-color:#c8102e;font-weight:700}
 </style>
 </head>
 <body>
@@ -695,7 +696,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 <!-- ===== LAYOUT: slim sidebar (all the words) + songs up front ===== -->
 <div class="layout">
 <aside class="side" id="side" aria-label="About Luke">
-<button class="side-tog" id="sideTog" aria-expanded="false" aria-controls="sideBody"><span class="st-name">Luke Andrew <em>motherfucking</em> Kelly</span><span class="st-more">Tips · memoir · résumé · more</span></button>
+<button class="side-tog" id="sideTog" aria-expanded="false" aria-controls="sideBody"><span class="st-name">Luke Andrew <em>motherfucking</em> Kelly</span><span class="st-more">Résumé · tips · memoir · more</span></button>
 <div class="side-body" id="sideBody">
 <!-- ===== BRAND: Human Tradition (logo also at icons/human-tradition-logo.svg) ===== -->
 <div class="htstrip"><svg class="htmark" viewBox="0 0 34 40" aria-hidden="true"><g transform="translate(7 0) skewX(-10)"><rect x="0" y="2" width="8" height="36" fill="#111"/><rect x="11" y="12" width="8" height="5" fill="#8a0303"/><rect x="11" y="20" width="8" height="18" fill="#111"/><rect x="22" y="22" width="8" height="5" fill="#8a0303"/><rect x="22" y="30" width="8" height="8" fill="#111"/></g></svg><span class="htstamp">Built by Human Tradition</span><span class="store" id="store"></span></div>
@@ -710,6 +711,35 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
       <p class="sub">Voice memos, trimmed to the song and polished the same way every time.</p>
     </div>
 </header>
+<details class="cv fold" id="foldCv" data-key="lak-fold-cv3" data-open="1" open>
+  <summary><h2 class="cv-h">Résumé</h2><span class="cv-sub">Curriculum vitae · abridged</span><span class="fold-ind" aria-hidden="true"></span></summary>
+  <div class="cv-body">
+    <p class="cv-name">Luke Andrew <em>Motherfucking</em> Kelly</p>
+    <dl class="cv-stats">
+      <div><dt>Name</dt><dd>Luke Andrew motherfucking Kelly</dd></div>
+      <div><dt>Height</dt><dd>6'0"</dd></div>
+      <div><dt>Weight</dt><dd>175 lbs</dd></div>
+      <div><dt>Status</dt><dd>Single, no children</dd></div>
+      <div><dt>Tattoos</dt><dd>Lots</dd></div>
+    </dl>
+    <div class="cv-cols">
+      <section class="cv-sec"><h3>Experience</h3>
+        <ul class="cv-exp">
+          <li>Police Officer</li>
+          <li>Worked at an inpatient psychiatric hospital</li>
+          <li class="cv-hot"><span class="cv-hl">Spent seven days as a patient in an inpatient psychiatric hospital</span> <span class="cv-stamp">Both sides of the door</span></li>
+        </ul>
+      </section>
+      <section class="cv-sec"><h3>Personal statement</h3>
+        <p class="cv-stmt">I want to be an actor, but I'm not an actor because I was born in a cult. I was kidnapped as a child. I finally escaped. I just want to be as famous as Matthew McConaughey. I am personally offended that I have not been cast in every single Christopher Nolan film he has ever made. I am not blaming him personally, but I am telling him now: this is his chance to make up for lost time.</p>
+      </section>
+    </div>
+    <section class="cv-cast"><h3>If you like these actors, you’re going to love him:</h3>
+      <ul class="cv-actors"><li>Tom Hardy</li><li>Matthew McConaughey</li><li>Shia LaBeouf</li><li>Tom Cruise</li><li class="gos">Ryan Gosling</li><li class="gos">Ryan Gosling</li><li class="gos">Ryan Gosling</li><li class="nf">Nathan Fielder</li></ul>
+      <p class="cv-bio">It’s sort of like if Ryan Gosling and Nathan Fielder had a son, and the son was raised by reptilians on the moon, and then he finally escaped to find his father, Nathan Fielder, and Steve Jobs, and he’s back, and he’s ready to be hired for Hollywood. <strong>Trust me — he has a higher IQ than you probably think he does.</strong></p>
+    </section>
+  </div>
+</details>
 <!-- ===== TOP SECTION: three columns (stacks on phones) ===== -->
 <div class="topgrid tg-dense">
 <div class="tg-col tg-c1">
@@ -772,38 +802,9 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 <!-- ===== TAGLINE ===== -->
 <figure class="tagline" aria-label="Tagline"><q>Nobody’s gonna fact-check a guy who says he escaped the moon.</q><small>This fall · Luke Andrew motherfucking Kelly</small></figure>
 <!-- ===== RÉSUMÉ ===== -->
-<details class="cv fold" id="foldCv" data-key="lak-fold-cv2" data-closed="1" open>
-  <summary><h2 class="cv-h">Résumé</h2><span class="cv-sub">Curriculum vitae · abridged</span><span class="fold-ind" aria-hidden="true"></span></summary>
-  <div class="cv-body">
-    <p class="cv-name">Luke Andrew <em>Motherfucking</em> Kelly</p>
-    <dl class="cv-stats">
-      <div><dt>Name</dt><dd>Luke Andrew motherfucking Kelly</dd></div>
-      <div><dt>Height</dt><dd>6'0"</dd></div>
-      <div><dt>Weight</dt><dd>175 lbs</dd></div>
-      <div><dt>Status</dt><dd>Single, no children</dd></div>
-      <div><dt>Tattoos</dt><dd>Lots</dd></div>
-    </dl>
-    <div class="cv-cols">
-      <section class="cv-sec"><h3>Experience</h3>
-        <ul class="cv-exp">
-          <li>Police Officer</li>
-          <li>Worked at an inpatient psychiatric hospital</li>
-          <li class="cv-hot"><span class="cv-hl">Spent seven days as a patient in an inpatient psychiatric hospital</span> <span class="cv-stamp">Both sides of the door</span></li>
-        </ul>
-      </section>
-      <section class="cv-sec"><h3>Personal statement</h3>
-        <p class="cv-stmt">I want to be an actor, but I'm not an actor because I was born in a cult. I was kidnapped as a child. I finally escaped. I just want to be as famous as Matthew McConaughey. I am personally offended that I have not been cast in every single Christopher Nolan film he has ever made. I am not blaming him personally, but I am telling him now: this is his chance to make up for lost time.</p>
-      </section>
-    </div>
-    <section class="cv-cast"><h3>If you like these actors, you’re going to love him:</h3>
-      <ul class="cv-actors"><li>Tom Hardy</li><li>Matthew McConaughey</li><li>Shia LaBeouf</li><li>Tom Cruise</li><li class="gos">Ryan Gosling</li><li class="gos">Ryan Gosling</li><li class="gos">Ryan Gosling</li><li class="nf">Nathan Fielder</li></ul>
-      <p class="cv-bio">It’s sort of like if Ryan Gosling and Nathan Fielder had a son, and the son was raised by reptilians on the moon, and then he finally escaped to find his father, Nathan Fielder, and Steve Jobs, and he’s back, and he’s ready to be hired for Hollywood. <strong>Trust me — he has a higher IQ than you probably think he does.</strong></p>
-    </section>
-  </div>
-</details>
 <script>(function(){ var mob = matchMedia('(max-width:640px)').matches;   // phones: folded by default; your choice is remembered
   document.querySelectorAll('details.fold').forEach(function(d){ var k = d.dataset.key, v = null; try { v = localStorage.getItem(k); } catch(e){}
-    d.open = v === null ? (!mob && !d.dataset.closed) : v === '1';
+    d.open = v === null ? ((!mob || !!d.dataset.open) && !d.dataset.closed) : v === '1';
     d.addEventListener('toggle', function(){ try { localStorage.setItem(k, d.open ? '1' : '0'); } catch(e){} }); }); })();</script>
 <!-- ===== TOP BANNER: edit the text below (id="topBanner") ===== -->
 <div class="topbanner" id="topBanner" role="note">Debuting: 'Song for Barbara Walters' — the much-awaited, anticipated single from Luke Andrew motherfucking Kelly — releasing on Elon Musk's birthday. Dedicated to the possibility of Nathan Fielder being featured on the track.</div>
@@ -895,6 +896,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
     <div class="grp">
       <button id="selAll" title="Tick every song shown below">Select all</button>
       <button id="delSel" class="primary" disabled title="Delete the ticked songs (asks first)">Delete selected</button>
+      <button id="delBroken" class="danger" hidden title="Delete every song that couldn’t be read as audio, all at once">Delete broken songs</button>
       <button id="fixNames" title="Give songs with a Voice Memos code name their real title from the file, or a friendly date. Names you typed yourself are left alone.">Fix names</button>
     </div>
   </div>
@@ -1503,6 +1505,13 @@ function drawEditBar(){
   const shown = visible(), all = shown.length && shown.every(m => picked.has(m.id));
   $('#selAll').textContent = all ? 'Select none' : 'Select all';
   $('#delSel').textContent = 'Delete selected' + (picked.size ? ` (${picked.size})` : ''); $('#delSel').disabled = !picked.size;
+  const nb = memos.filter(m => m.state==='error').length, db = $('#delBroken'); if (db){ db.hidden = !nb; db.textContent = `Delete broken songs (${nb})`; }
+}
+async function deleteBroken(){   // one tap, no per-song questions: every song that failed to load goes
+  const ids = memos.filter(m => m.state==='error').map(m => m.id); if (!ids.length) return;
+  for (const id of ids){ if (playing && playing.id===id){ player.pause(); playing = null; } if (playlist && playlist.ids.includes(id)) playlist = null;
+    try { await delMemo(id); } catch(e){} memos = memos.filter(x => x.id!==id); picked.delete(id); }
+  render(); setStatus(`Deleted ${ids.length} broken song${ids.length>1?'s':''}.`);
 }
 async function deletePicked(){
   const ids = [...picked].filter(id => memos.some(m => m.id===id)); if (!ids.length) return;
@@ -2078,6 +2087,7 @@ $('#bkJump').addEventListener('click', () => { const n = bk.names.length; if (n 
 $('#bkPlay').addEventListener('click', playBucket);
 $('#selAll').addEventListener('click', () => { if (!editMode) $('#edit').click(); const shown = visible(), all = shown.length && shown.every(m => picked.has(m.id)); shown.forEach(m => all ? picked.delete(m.id) : picked.add(m.id)); render(); });
 $('#delSel').addEventListener('click', deletePicked);
+$('#delBroken').addEventListener('click', deleteBroken);
 $('#fixNames').addEventListener('click', async () => { const b = $('#fixNames'); b.disabled = true; setStatus('Reading song titles…');
   const n = await fixNames(true); b.disabled = false; render(); setStatus(n ? `Renamed ${n} song${n>1?'s':''}. Names you typed yourself were left alone.` : 'All names already look good.'); });
 $('#rollAll').addEventListener('click', e => { let n = 0; memos.forEach(m => { if (roll(m)) n++; }); if (playing) updatePreview(); render();
