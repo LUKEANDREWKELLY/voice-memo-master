@@ -878,7 +878,7 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
 
   <div class="tools" id="songs">
     <input id="search" type="search" placeholder="Search names, dates, or lyrics" aria-label="Search memos">
-    <div class="ab sort" role="group" aria-label="Sort by"><button data-sort="az" aria-pressed="false" title="Sort by name, A to Z">A–Z</button><button data-sort="new" aria-pressed="true" title="Newest recording first">Newest</button><button data-sort="old" aria-pressed="false" title="Oldest recording first">Oldest</button><button data-sort="top" aria-pressed="false" title="Most upvotes first">Top</button></div>
+    <div class="ab sort" role="group" aria-label="Sort by"><button data-sort="az" aria-pressed="false" title="Sort by name, A to Z">A–Z</button><button data-sort="added" aria-pressed="false" title="Most recently uploaded first">Just added</button><button data-sort="new" aria-pressed="true" title="Newest recording first (the date it was recorded, not uploaded)">Newest rec.</button><button data-sort="old" aria-pressed="false" title="Oldest recording first">Oldest</button><button data-sort="top" aria-pressed="false" title="Most upvotes first">Top</button></div>
     <span class="count" id="count"></span>
   </div>
   <div class="acts" id="acts">
@@ -1318,10 +1318,10 @@ async function saveZip(entries, name){
 
 /* ---------- UI ---------- */
 let memos = [], playing = null, abState = {}, openLyrics = {}, editMode = false, sortMode = 'new';
-try { sortMode = localStorage.getItem('lak-sort') || 'new'; if (!/^(az|new|old|top)$/.test(sortMode)) sortMode = 'new'; } catch(e){}
+try { sortMode = localStorage.getItem('lak-sort') || 'new'; if (!/^(az|new|old|top|added)$/.test(sortMode)) sortMode = 'new'; } catch(e){}
 const recDate = m => m.created || m.added || 0;   // recording date from the file's tags, else the file's date, else when it was added
 const byName = new Intl.Collator(undefined, {numeric:true, sensitivity:'base'});
-const SORTS = { az: (x,y) => byName.compare(x.name, y.name) || recDate(y)-recDate(x), new: (x,y) => recDate(y)-recDate(x), old: (x,y) => recDate(x)-recDate(y), top: (x,y) => ((y.votes||0)-(x.votes||0)) || recDate(y)-recDate(x) };
+const SORTS = { added: (x,y) => ((y.added||0)-(x.added||0)) || recDate(y)-recDate(x), az: (x,y) => byName.compare(x.name, y.name) || recDate(y)-recDate(x), new: (x,y) => recDate(y)-recDate(x), old: (x,y) => recDate(x)-recDate(y), top: (x,y) => ((y.votes||0)-(x.votes||0)) || recDate(y)-recDate(x) };
 const player = $('#player');
 const fmt = s => { s=Math.max(0,s); const m=Math.floor(s/60), r=Math.round(s%60); return m+':'+String(r).padStart(2,'0'); };
 const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -2024,7 +2024,9 @@ async function addFiles(files){
     memos.push(m); queue.push([m,f]); added++; render();
     try { if (!(await putBlob(m.id+':orig', f))) m._volatile = true; await putMemo(strip(m)); } catch(e){ setStatus('Couldn’t store ' + f.name + ': ' + (e && e.message || e)); }
   }
-  if (added){ syncBk(); const last = memos[memos.length-1]; bk.active = added === 1 && bk.map[last.id] !== undefined ? bk.map[last.id] : 'all'; saveBk(); }
+  if (added){ syncBk(); const last = memos[memos.length-1]; bk.active = added === 1 && bk.map[last.id] !== undefined ? bk.map[last.id] : 'all'; saveBk();
+    sortMode = 'added'; try { localStorage.setItem('lak-sort', sortMode); } catch(e){} if ($('#search').value) $('#search').value = '';   // new uploads land on top, never hidden by an old search
+    if (!dupes.length) setBanner(`Added ${added} song${added>1?'s':''}. ${added>1?'They’re':'It’s'} at the top of the list (sorted by Just added) and polishing one at a time.`); }
   render(); run();
   if (dupes.length){
     const msg = `Skipped ${dupes.length} duplicate${dupes.length>1?'s':''} already in your library: ${dupes.slice(0,5).join(', ')}${dupes.length>5?`, and ${dupes.length-5} more`:''}.`;
