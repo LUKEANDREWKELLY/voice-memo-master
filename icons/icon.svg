@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0b0b10"/>
+  <rect x="40.5" y="40.5" width="431" height="431" fill="none" stroke="#34313f" stroke-width="3"/>
+  <g id="mark">
+    <rect x="100.0" y="221.0" width="21.1" height="70" fill="#ff2d95"/><rect x="129.1" y="196.0" width="21.1" height="120" fill="#ff2d95"/><rect x="158.2" y="161.0" width="21.1" height="190" fill="#ff2d95"/><rect x="187.3" y="131.0" width="21.1" height="250" fill="#ff2d95"/><rect x="216.4" y="106.0" width="21.1" height="300" fill="#ff2d95"/><rect x="245.5" y="141.0" width="21.1" height="230" fill="#ff2d95"/><rect x="274.5" y="116.0" width="21.1" height="280" fill="#ff2d95"/><rect x="303.6" y="156.0" width="21.1" height="200" fill="#ff2d95"/><rect x="332.7" y="186.0" width="21.1" height="140" fill="#ff2d95"/><rect x="361.8" y="206.0" width="21.1" height="100" fill="#ff2d95"/><rect x="390.9" y="226.0" width="21.1" height="60" fill="#ff2d95"/>
+    <rect x="267.5" y="92" width="6" height="328" fill="#2de2e6"/>
+    <rect x="96" y="440" width="320" height="6" fill="#ff2d95"/>
+  </g>
+</svg>
