@@ -1,5 +1,15 @@
 [
 {
+"sha": "81f3c00",
+"date": "2026-09-26T23:49:49-04:00",
+"msg": "The app now spots every song you've published, whichever copy of the app you published it from"
+},
+{
+"sha": "de8a2e7",
+"date": "2026-09-26T23:49:06-04:00",
+"msg": "Build log data"
+},
+{
 "sha": "cd4820e",
 "date": "2026-09-26T23:49:06-04:00",
 "msg": "Room for way more songs: the gallery now has three shelves (about 1 GB each) that fill up one after another, a sound-quality picker (Compact is the new default), and a space meter for every shelf"
