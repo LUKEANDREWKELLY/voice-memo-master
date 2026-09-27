@@ -1,5 +1,15 @@
 [
 {
+"sha": "13de894",
+"date": "2026-09-26T22:45:10-04:00",
+"msg": "Drop songs anywhere (whole folders too), a clear count of added vs skipped after every upload, and an Undo button when you rename a song"
+},
+{
+"sha": "7a67a93",
+"date": "2026-09-26T22:41:49-04:00",
+"msg": "Build log data"
+},
+{
 "sha": "03a55aa",
 "date": "2026-09-26T22:41:49-04:00",
 "msg": "New Just added sort: fresh uploads jump straight to the top with a note saying so, and Newest is now Newest rec. since it goes by the day you recorded it"
