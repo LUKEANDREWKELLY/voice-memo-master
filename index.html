@@ -78,6 +78,18 @@ li.memo{scroll-margin-top:calc(var(--npH) + env(safe-area-inset-top,0px) + 8px)}
 .np.idle .np-bar{cursor:default}
 li.memo.flash{animation:flash 1.2s ease-out}
 @keyframes flash{0%,40%{background:var(--hi)}}
+/* memoir blurb: the very first thing on the page */
+.memoir{background:var(--paper);border-bottom:1px solid var(--grid)}
+.mm-band{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;padding:9px 12px 8px;background:var(--accent);color:var(--accent-ink);border-bottom:1px solid var(--grid)}
+.mm-stamp{flex:none;display:inline-block;padding:3px 9px 2px;background:var(--bg);color:var(--ink);border:2px solid var(--grid);box-shadow:2px 2px 0 var(--grid);font-size:12px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;transform:rotate(-4deg);line-height:1.1}
+.mm-dash{font-weight:900;font-size:16px;line-height:1}
+.mm-title{margin:0;font-size:19px;font-weight:900;letter-spacing:-.01em;line-height:1.08;text-transform:uppercase}
+.mm-title em{font-style:italic;text-transform:lowercase;letter-spacing:0;text-decoration:underline;text-decoration-color:var(--bg);text-decoration-thickness:3px;text-underline-offset:3px;padding-right:.08em}
+.mm-inc{display:inline-block;margin-left:4px;padding:1px 5px;border:1px solid var(--accent-ink);font-size:9.5px;font-weight:800;letter-spacing:.14em;vertical-align:3px;line-height:1.3}
+.mm-body{padding:7px 12px 8px;max-width:78ch}
+.mm-text{margin:0;font-size:12px;line-height:1.45;font-weight:500}
+.mm-sign{margin:4px 0 0;font-size:10.5px;font-style:italic;font-weight:600;color:var(--muted)}
+.mm-more{display:none}
 .topbanner{display:block;width:100%;padding:3px 6px;background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:1.3;font-weight:700;border-bottom:1px solid var(--grid)}
 
 /* photo banner: one wide slide at a time above the logo (swipe, arrows, gentle auto-advance) */
@@ -394,6 +406,18 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   .bn-ed button{min-height:30px;padding:0 8px}
   .fab{min-height:38px}
 }
+@media (max-width:640px){
+  .mm-band{padding:7px 8px 6px;gap:4px 9px}
+  .mm-stamp{font-size:10px;padding:2px 7px 1px;letter-spacing:.16em}
+  .mm-dash{font-size:13px}
+  .mm-title{font-size:14.5px}
+  .mm-inc{font-size:8.5px;padding:0 4px;vertical-align:2px}
+  .mm-body{padding:5px 8px 6px}
+  .mm-text{font-size:11px;line-height:1.4}
+  .memoir.short .mm-text{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .memoir.short .mm-sign{display:none}
+  .mm-more{display:inline-flex;align-items:center;margin-top:4px;min-height:30px;padding:0 10px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;border:1px solid var(--grid);background:var(--cell2)}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 .subtext{font-weight:500;line-height:1.35;margin-top:2px}
 .subtext strong{font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--accent)}
@@ -458,6 +482,16 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   <button class="np-next" id="npNext" title="Next song in this bucket">Next</button>
   <div class="np-bar" id="npBar" role="slider" aria-label="Song position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="-1"><div class="np-fill" id="npFill"></div></div>
 </div>
+<!-- ===== MEMOIR BLURB (very top) ===== -->
+<section class="memoir short" id="memoir" aria-labelledby="mmTitle">
+  <div class="mm-band"><span class="mm-stamp" aria-hidden="true">FOR SALE</span><span class="mm-dash" aria-hidden="true">—</span><h2 class="mm-title" id="mmTitle"><span class="sr-file">FOR SALE — </span>Luke Andrew <em>motherfucking</em> Kelly: A Memoir <span class="mm-inc">(Incomplete)</span></h2></div>
+  <div class="mm-body">
+    <p class="mm-text">I've been building this since 1988. Thirty-eight years of bad decisions, good songs, and one very specific obsession with making your audio do things it was never supposed to do. Girls, you're going to love this memoir. Boys, you're going to steal it. Everyone else — just press play.</p>
+    <p class="mm-sign">Coming soon. Probably. Don't hold your breath. Or do. I don't care. I'm busy.</p>
+    <button class="mm-more" id="mmMore" aria-expanded="false" aria-controls="memoir">Read more</button>
+  </div>
+</section>
+<script>document.getElementById('mmMore').addEventListener('click', e => { const m = document.getElementById('memoir'), open = m.classList.toggle('short') === false; e.currentTarget.setAttribute('aria-expanded', String(open)); e.currentTarget.textContent = open ? 'Read less' : 'Read more'; });</script>
 <!-- ===== TOP BANNER: edit the text below (id="topBanner") ===== -->
 <div class="topbanner" id="topBanner" role="note">Debuting: 'Song for Barbara Walters' — the much-awaited, anticipated single from Luke Andrew motherfucking Kelly — releasing on Elon Musk's birthday. Dedicated to the possibility of Nathan Fielder being featured on the track.</div>
 <!-- ===== /TOP BANNER ===== -->
