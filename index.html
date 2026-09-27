@@ -90,6 +90,16 @@ li.memo.flash{animation:flash 1.2s ease-out}
 .mm-text{margin:0;font-size:12px;line-height:1.45;font-weight:500}
 .mm-sign{margin:4px 0 0;font-size:10.5px;font-style:italic;font-weight:600;color:var(--muted)}
 .mm-more{display:none}
+/* dedication strip: favorite bands */
+.bands{background:var(--paper);border-bottom:1px solid var(--grid)}
+.bands h2{margin:0;padding:4px 12px 3px;background:var(--head);border-bottom:1px solid var(--grid);font-size:10.5px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;line-height:1.3}
+.bands ul{display:flex;flex-wrap:wrap;margin:0;padding:5px 12px 2px;list-style:none;font-size:11.5px;line-height:1.7}
+.bands li{white-space:nowrap}
+.bands li:not(:last-child)::after{content:"/";margin:0 7px;color:var(--muted);opacity:.55;font-weight:400}
+.bands a{color:var(--ink);font-weight:800;text-decoration:none;border-bottom:1px solid rgba(17,17,17,.25)}
+.bands a:hover,.bands a:focus-visible{color:var(--accent);border-bottom-color:var(--accent);outline:none}
+.bands a:focus-visible{background:var(--hi)}
+.bands-note{margin:0;padding:0 12px 6px;font-size:10.5px;font-style:italic;color:var(--muted)}
 .topbanner{display:block;width:100%;padding:3px 6px;background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:1.3;font-weight:700;border-bottom:1px solid var(--grid)}
 
 /* photo banner: one wide slide at a time above the logo (swipe, arrows, gentle auto-advance) */
@@ -416,6 +426,10 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   .mm-text{font-size:11px;line-height:1.4}
   .memoir.short .mm-text{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
   .memoir.short .mm-sign{display:none}
+  .bands h2{padding:3px 8px;font-size:9.5px}
+  .bands ul{padding:3px 8px 1px;font-size:10.5px;line-height:1.75}
+  .bands li:not(:last-child)::after{margin:0 5px}
+  .bands-note{padding:0 8px 5px;font-size:9.5px}
   .mm-more{display:inline-flex;align-items:center;margin-top:4px;min-height:30px;padding:0 10px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;border:1px solid var(--grid);background:var(--cell2)}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -492,6 +506,12 @@ li.lyrics textarea{width:100%;font:inherit;font-size:11px;line-height:1.35;paddi
   </div>
 </section>
 <script>document.getElementById('mmMore').addEventListener('click', e => { const m = document.getElementById('memoir'), open = m.classList.toggle('short') === false; e.currentTarget.setAttribute('aria-expanded', String(open)); e.currentTarget.textContent = open ? 'Read less' : 'Read more'; });</script>
+<!-- ===== DEDICATION STRIP: favorite bands ===== -->
+<section class="bands" aria-labelledby="bandsTitle">
+  <h2 id="bandsTitle">This is dedicated to the legacy of Luke Andrew motherfucking Kelly's favorite bands</h2>
+  <ul><li><a href="https://www.georgewatsky.com/" target="_blank" rel="noopener">Watsky</a></li><li><a href="https://www.profgampo.com/" target="_blank" rel="noopener">Prof</a></li><li><a href="https://www.ajrbrothers.com/" target="_blank" rel="noopener">AJR</a></li><li><a href="https://boniver.org/" target="_blank" rel="noopener">Bon Iver</a></li><li><a href="https://www.aurora-music.com/" target="_blank" rel="noopener">Aurora</a></li><li><a href="https://www.thinlizzyofficial.com/" target="_blank" rel="noopener">Thin Lizzy</a></li><li><a href="https://www.thelonebellow.com/" target="_blank" rel="noopener">The Lone Bellow</a></li><li><a href="https://en.wikipedia.org/wiki/The_Jackson_5" target="_blank" rel="noopener">The Jackson 5</a></li><li><a href="https://www.joanjett.com/" target="_blank" rel="noopener">Joan Jett and the Blackhearts</a></li><li><a href="https://www.haimofficial.com/" target="_blank" rel="noopener">Haim</a></li><li><a href="https://www.gretavanfleet.com/" target="_blank" rel="noopener">Greta Van Fleet</a></li><li><a href="https://andygrammer.com/" target="_blank" rel="noopener">Andy Grammer</a></li><li><a href="https://www.bensonboone.com/" target="_blank" rel="noopener">Benson Boone</a></li><li><a href="https://www.jukeboxtheghost.com/" target="_blank" rel="noopener">Jukebox the Ghost</a></li><li><a href="https://www.samhunt.com/" target="_blank" rel="noopener">Sam Hunt</a></li><li><a href="https://hozier.com/" target="_blank" rel="noopener">Hozier</a></li><li><a href="https://open.spotify.com/search/Fletcher%20Gill" target="_blank" rel="noopener">Fletcher Gill</a></li><li><a href="https://www.arkellsmusic.com/" target="_blank" rel="noopener">Arkells</a></li><li><a href="https://www.tinymovingparts.com/" target="_blank" rel="noopener">Tiny Moving Parts</a></li><li><a href="https://www.officialkaleo.com/" target="_blank" rel="noopener">Kaleo</a></li><li><a href="https://www.sylvanesso.com/" target="_blank" rel="noopener">Sylvan Esso</a></li></ul>
+  <p class="bands-note">The Galactic Federation believes that this is of utmost importance if we are going to save this planet.</p>
+</section>
 <!-- ===== TOP BANNER: edit the text below (id="topBanner") ===== -->
 <div class="topbanner" id="topBanner" role="note">Debuting: 'Song for Barbara Walters' — the much-awaited, anticipated single from Luke Andrew motherfucking Kelly — releasing on Elon Musk's birthday. Dedicated to the possibility of Nathan Fielder being featured on the track.</div>
 <!-- ===== /TOP BANNER ===== -->
