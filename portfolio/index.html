@@ -3,22 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Luke Andrew Kelly — Photographs</title>
-<meta name="description" content="Photographs by Luke Andrew Kelly, undiscovered musician, New York. Small and grainy on purpose.">
-<meta name="author" content="Luke Andrew Kelly">
+<title>Luke Andrew fvckin' Kelly — Photographs</title>
+<meta name="description" content="Photographs by Luke Andrew fvckin' Kelly, undiscovered musician, New York. Small and grainy on purpose.">
+<meta name="author" content="Luke Andrew fvckin' Kelly">
 <meta name="theme-color" content="#e1ad01">
 <meta name="color-scheme" content="light">
 <link rel="canonical" href="https://lukeandrewkelly.github.io/voice-memo-master/portfolio/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Human Tradition">
-<meta property="og:title" content="Luke Andrew Kelly — Photographs">
-<meta property="og:description" content="Photographs by Luke Andrew Kelly, undiscovered musician, New York. Small and grainy on purpose.">
+<meta property="og:title" content="Luke Andrew fvckin' Kelly — Photographs">
+<meta property="og:description" content="Photographs by Luke Andrew fvckin' Kelly, undiscovered musician, New York. Small and grainy on purpose.">
 <meta property="og:url" content="https://lukeandrewkelly.github.io/voice-memo-master/portfolio/">
 <meta property="og:image" content="https://lukeandrewkelly.github.io/voice-memo-master/portfolio/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Luke Andrew Kelly — Photographs">
+<meta name="twitter:description" content="Photographs by Luke Andrew fvckin' Kelly, undiscovered musician, New York. Small and grainy on purpose.">
+<meta name="twitter:title" content="Luke Andrew fvckin' Kelly — Photographs">
 <meta name="twitter:image" content="https://lukeandrewkelly.github.io/voice-memo-master/portfolio/og.png">
 <link rel="icon" type="image/svg+xml" href="../icons/icon.svg">
 <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
@@ -26,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,900&display=swap" rel="stylesheet">
 <style>
-/* ===== Luke Andrew Kelly — Photographs. Same sheet as Voice Memo Master: mustard cells, black gridlines, blood-red accents, beige data cells. Inter, no radius. ===== */
+/* ===== Luke Andrew fvckin' Kelly — Photographs. Same sheet as Voice Memo Master: mustard cells, black gridlines, blood-red accents, beige data cells. Inter, no radius. ===== */
 :root{
   --bg:#e1ad01; --cell:#e1ad01; --cell2:#ebbd1e; --hi:#f4d04a; --head:#c29200;
   --paper:#f3ead3; --paper2:#e7dcbf; --paper-hi:#fbf4e0; --ink:#111; --muted:#3b2e00; --grid:#111;
@@ -51,7 +52,7 @@ header>div:first-child>*{margin:0;padding:2px 5px;border-bottom:1px solid var(--
 header>div:first-child>*:last-child{border-bottom:none}
 .brand{display:flex;align-items:center;gap:5px;background:var(--head);font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
 .brand .sq{display:inline-block;width:8px;height:8px;background:var(--accent);border:1px solid var(--grid)}
-h1{font-size:clamp(24px,5.4vw,58px);line-height:.92;font-weight:900;letter-spacing:-.035em;text-transform:uppercase;color:var(--ink);padding:6px 5px 5px!important}
+h1{font-size:clamp(23px,4.6vw,54px);line-height:.92;font-weight:900;letter-spacing:-.035em;text-transform:uppercase;color:var(--ink);padding:6px 5px 5px!important}
 h1 .dash{color:var(--accent)}
 h1 .ph{white-space:nowrap}
 .credit{font-size:11px;font-weight:700}
@@ -130,6 +131,18 @@ body.owner .tile .rm{display:block}
 .lb-prev{left:0}.lb-next{right:0}
 .lb-prev:hover,.lb-next:hover{background:rgba(255,255,255,.06)!important}
 .lb-foot{border-top:1px solid #333;padding:4px 10px;font-size:9.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#bfa13a;display:flex;justify-content:space-between}
+
+
+/* reel: a wide banner slider of the best frames (echoes the main app's banner) */
+.reel{position:relative;overflow:hidden;border:1px solid var(--grid);margin:0 0 4px;background:#111;height:150px}
+.reel-track{display:flex;height:100%;width:max-content;animation:reel var(--reel-dur,60s) linear infinite}
+.reel:hover .reel-track,.reel:focus-within .reel-track{animation-play-state:paused}
+.reel button{flex:none;height:100%;padding:0;border:none;border-right:1px solid var(--grid);background:#222;min-height:0;cursor:zoom-in}
+.reel img{display:block;height:100%;width:auto}
+.reel-tag{position:absolute;left:0;top:0;z-index:1;padding:1px 6px;background:var(--accent);color:var(--accent-ink);font-size:9.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;border-right:1px solid var(--grid);border-bottom:1px solid var(--grid);pointer-events:none}
+@keyframes reel{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.reel{overflow-x:auto}.reel-track{animation:none}}
+@media (max-width:760px){.reel{height:112px}}
 
 /* film grain over everything: one small noise tile shifted in steps (cheap, composited) */
 .grain{position:fixed;top:-12%;left:-12%;width:124%;height:124%;pointer-events:none;z-index:100;opacity:.085;background-repeat:repeat;background-size:180px 180px;animation:grain .9s steps(6) infinite;will-change:transform}
@@ -213,15 +226,15 @@ details.how code{background:var(--paper2);padding:0 3px;border:1px solid rgba(17
 </head>
 <body>
 <div class="grain" id="grain" aria-hidden="true"></div>
-<div class="topbanner" role="note">Luke Andrew Kelly, undiscovered musician, also takes pictures. Small, grainy, on purpose.</div>
+<div class="topbanner" role="note">Luke Andrew fvckin' Kelly, undiscovered musician, also takes pictures. Small, grainy, on purpose.</div>
 <!-- ===== BRAND: Human Tradition ===== -->
 <div class="htstrip"><svg class="htmark" viewBox="0 0 58 42" aria-hidden="true"><g transform="translate(8.5 0) skewX(-12)"><rect x="1" y="3" width="17" height="4" fill="#111"/><rect x="5" y="3" width="9" height="36" fill="#111"/><rect x="1" y="35" width="17" height="4" fill="#111"/><rect x="25" y="19" width="8" height="20" fill="#111"/><rect x="25" y="11" width="8" height="5" fill="#8a0303"/><rect x="40" y="27" width="8" height="12" fill="#111"/><rect x="40" y="19" width="8" height="5" fill="#8a0303"/></g></svg><span class="htstamp">Human Tradition</span><span class="store" id="store">New York</span></div>
 <div class="wrap">
   <header>
     <div>
       <p class="brand"><span class="sq" aria-hidden="true"></span>Photographs</p>
-      <h1>Luke Andrew Kelly <span class="dash">—</span> <span class="ph">Photographs</span></h1>
-      <p class="credit">Luke Andrew Kelly, <em>undiscovered musician</em>. Photographer, apparently.</p>
+      <h1>Luke Andrew fvckin' Kelly <span class="dash">—</span> <span class="ph">Photographs</span></h1>
+      <p class="credit">Luke Andrew fvckin' Kelly, <em>undiscovered musician</em>. Photographer, apparently.</p>
       <p class="sub">New York and wherever else. Every frame shrunk down and roughed up the same way.</p>
     </div>
     <div class="head-actions">
@@ -288,6 +301,7 @@ details.how code{background:var(--paper2);padding:0 3px;border:1px solid rgba(17
     </div>
   </section>
 
+  <div class="reel" id="reel" hidden aria-label="Best frames"><span class="reel-tag">Best frames</span><div class="reel-track" id="reelTrack"></div></div>
   <div class="previewbar" id="previewBar" hidden><span id="previewText">Local preview — only on this device, not published</span><button type="button" id="previewEnd">End preview</button></div>
   <div class="tools" id="tools">
     <div class="sort" role="group" aria-label="Order">
@@ -306,7 +320,7 @@ details.how code{background:var(--paper2);padding:0 3px;border:1px solid rgba(17
     <div class="msg"><b>No photographs yet.</b><span>Still in the darkroom. Check back soon.</span></div>
   </div>
   <div class="foot">
-    <span>© Luke Andrew Kelly · Human Tradition</span>
+    <span>© Luke Andrew fvckin' Kelly · Human Tradition</span>
     <a href="../">Voice Memo Master →</a>
   </div>
 </div>
@@ -314,7 +328,7 @@ details.how code{background:var(--paper2);padding:0 3px;border:1px solid rgba(17
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Photograph">
   <div class="lb-top"><span class="lb-count" id="lbCount"></span><button type="button" id="lbClose" aria-label="Close photo">Close</button></div>
   <div class="lb-stage" id="lbStage"><img id="lbImg" alt=""><button type="button" class="lb-prev" id="lbPrev" aria-label="Previous photo">‹</button><button type="button" class="lb-next" id="lbNext" aria-label="Next photo">›</button></div>
-  <div class="lb-foot"><span>Luke Andrew Kelly</span><span id="lbDate"></span></div>
+  <div class="lb-foot"><span>Luke Andrew fvckin' Kelly</span><span id="lbDate"></span></div>
 </div>
 
 <script>
@@ -396,8 +410,18 @@ function render(){
   $('#empty').hidden = order.length > 0; grid.hidden = order.length === 0; $('#tools').hidden = order.length === 0;
   $('#previewBar').hidden = !previewList;
   $('#endRow').hidden = true;
+  drawReel(list);
   more();
 }
+function drawReel(list){
+  const reel = $('#reel'), best = list.slice().sort((x, y) => (y.score||0) - (x.score||0)).slice(0, 14);
+  if (best.length < 4){ reel.hidden = true; $('#reelTrack').textContent = ''; return; }
+  const cell = p => `<button type="button" data-id="${esc(p.id)}" aria-label="Open photograph"><img src="${esc(srcOf(p))}" alt="" loading="lazy" decoding="async" width="${p.width||3}" height="${p.height||2}"></button>`;
+  $('#reelTrack').innerHTML = best.map(cell).join('') + best.map(cell).join('');   // doubled for a seamless loop
+  $('#reelTrack').style.setProperty('--reel-dur', `${best.length * 5}s`);
+  reel.hidden = false;
+}
+$('#reelTrack').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const i = order.findIndex(p => p.id === b.dataset.id); if (i >= 0) openLb(i); });
 function more(){
   const end = Math.min(order.length, shown + CHUNK);
   for (; shown < end; shown++){ const t = makeTile(order[shown], shown); tiles.push(t); placeTile(t); }
